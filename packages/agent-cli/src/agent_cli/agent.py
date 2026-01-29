@@ -1,103 +1,30 @@
-import os
-from pathlib import Path
-
-from anthropic import Anthropic
-from anthropic.types import (
-    MessageParam,
-    TextBlock,
-    TextBlockParam,
-    ToolResultBlockParam,
-    ToolUseBlock,
-)
-from dotenv import load_dotenv
-
-from .output import print_text, print_tool_call, print_tool_result
-from .task import TaskManager
-from .tools import TOOLS, execute_tool
-
-load_dotenv(override=True)
-
-WORKDIR = Path.cwd()
-MODEL = os.getenv("ANTHROPIC_MODEL", "glm-4.7")
-client = Anthropic(
-    api_key=os.getenv("ANTHROPIC_API_KEY"), base_url=os.getenv("ANTHROPIC_BASE_URL")
-)
-
-SYSTEM = f"""You are Cyber Agent, a world-class coding agent at {WORKDIR}.
-
-Loop: plan -> act with tools -> update tasks -> report results.
-
-Rules:
-- Use TaskUpdate to track multi-step tasks.
-- Mark tasks `in_progress` before starting, `completed` when done.
-- Prefer tools over prose. Act, don't just explain.
-- After finishing, summarize what changed.
-
-Commit footer: When you make changes that get committed, add this footer:
-Co-authored-by: Cyber Agent"""
+AGENTS = {
+    # Explore: Read-only agent for searching and analyzing
+    # Cannot modify files - safe for broad exploration
+    "Explore": {
+        "description": "Read-only agent for exploring code, finding files, searching",
+        "tools": ["Bash", "Read"],  # No write access
+        "prompt": "You are an exploration agent. Search and analyze, but never modify files. Return a concise summary.",
+    },
+    # Plan: Analysis agent for design work
+    # Read-only, focused on producing plans and strategies
+    "Plan": {
+        "description": "Planning agent for designing implementation strategies",
+        "tools": ["Bash", "Read"],  # Read-only
+        "prompt": "You are a planning agent. Analyze the codebase and output a numbered implementation plan. Do NOT make changes.",
+    },
+    # Code: Full-powered agent for implementation
+    # Has all tools - use for actual coding work
+    "Code": {
+        "description": "Full agent for implementing features and fixing bugs",
+        "tools": "*",  # All tools
+        "prompt": "You are a coding agent. Implement the requested changes efficiently.",
+    },
+}
 
 
-def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
-    """
-    This is the pattern that ALL coding agents share:
-
-        while True:
-            response = model(messages, tools)
-            if no tool calls: return
-            execute tools, append results, continue
-    """
-    task_manager = TaskManager()
-
-    while True:
-        # Step 1: Call the model
-        response = client.messages.create(
-            model=MODEL,
-            system=SYSTEM,
-            messages=messages,
-            tools=TOOLS,
-            max_tokens=8000,
-        )
-
-        # Step 2: Collect any tool calls and print text output
-        tool_calls: list[ToolUseBlock] = []
-        for block in response.content:
-            if isinstance(block, TextBlock):
-                print_text(block.text)
-            if isinstance(block, ToolUseBlock):
-                tool_calls.append(block)
-
-        # Step 3: If not tool calls, task is complete
-        if response.stop_reason != "tool_use":
-            messages.append({"role": "assistant", "content": response.content})
-            return messages
-
-        # Step 4: Execute each tool and collect results
-        results: list[ToolResultBlockParam | TextBlockParam] = []
-        used_task = False
-
-        for tool_call in tool_calls:
-            print_tool_call(tool_call.name, tool_call.input)
-            output = execute_tool(tool_call.name, tool_call.input)
-            print_tool_result(output)
-
-            results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": tool_call.id,
-                    "content": output,
-                }
-            )
-
-            if tool_call.name == "TaskUpdate":
-                used_task = True
-
-        if used_task:
-            task_manager.reset()
-        else:
-            task_manager.increment()
-
-        # Step 5: Append to conversation and continue
-        messages.append({"role": "assistant", "content": response.content})
-        if task_manager.too_long_without_task():
-            results.insert(0, {"type": "text", "text": TaskManager.NAG_REMINDER})
-        messages.append({"role": "user", "content": results})
+def get_agent_description() -> str:
+    """Generate agent type descriptions for the Task tool."""
+    return "\n".join(
+        f"- {name}: {config['description']}" for name, config in AGENTS.items()
+    )
