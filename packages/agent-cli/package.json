@@ -4,6 +4,6 @@
   "version": "3.0.0",
   "private": true,
   "packageManager": "pnpm@10.28.1",
-  "description": "Minimal Claude Code.",
+  "description": "Minimal Claude Code with `Bash`/`Read`/`Write`/`Edit` tools, task planning, subagent orchestration, and skill system support.",
   "license": "MIT"
 }

@@ -1,6 +1,6 @@
 # Agent CLI
 
-Minimal Claude Code.
+Minimal Claude Code with `Bash`/`Read`/`Write`/`Edit` tools, task planning, subagent orchestration, and skill system support.
 
 ## References
 
