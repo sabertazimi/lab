@@ -15,7 +15,10 @@ def load_system_reminder(workdir: Path) -> str | None:
     if not claude_md.exists():
         return None
 
-    content = claude_md.read_text(encoding="utf-8", newline="\n")
+    try:
+        content = claude_md.read_text(encoding="utf-8", newline="\n")
+    except (OSError, UnicodeError):
+        return None
     return f"""<system-reminder>
 Below are the project-specific guidelines from the CLAUDE.md file:
 {content}
