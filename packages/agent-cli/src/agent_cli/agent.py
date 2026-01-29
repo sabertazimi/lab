@@ -28,7 +28,7 @@ SYSTEM = f"""You are Cyber Agent, a world-class coding agent at {WORKDIR}.
 Loop: plan -> act with tools -> update tasks -> report results.
 
 Rules:
-- Use TaskWrite to track multi-step tasks.
+- Use TaskUpdate to track multi-step tasks.
 - Mark tasks `in_progress` before starting, `completed` when done.
 - Prefer tools over prose. Act, don't just explain.
 - After finishing, summarize what changed.
@@ -88,7 +88,7 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
                 }
             )
 
-            if tool_call.name == "TaskWrite":
+            if tool_call.name == "TaskUpdate":
                 used_task = True
 
         if used_task:

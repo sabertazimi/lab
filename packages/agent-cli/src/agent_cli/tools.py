@@ -37,13 +37,13 @@ class EditToolCall:
 
 
 @dataclass
-class TaskWriteToolCall:
-    name: Literal["TaskWrite"]
+class TaskUpdateToolCall:
+    name: Literal["TaskUpdate"]
     tasks: list[dict[str, str]]
 
 
 ToolCall = (
-    BashToolCall | ReadToolCall | WriteToolCall | EditToolCall | TaskWriteToolCall
+    BashToolCall | ReadToolCall | WriteToolCall | EditToolCall | TaskUpdateToolCall
 )
 
 
@@ -123,7 +123,7 @@ TOOLS: list[ToolParam] = [
         },
     },
     {
-        "name": "TaskWrite",
+        "name": "TaskUpdate",
         "description": "Update the task list. Use to plan and track progress.",
         "input_schema": {
             "type": "object",
@@ -305,9 +305,9 @@ def execute_tool(name: str, args: dict[str, object]) -> str:
                 new_text=str(args["new_text"]),
             )
             return run_edit(tool.path, tool.old_text, tool.new_text)
-        case "TaskWrite":
+        case "TaskUpdate":
             tasks = cast(list[dict[str, str]], args.get("tasks", []))
-            tool = TaskWriteToolCall(name="TaskWrite", tasks=tasks)
+            tool = TaskUpdateToolCall(name="TaskUpdate", tasks=tasks)
             return run_task(tool.tasks)
         case _:
             return f"Unknown tool: {name}"

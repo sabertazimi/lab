@@ -24,7 +24,7 @@ def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
             detail = str(tool_input.get("path", ""))
         case "Edit":
             detail = str(tool_input.get("path", ""))
-        case "TaskWrite":
+        case "TaskUpdate":
             task_manager = TaskManager()
             if task_manager.total_count == 0:
                 detail = "🚀"

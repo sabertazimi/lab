@@ -46,9 +46,9 @@ class TaskManager(metaclass=Singleton):
     This gives real-time visibility into what the agent is doing.
     """
 
-    INITIAL_REMINDER = "<reminder>Use TodoWrite for multi-step tasks.</reminder>"
+    INITIAL_REMINDER = "<reminder>Use TaskUpdate for multi-step tasks.</reminder>"
     NAG_REMINDER = (
-        "<reminder>10+ turns without todo update. Please update todos.</reminder>"
+        "<reminder>10+ turns without task update. Please update tasks.</reminder>"
     )
     MAX_TASKS = 20
 
@@ -60,7 +60,7 @@ class TaskManager(metaclass=Singleton):
 
     def update(self, tasks: list[dict[str, str]]) -> str:
         """
-        Validate and update the todo list.
+        Validate and update the task list.
 
         The model sends a complete new list each time. We validate it,
         store it, and return a rendered view that the model will see.
@@ -72,7 +72,7 @@ class TaskManager(metaclass=Singleton):
         - Maximum 20 tasks allowed
 
         Returns:
-            Rendered text view of the todo list
+            Rendered text view of the task list
         """
         validated_tasks: list[Task] = []
         in_progress_count = 0
