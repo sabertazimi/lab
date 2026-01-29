@@ -1,6 +1,5 @@
 import os
 import subprocess
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, cast
@@ -15,7 +14,7 @@ from anthropic.types import (
 
 from .agent import AGENTS, get_agent_description
 from .llm import MODEL, client
-from .output import console
+from .output import console, get_tool_call_detail
 from .task import TaskManager
 
 
@@ -398,49 +397,46 @@ Complete the task and return a clear, concise summary."""
         {"role": "user", "content": prompt},
     ]
 
-    console.print(f"  [{agent_type}] {description}")
-    start = time.time()
     tool_count = 0
 
-    while True:
-        response = client.messages.create(
-            model=MODEL,
-            system=system_prompt,
-            messages=messages,
-            tools=tools,
-            max_tokens=8000,
-        )
-
-        if response.stop_reason != "tool_use":
-            break
-
-        tool_calls: list[ToolUseBlock] = [
-            block for block in response.content if isinstance(block, ToolUseBlock)
-        ]
-        results: list[ToolResultBlockParam] = []
-
-        for tool_call in tool_calls:
-            tool_count += 1
-            output = execute_tool(tool_call.name, tool_call.input)
-            results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": tool_call.id,
-                    "content": output,
-                }
+    with console.status(f"Preparing ${agent_type} agent...") as status:
+        while True:
+            response = client.messages.create(
+                model=MODEL,
+                system=system_prompt,
+                messages=messages,
+                tools=tools,
+                max_tokens=8000,
             )
 
-            elapsed_time = time.time() - start
-            console.print(
-                f"\r  [{agent_type}] {description} ... {tool_count} tools, {elapsed_time:.1f}s"
-            )
+            if response.stop_reason != "tool_use":
+                break
 
-        messages.append({"role": "assistant", "content": response.content})
-        messages.append({"role": "user", "content": results})
+            tool_calls: list[ToolUseBlock] = [
+                block for block in response.content if isinstance(block, ToolUseBlock)
+            ]
+            results: list[ToolResultBlockParam] = []
 
-    elapsed_time = time.time() - start
+            for tool_call in tool_calls:
+                tool_count += 1
+                output = execute_tool(tool_call.name, tool_call.input)
+                results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_call.id,
+                        "content": output,
+                    }
+                )
+                status.update(
+                    f"{get_tool_call_detail(tool_call.name, tool_call.input)}"
+                )
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({"role": "user", "content": results})
+
     console.print(
-        f"\r  [{agent_type}] {description} - done {tool_count} tools, {elapsed_time:.1f}s\n"
+        f"  {tool_count} tools used",
+        style="bright_black",
     )
 
     for block in response.content:
