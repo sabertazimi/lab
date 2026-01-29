@@ -1,3 +1,4 @@
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -178,20 +179,33 @@ def run_bash(command: str, timeout: float = 60) -> str:
     Security: Blocks obviously dangerous commands.
     Timeout: 60 seconds to prevent hanging.
     Output: Truncated to 50KB to prevent context overflow.
+
+    On Windows, uses git-bash for better Unix command compatibility.
     """
     dangerous_commands = ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/"]
     if any(dangerous in command for dangerous in dangerous_commands):
         return "Error: Dangerous command blocked"
 
     try:
-        result = subprocess.run(
-            command,
-            shell=True,
-            cwd=WORKDIR,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
+        if os.name == "nt":
+            # Windows: use git-bash for Unix command compatibility
+            result = subprocess.run(
+                [r"C:\Program Files\Git\bin\bash.exe", "-c", command],
+                cwd=WORKDIR,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+        else:
+            # Unix-like: use default shell
+            result = subprocess.run(
+                command,
+                shell=True,
+                cwd=WORKDIR,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
         output = (result.stdout + result.stderr).strip()
         return output[:50000] if output else "(no output)"
     except subprocess.TimeoutExpired:
