@@ -2,14 +2,16 @@ from anthropic.types import MessageParam, TextBlockParam
 
 from .context import load_system_reminder
 from .llm import WORKDIR
-from .output import console
+from .output import console, print_banner
 from .task import task_manager
 from .workflow import agent_loop
 
 
 def main() -> None:
-    console.print(f"Minimal Claude Code - {WORKDIR}")
-    console.print("Type '/exit' to quit.\n")
+    print_banner()
+    console.print(f"  📂 {WORKDIR}", style="dim")
+    console.print()
+    console.print("  Type '/exit' to quit.\n")
 
     history: list[MessageParam] = []
     first_turn = True

@@ -7,6 +7,50 @@ from .task import task_manager
 console = Console()
 
 
+def print_banner() -> None:
+    """Print ASCII art banner with gradient effect."""
+    logo_lines = [
+        r"   ██████╗██╗   ██╗██████╗ ███████╗██████╗ ",
+        r"  ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗",
+        r"  ██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝",
+        r"  ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗",
+        r"  ╚██████╗   ██║   ██████╔╝███████╗██║  ██║",
+        r"   ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝",
+        r"   ██████╗ ██████╗ ██████╗ ███████╗        ",
+        r"  ██╔════╝██╔═══██╗██╔══██╗██╔════╝        ",
+        r"  ██║     ██║   ██║██║  ██║█████╗          ",
+        r"  ██║     ██║   ██║██║  ██║██╔══╝          ",
+        r"  ╚██████╗╚██████╔╝██████╔╝███████╗        ",
+        r"   ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝        ",
+    ]
+
+    # Gradient colors: cyan -> blue -> magenta
+    gradient = [
+        "bright_cyan",
+        "cyan",
+        "dodger_blue2",
+        "dodger_blue1",
+        "blue_violet",
+        "medium_purple1",
+        "bright_cyan",
+        "cyan",
+        "dodger_blue2",
+        "dodger_blue1",
+        "blue_violet",
+        "medium_purple1",
+    ]
+
+    console.print()
+    for line, color in zip(logo_lines, gradient, strict=False):
+        console.print(line, style=f"bold {color}")
+
+    console.print()
+    console.print("  ┌─────────────────────────────────────────┐", style="dim")
+    console.print("  │  🤖 AI-Powered Coding Agent             │", style="dim")
+    console.print("  └─────────────────────────────────────────┘", style="dim")
+    console.print()
+
+
 def print_text(text: str) -> None:
     """Print model text output with bullet prefix, rendering Markdown."""
     console.print()
@@ -15,23 +59,6 @@ def print_text(text: str) -> None:
     table.add_column()
     table.add_row("● ", Markdown(text))
     console.print(table)
-
-
-def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
-    """Print tool call: ToolName(key_arg)."""
-    console.print("\n", end="")
-    console.print("● ", style="green", end="")
-    console.print(get_tool_call_detail(name, tool_input))
-
-
-def print_tool_result(output: str, max_length: int = 200) -> None:
-    """Print tool result preview in gray."""
-    preview_text = output[:max_length] + "..." if len(output) > max_length else output
-    table = Table.grid(padding=0)
-    table.add_column(width=5, no_wrap=True)
-    table.add_column()
-    table.add_row("  ⎿  ", preview_text)
-    console.print(table, style="bright_black")
 
 
 def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
@@ -60,3 +87,20 @@ def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
         case _:
             detail = str(tool_input)
     return f"{name}({detail})"
+
+
+def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
+    """Print tool call: ToolName(key_arg)."""
+    console.print("\n", end="")
+    console.print("● ", style="green", end="")
+    console.print(get_tool_call_detail(name, tool_input))
+
+
+def print_tool_result(output: str, max_length: int = 200) -> None:
+    """Print tool result preview in gray."""
+    preview_text = output[:max_length] + "..." if len(output) > max_length else output
+    table = Table.grid(padding=0)
+    table.add_column(width=5, no_wrap=True)
+    table.add_column()
+    table.add_row("  ⎿  ", preview_text)
+    console.print(table, style="bright_black")
