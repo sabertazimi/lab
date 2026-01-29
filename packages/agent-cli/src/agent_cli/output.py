@@ -2,7 +2,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
 
-from .task import TaskManager
+from .task import task_manager
 
 console = Console()
 
@@ -45,7 +45,6 @@ def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
         case "Edit":
             detail = str(tool_input.get("path", ""))
         case "TaskUpdate":
-            task_manager = TaskManager()
             if task_manager.total_count == 0:
                 detail = "🚀"
             elif task_manager.completed_count + 1 == task_manager.total_count:
@@ -56,6 +55,8 @@ def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
                 )
         case "Task":
             detail = str(tool_input.get("description", ""))
+        case "Skill":
+            detail = str(tool_input.get("skill_name", ""))
         case _:
             detail = str(tool_input)
     return f"{name}({detail})"

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from anthropic.types import (
     MessageParam,
     TextBlock,
@@ -9,23 +7,30 @@ from anthropic.types import (
 )
 
 from .agent import get_agent_description
-from .llm import MODEL, client
+from .llm import MODEL, WORKDIR, client
 from .output import print_text, print_tool_call, print_tool_result
-from .task import TaskManager
+from .skill import skill_loader
+from .task import task_manager
 from .tools import ALL_TOOLS, execute_tool
-
-WORKDIR = Path.cwd()
-
 
 SYSTEM = f"""You are Cyber Agent, a world-class coding agent at {WORKDIR}.
 
 Loop: plan -> act with tools -> report.
 
-You can spawn subagents for complex subtasks:
+<available_skills>
+Invoke with Skill tool when task matches:
+{skill_loader.get_descriptions()}
+</available_skills>
+
+
+<available_subagents>
+Invoke with Task tool for focused subtasks:
 {get_agent_description()}
+</available_subagents>
 
 Rules:
-- Use Task tool for subtasks that need focused exploration or implementation.
+- Use Skill tool IMMEDIATELY when a task matches a skill description.
+- Use Task tool for subtasks needing focused exploration or implementation.
 - Use TaskUpdate to track multi-step work.
 - Prefer tools over prose. Act, don't just explain.
 - After finishing, summarize what changed.
@@ -43,8 +48,6 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
             if no tool calls: return
             execute tools, append results, continue
     """
-    task_manager = TaskManager()
-
     while True:
         # Step 1: Call the model
         response = client.messages.create(
@@ -96,5 +99,5 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
         # Step 5: Append to conversation and continue
         messages.append({"role": "assistant", "content": response.content})
         if task_manager.too_long_without_task():
-            results.insert(0, {"type": "text", "text": TaskManager.NAG_REMINDER})
+            results.insert(0, {"type": "text", "text": task_manager.NAG_REMINDER})
         messages.append({"role": "user", "content": results})

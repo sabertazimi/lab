@@ -13,9 +13,10 @@ from anthropic.types import (
 )
 
 from .agent import AGENTS, get_agent_description
-from .llm import MODEL, client
+from .llm import MODEL, WORKDIR, client
 from .output import console, get_tool_call_detail
-from .task import TaskManager
+from .skill import skill_loader
+from .task import task_manager
 
 
 @dataclass
@@ -60,6 +61,12 @@ class TaskToolCall:
     description: str
 
 
+@dataclass
+class SkillToolCall:
+    name: Literal["Skill"]
+    skill_name: str
+
+
 ToolCall = (
     BashToolCall
     | ReadToolCall
@@ -67,10 +74,9 @@ ToolCall = (
     | EditToolCall
     | TaskUpdateToolCall
     | TaskToolCall
+    | SkillToolCall
 )
 
-
-WORKDIR = Path.cwd()
 
 BASE_TOOLS: list[ToolParam] = [
     {
@@ -216,7 +222,40 @@ Example uses:
     },
 }
 
-ALL_TOOLS = BASE_TOOLS + [TASK_TOOL]
+SKILL_TOOL: ToolParam = {
+    "name": "Skill",
+    "description": f"""<skills_instructions>
+When users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively.
+
+How to use skills:
+- Invoke skills using this tool with the skill name only (no arguments)
+- The skill content will be injected into the conversation, giving you detailed instructions and access to resources.
+
+When to use skills:
+- IMMEDIATELY when user task matches a skill description
+- Before attempting domain-specific work (PDF, MCP, etc.)
+
+IMPORTANT:
+- Only use skills listed in <available_skills> below
+- Do not invoke a skill that is already running
+</skills_instructions>
+
+<available_skills>
+{skill_loader.get_descriptions()}
+</available_skills>""",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "skill_name": {
+                "type": "string",
+                "description": "The name of the skill to load",
+            },
+        },
+        "required": ["skill_name"],
+    },
+}
+
+ALL_TOOLS = BASE_TOOLS + [TASK_TOOL, SKILL_TOOL]
 
 
 def safe_path(path: str) -> Path:
@@ -354,8 +393,6 @@ def run_task_update(tasks: list[dict[str, str]]) -> str:
     The model sends a complete new list (not a diff).
     We validate it and return the renderer view.
     """
-    task_manager = TaskManager()
-
     try:
         return task_manager.update(tasks)
     except Exception as e:
@@ -446,6 +483,31 @@ Complete the task and return a clear, concise summary."""
     return "(subagent returned no text)"
 
 
+def run_skill(skill_name: str) -> str:
+    """
+    Load a skill and inject it into the conversation.
+
+    This is the key mechanism:
+    1. Get skill content (SKILL.md body + resource hints)
+    2. Return it wrapped in <skill-loaded> tags
+    3. Model receives this as tool_result (user message)
+    4. Model now "knows" how to do the task
+    """
+    content = skill_loader.get_skill(skill_name)
+
+    if content is None:
+        available_skills = ", ".join(skill_loader.list_skills()) or "none"
+        return (
+            f"Error: Unknown skill '{skill_name}'. Available skills: {available_skills}"
+        )
+
+    return f"""<skill-loaded name="{skill_name}">
+{content}
+</skill-loaded>
+
+Follow the instructions in the skill above to complete the user's task."""
+
+
 def execute_tool(name: str, args: dict[str, object]) -> str:
     """
     Dispatch tool call to the appropriate implementation.
@@ -490,5 +552,8 @@ def execute_tool(name: str, args: dict[str, object]) -> str:
                 description=str(args["description"]),
             )
             return run_task(tool.agent_type, tool.prompt, tool.description)
+        case "Skill":
+            tool = SkillToolCall(name="Skill", skill_name=str(args["skill_name"]))
+            return run_skill(tool.skill_name)
         case _:
             return f"Unknown tool: {name}"
