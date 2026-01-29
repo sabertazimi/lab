@@ -13,7 +13,7 @@ from .skill import skill_loader
 from .task import task_manager
 from .tools import ALL_TOOLS, execute_tool
 
-SYSTEM = f"""You are Cyber Agent, a world-class coding agent at {WORKDIR}.
+SYSTEM = f"""You are Cyber Code, a world-class coding agent at {WORKDIR}.
 
 Loop: plan -> act with tools -> report.
 
@@ -36,7 +36,7 @@ Rules:
 - After finishing, summarize what changed.
 
 Commit footer: When you make changes that get committed, add this footer:
-Co-authored-by: Cyber Agent"""
+Co-authored-by: Cyber Code"""
 
 
 def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
