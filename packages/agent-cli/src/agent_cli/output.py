@@ -1,3 +1,5 @@
+from .task import TaskManager
+
 # ANSI escape codes
 GREEN = "\033[32m"
 GRAY = "\033[90m"
@@ -22,6 +24,14 @@ def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
             detail = str(tool_input.get("path", ""))
         case "Edit":
             detail = str(tool_input.get("path", ""))
+        case "TaskUpdate":
+            task_manager = TaskManager()
+            if task_manager.total_count == 0:
+                detail = "🚀"
+            elif task_manager.completed_count + 1 == task_manager.total_count:
+                detail = "🏁"
+            else:
+                detail = "⏳"
         case _:
             detail = str(tool_input)
     print(f"\n{GREEN}●{RESET} {name}({detail})")

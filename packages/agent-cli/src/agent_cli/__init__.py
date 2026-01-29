@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from anthropic.types import MessageParam
+from anthropic.types import MessageParam, TextBlockParam
 
 from .agent import agent_loop
+from .task import TaskManager
 
 WORKDIR = Path.cwd()
 
@@ -12,6 +13,7 @@ def main() -> None:
     print("Type '/exit' to quit.\n")
 
     history: list[MessageParam] = []
+    first_turn = True
 
     while True:
         try:
@@ -24,7 +26,14 @@ def main() -> None:
         if user_input.lower() == "/exit":
             break
 
-        history.append({"role": "user", "content": user_input})
+        content: list[TextBlockParam] = []
+
+        if first_turn:
+            content.append({"type": "text", "text": TaskManager.INITIAL_REMINDER})
+            first_turn = False
+
+        content.append({"type": "text", "text": user_input})
+        history.append({"role": "user", "content": content})
 
         try:
             agent_loop(history)

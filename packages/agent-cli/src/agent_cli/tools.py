@@ -1,9 +1,11 @@
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Literal, cast
 
 from anthropic.types import ToolParam
+
+from .task import TaskManager
 
 
 @dataclass
@@ -34,7 +36,15 @@ class EditToolCall:
     new_text: str
 
 
-ToolCall = BashToolCall | ReadToolCall | WriteToolCall | EditToolCall
+@dataclass
+class TaskUpdateToolCall:
+    name: Literal["TaskUpdate"]
+    tasks: list[dict[str, str]]
+
+
+ToolCall = (
+    BashToolCall | ReadToolCall | WriteToolCall | EditToolCall | TaskUpdateToolCall
+)
 
 
 WORKDIR = Path.cwd()
@@ -110,6 +120,39 @@ TOOLS: list[ToolParam] = [
                 },
             },
             "required": ["path", "old_text", "new_text"],
+        },
+    },
+    {
+        "name": "TaskUpdate",
+        "description": "Update the task list. Use to plan and track progress.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "tasks": {
+                    "type": "array",
+                    "description": "Complete list of tasks (replaces existing list)",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "content": {
+                                "type": "string",
+                                "description": "Task description",
+                            },
+                            "status": {
+                                "type": "string",
+                                "enum": ["pending", "in_progress", "completed"],
+                                "description": "Task status",
+                            },
+                            "active_form": {
+                                "type": "string",
+                                "description": "Present tense action, e.g. 'Reading files'",
+                            },
+                        },
+                        "required": ["content", "status", "active_form"],
+                    },
+                },
+            },
+            "required": ["tasks"],
         },
     },
 ]
@@ -215,6 +258,21 @@ def run_edit(path: str, old_text: str, new_text: str) -> str:
         return f"Error: {e}"
 
 
+def run_task(tasks: list[dict[str, str]]) -> str:
+    """
+    Update the task list.
+
+    The model sends a complete new list (not a diff).
+    We validate it and return the renderer view.
+    """
+    task_manager = TaskManager()
+
+    try:
+        return task_manager.update(tasks)
+    except Exception as e:
+        return f"Error: {e}"
+
+
 def execute_tool(name: str, args: dict[str, object]) -> str:
     """
     Dispatch tool call to the appropriate implementation.
@@ -247,5 +305,9 @@ def execute_tool(name: str, args: dict[str, object]) -> str:
                 new_text=str(args["new_text"]),
             )
             return run_edit(tool.path, tool.old_text, tool.new_text)
+        case "TaskUpdate":
+            tasks = cast(list[dict[str, str]], args.get("tasks", []))
+            tool = TaskUpdateToolCall(name="TaskUpdate", tasks=tasks)
+            return run_task(tool.tasks)
         case _:
             return f"Unknown tool: {name}"

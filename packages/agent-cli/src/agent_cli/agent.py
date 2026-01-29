@@ -2,10 +2,17 @@ import os
 from pathlib import Path
 
 from anthropic import Anthropic
-from anthropic.types import MessageParam, TextBlock, ToolResultBlockParam, ToolUseBlock
+from anthropic.types import (
+    MessageParam,
+    TextBlock,
+    TextBlockParam,
+    ToolResultBlockParam,
+    ToolUseBlock,
+)
 from dotenv import load_dotenv
 
 from .output import print_text, print_tool_call, print_tool_result
+from .task import TaskManager
 from .tools import TOOLS, execute_tool
 
 load_dotenv(override=True)
@@ -18,12 +25,12 @@ client = Anthropic(
 
 SYSTEM = f"""You are Cyber Agent, a world-class coding agent at {WORKDIR}.
 
-Loop: think briefly -> use tools -> report results.
+Loop: plan -> act with tools -> update tasks -> report results.
 
 Rules:
+- Use TaskUpdate to track multi-step tasks.
+- Mark tasks `in_progress` before starting, `completed` when done.
 - Prefer tools over prose. Act, don't just explain.
-- Never invent file paths. Use bash ls/find first if unsure.
-- Make minimal changes. Don't over-engineer.
 - After finishing, summarize what changed.
 
 Commit footer: When you make changes that get committed, add this footer:
@@ -39,6 +46,8 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
             if no tool calls: return
             execute tools, append results, continue
     """
+    task_manager = TaskManager()
+
     while True:
         # Step 1: Call the model
         response = client.messages.create(
@@ -63,11 +72,14 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
             return messages
 
         # Step 4: Execute each tool and collect results
-        results: list[ToolResultBlockParam] = []
+        results: list[ToolResultBlockParam | TextBlockParam] = []
+        used_task = False
+
         for tool_call in tool_calls:
             print_tool_call(tool_call.name, tool_call.input)
             output = execute_tool(tool_call.name, tool_call.input)
             print_tool_result(output)
+
             results.append(
                 {
                     "type": "tool_result",
@@ -76,6 +88,16 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
                 }
             )
 
+            if tool_call.name == "TaskUpdate":
+                used_task = True
+
+        if used_task:
+            task_manager.reset()
+        else:
+            task_manager.increment()
+
         # Step 5: Append to conversation and continue
         messages.append({"role": "assistant", "content": response.content})
+        if task_manager.too_long_without_task():
+            results.insert(0, {"type": "text", "text": TaskManager.NAG_REMINDER})
         messages.append({"role": "user", "content": results})
