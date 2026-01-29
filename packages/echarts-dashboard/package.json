@@ -1,7 +1,7 @@
 {
   "name": "@lab/echarts-dashboard",
   "type": "module",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "packageManager": "pnpm@10.28.1",
   "scripts": {

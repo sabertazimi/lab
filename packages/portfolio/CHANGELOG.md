@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/sabertazimi/lab/compare/v3.0.0...v3.1.0) (2026-01-29)
+
+### Features
+
+- **bash-agent:** initialize minimal Claude Code learning project ([#938](https://github.com/sabertazimi/lab/issues/938)) ([3e7dd4f](https://github.com/sabertazimi/lab/commit/3e7dd4f86fb00176ca69294d39af751e3b29286a))
+
+### Performance Improvements
+
+- [ImgBot] optimize images ([#937](https://github.com/sabertazimi/lab/issues/937)) ([4f59b84](https://github.com/sabertazimi/lab/commit/4f59b842c4496c14bd45c56670c7190ec0538f10))
+
 # [3.0.0](https://github.com/sabertazimi/lab/compare/v2.5.0...v3.0.0) (2026-01-28)
 
 - feat(rust)!: add rust learning workspace with rustlings, exercism, and docs (#935) ([cfa6854](https://github.com/sabertazimi/lab/commit/cfa6854932c3bf4476e99c39403c621320f89916)), closes [#935](https://github.com/sabertazimi/lab/issues/935)
