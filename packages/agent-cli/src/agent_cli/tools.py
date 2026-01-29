@@ -4,8 +4,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, cast
 
-from anthropic.types import ToolParam
+from anthropic.types import (
+    MessageParam,
+    TextBlock,
+    ToolParam,
+    ToolResultBlockParam,
+    ToolUseBlock,
+)
 
+from .agent import AGENTS, get_agent_description
+from .llm import MODEL, client
+from .output import console, get_tool_call_detail
 from .task import TaskManager
 
 
@@ -43,14 +52,27 @@ class TaskUpdateToolCall:
     tasks: list[dict[str, str]]
 
 
+@dataclass
+class TaskToolCall:
+    name: Literal["Task"]
+    agent_type: str
+    prompt: str
+    description: str
+
+
 ToolCall = (
-    BashToolCall | ReadToolCall | WriteToolCall | EditToolCall | TaskUpdateToolCall
+    BashToolCall
+    | ReadToolCall
+    | WriteToolCall
+    | EditToolCall
+    | TaskUpdateToolCall
+    | TaskToolCall
 )
 
 
 WORKDIR = Path.cwd()
 
-TOOLS: list[ToolParam] = [
+BASE_TOOLS: list[ToolParam] = [
     {
         "name": "Bash",
         "description": "Run a shell command. Use for: ls, find, grep, git, pnpm, uv, python, etc.",
@@ -158,6 +180,44 @@ TOOLS: list[ToolParam] = [
     },
 ]
 
+TASK_TOOL: ToolParam = {
+    "name": "Task",
+    "description": f"""Spawn a subagent for a focused subtask.
+
+Subagents run in ISOLATED context - they don't see parent's history.
+Use this to keep the main conversation clean.
+
+Agent types:
+{get_agent_description()}
+
+Example uses:
+- Task(Explore): "Find all files using the auth module"
+- Task(Plan): "Design a migration strategy for the database"
+- Task(Code): "Implement the user registration form"
+""",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "agent_type": {
+                "type": "string",
+                "enum": list(AGENTS.keys()),
+                "description": "The type of agent to spawn",
+            },
+            "prompt": {
+                "type": "string",
+                "description": "Detailed instructions for the subagent",
+            },
+            "description": {
+                "type": "string",
+                "description": "Short task name (3-5 words) for progress display",
+            },
+        },
+        "required": ["agent_type", "prompt", "description"],
+    },
+}
+
+ALL_TOOLS = BASE_TOOLS + [TASK_TOOL]
+
 
 def safe_path(path: str) -> Path:
     """
@@ -170,6 +230,21 @@ def safe_path(path: str) -> Path:
     if not resolved_path.is_relative_to(WORKDIR):
         raise ValueError(f"Path escapes workspace: {path}")
     return resolved_path
+
+
+def get_tools_for_agent(agent_type: str) -> list[ToolParam]:
+    """
+    Filter tools based on agent type.
+
+    Each agent type has a whitelist of allowed tools.
+    '*' means all tools (but subagents don't get Task to prevent infinite recursion).
+    """
+    allowed_tools = AGENTS.get(agent_type, {}).get("tools", "*")
+
+    if allowed_tools == "*":
+        return BASE_TOOLS
+
+    return [tool for tool in BASE_TOOLS if tool["name"] in allowed_tools]
 
 
 def run_bash(command: str, timeout: float = 60) -> str:
@@ -272,7 +347,7 @@ def run_edit(path: str, old_text: str, new_text: str) -> str:
         return f"Error: {e}"
 
 
-def run_task(tasks: list[dict[str, str]]) -> str:
+def run_task_update(tasks: list[dict[str, str]]) -> str:
     """
     Update the task list.
 
@@ -285,6 +360,90 @@ def run_task(tasks: list[dict[str, str]]) -> str:
         return task_manager.update(tasks)
     except Exception as e:
         return f"Error: {e}"
+
+
+def run_task(agent_type: str, prompt: str, description: str) -> str:
+    """
+    Execute a subagent task with isolated context.
+
+    This is the core of the subagent mechanism:
+
+    1. Create isolated message history (KEY: no parent context!)
+    2. Use agent-specific system prompt
+    3. Filter available tools based on agent type
+    4. Run the same query loop as main agent
+    5. Return ONLY the final text (not intermediate details)
+
+    The parent agent sees just the summary, keeping its context clean.
+
+    Progress Display:
+    ----------------
+    While running, we show:
+      [Explore] find auth files ... 5 tools, 3.2s
+
+    This gives visibility without polluting the main conversation.
+    """
+    if agent_type not in AGENTS:
+        return f"Error: Unknown agent type '{agent_type}'"
+
+    config = AGENTS[agent_type]
+    system_prompt = f"""You are a {agent_type} subagent at {WORKDIR}.
+
+{config["prompt"]}
+
+Complete the task and return a clear, concise summary."""
+    tools = get_tools_for_agent(agent_type)
+    messages: list[MessageParam] = [
+        {"role": "user", "content": prompt},
+    ]
+
+    tool_count = 0
+
+    with console.status(f"Preparing ${agent_type} agent...") as status:
+        while True:
+            response = client.messages.create(
+                model=MODEL,
+                system=system_prompt,
+                messages=messages,
+                tools=tools,
+                max_tokens=8000,
+            )
+
+            if response.stop_reason != "tool_use":
+                break
+
+            tool_calls: list[ToolUseBlock] = [
+                block for block in response.content if isinstance(block, ToolUseBlock)
+            ]
+            results: list[ToolResultBlockParam] = []
+
+            for tool_call in tool_calls:
+                tool_count += 1
+                output = execute_tool(tool_call.name, tool_call.input)
+                results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_call.id,
+                        "content": output,
+                    }
+                )
+                status.update(
+                    f"{get_tool_call_detail(tool_call.name, tool_call.input)}"
+                )
+
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({"role": "user", "content": results})
+
+    console.print(
+        f"  {tool_count} tools used",
+        style="bright_black",
+    )
+
+    for block in response.content:
+        if isinstance(block, TextBlock):
+            return block.text
+
+    return "(subagent returned no text)"
 
 
 def execute_tool(name: str, args: dict[str, object]) -> str:
@@ -322,6 +481,14 @@ def execute_tool(name: str, args: dict[str, object]) -> str:
         case "TaskUpdate":
             tasks = cast(list[dict[str, str]], args.get("tasks", []))
             tool = TaskUpdateToolCall(name="TaskUpdate", tasks=tasks)
-            return run_task(tool.tasks)
+            return run_task_update(tool.tasks)
+        case "Task":
+            tool = TaskToolCall(
+                name="Task",
+                agent_type=str(args["agent_type"]),
+                prompt=str(args["prompt"]),
+                description=str(args["description"]),
+            )
+            return run_task(tool.agent_type, tool.prompt, tool.description)
         case _:
             return f"Unknown tool: {name}"

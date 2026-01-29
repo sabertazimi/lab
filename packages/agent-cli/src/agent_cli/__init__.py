@@ -1,14 +1,13 @@
 from pathlib import Path
 
 from anthropic.types import MessageParam, TextBlockParam
-from rich.console import Console
 
-from .agent import agent_loop
 from .context import load_system_reminder
+from .output import console
 from .task import TaskManager
+from .workflow import agent_loop
 
 WORKDIR = Path.cwd()
-console = Console()
 
 
 def main() -> None:
