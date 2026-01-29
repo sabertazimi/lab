@@ -3,6 +3,7 @@ from pathlib import Path
 from anthropic.types import MessageParam, TextBlockParam
 
 from .agent import agent_loop
+from .context import load_system_reminder
 from .task import TaskManager
 
 WORKDIR = Path.cwd()
@@ -29,6 +30,9 @@ def main() -> None:
         content: list[TextBlockParam] = []
 
         if first_turn:
+            system_reminder = load_system_reminder(WORKDIR)
+            if system_reminder:
+                content.append({"type": "text", "text": system_reminder})
             content.append({"type": "text", "text": TaskManager.INITIAL_REMINDER})
             first_turn = False
 
