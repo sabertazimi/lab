@@ -473,7 +473,7 @@ Complete the task and return a clear, concise summary."""
 
     console.print(
         f"  {tool_count} tools used",
-        style="bright_black",
+        style="accent",
     )
 
     for block in response.content:

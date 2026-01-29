@@ -1,10 +1,20 @@
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
+from rich.theme import Theme
 
 from .task import task_manager
 
-console = Console()
+console = Console(
+    theme=Theme(
+        {
+            "primary": "green",
+            "accent": "grey62",
+            "muted": "bright_black",
+            "error": "red",
+        }
+    )
+)
 
 
 def print_banner() -> None:
@@ -25,13 +35,7 @@ def print_banner() -> None:
     ]
 
     # Gradient colors: cyan -> blue -> magenta
-    gradient = [
-        "bright_cyan",
-        "cyan",
-        "dodger_blue2",
-        "dodger_blue1",
-        "blue_violet",
-        "medium_purple1",
+    base_colors = [
         "bright_cyan",
         "cyan",
         "dodger_blue2",
@@ -39,15 +43,17 @@ def print_banner() -> None:
         "blue_violet",
         "medium_purple1",
     ]
+    repeats = (len(logo_lines) + len(base_colors) - 1) // len(base_colors)
+    gradient = (base_colors * repeats)[: len(logo_lines)]
 
     console.print()
     for line, color in zip(logo_lines, gradient, strict=False):
         console.print(line, style=f"bold {color}")
 
     console.print()
-    console.print("  ┌─────────────────────────────────────────┐", style="dim")
-    console.print("  │  🤖 AI-Powered Coding Agent             │", style="dim")
-    console.print("  └─────────────────────────────────────────┘", style="dim")
+    console.print("  ┌─────────────────────────────────────────┐", style="accent")
+    console.print("  │  🤖 AI-Powered Coding Agent             │", style="accent")
+    console.print("  └─────────────────────────────────────────┘", style="accent")
     console.print()
 
 
@@ -92,7 +98,7 @@ def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
 def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
     """Print tool call: ToolName(key_arg)."""
     console.print("\n", end="")
-    console.print("● ", style="green", end="")
+    console.print("● ", style="primary", end="")
     console.print(get_tool_call_detail(name, tool_input))
 
 
@@ -103,4 +109,4 @@ def print_tool_result(output: str, max_length: int = 200) -> None:
     table.add_column(width=5, no_wrap=True)
     table.add_column()
     table.add_row("  ⎿  ", preview_text)
-    console.print(table, style="bright_black")
+    console.print(table, style="muted")

@@ -9,7 +9,7 @@ from .workflow import agent_loop
 
 def main() -> None:
     print_banner()
-    console.print(f"  📂 {WORKDIR}", style="dim")
+    console.print(f"  📂 {WORKDIR}", style="accent")
     console.print()
     console.print("  Type '/exit' to quit.\n")
 
@@ -42,6 +42,6 @@ def main() -> None:
         try:
             agent_loop(history)
         except Exception as e:
-            console.print(f"Error: {e}", style="red")
+            console.print(f"Error: {e}", style="error")
 
         console.print()
