@@ -1,17 +1,19 @@
 from pathlib import Path
 
 from anthropic.types import MessageParam, TextBlockParam
+from rich.console import Console
 
 from .agent import agent_loop
 from .context import load_system_reminder
 from .task import TaskManager
 
 WORKDIR = Path.cwd()
+console = Console()
 
 
 def main() -> None:
-    print(f"Minimal Claude Code - {WORKDIR}")
-    print("Type '/exit' to quit.\n")
+    console.print(f"Minimal Claude Code - {WORKDIR}")
+    console.print("Type '/exit' to quit.\n")
 
     history: list[MessageParam] = []
     first_turn = True
@@ -42,6 +44,6 @@ def main() -> None:
         try:
             agent_loop(history)
         except Exception as e:
-            print(f"Error: {e}")
+            console.print(f"Error: {e}", style="red")
 
-        print()
+        console.print()

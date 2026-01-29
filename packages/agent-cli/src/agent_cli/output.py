@@ -1,16 +1,20 @@
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.table import Table
+
 from .task import TaskManager
 
-# ANSI escape codes
-GREEN = "\033[32m"
-GRAY = "\033[90m"
-RESET = "\033[0m"
+console = Console()
 
 
 def print_text(text: str) -> None:
-    """Print model text output with bullet prefix."""
-    # Align subsequent lines with the "● " prefix (2 chars)
-    aligned = text.replace("\n", "\n  ")
-    print(f"\n● {aligned}")
+    """Print model text output with bullet prefix, rendering Markdown."""
+    console.print()
+    table = Table.grid(padding=0)
+    table.add_column(width=2, no_wrap=True)
+    table.add_column()
+    table.add_row("● ", Markdown(text))
+    console.print(table)
 
 
 def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
@@ -31,15 +35,21 @@ def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
             elif task_manager.completed_count + 1 == task_manager.total_count:
                 detail = "🏁"
             else:
-                detail = "⏳"
+                detail = (
+                    f"{task_manager.completed_count + 1}/{task_manager.total_count}"
+                )
         case _:
             detail = str(tool_input)
-    print(f"\n{GREEN}●{RESET} {name}({detail})")
+    console.print("\n", end="")
+    console.print("●", style="green", end="")
+    console.print(f" {name}({detail})")
 
 
 def print_tool_result(output: str, max_length: int = 200) -> None:
-    """Print tool result preview in dim gray."""
-    preview = output[:max_length] + "..." if len(output) > max_length else output
-    # Align subsequent lines with the "  ⎿  " prefix (5 chars)
-    preview = preview.replace("\n", "\n     ")
-    print(f"  ⎿  {GRAY}{preview}{RESET}")
+    """Print tool result preview in gray."""
+    preview_text = output[:max_length] + "..." if len(output) > max_length else output
+    table = Table.grid(padding=0)
+    table.add_column(width=5, no_wrap=True)
+    table.add_column()
+    table.add_row("  ⎿  ", preview_text)
+    console.print(table, style="bright_black")
