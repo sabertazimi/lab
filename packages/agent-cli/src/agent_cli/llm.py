@@ -41,7 +41,7 @@ def _parse_config() -> EnvConfig:
                 config: Config = json.load(f)
                 return config.get("env", {})
     except (json.JSONDecodeError, OSError):
-        console.print("Error: parsing config file", style="error")
+        console.print(f"Error: parsing config file at {CONFIG_FILE}", style="error")
     return {}
 
 
