@@ -3,7 +3,6 @@ from rich.table import Table
 
 from .console import console
 from .llm import MODEL, WORKDIR
-from .task import task_manager
 
 
 def print_banner() -> None:
@@ -72,14 +71,7 @@ def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
         case "Edit":
             detail = str(tool_input.get("path", ""))
         case "TaskUpdate":
-            if task_manager.total_count == 0:
-                detail = "🚀"
-            elif task_manager.completed_count + 1 == task_manager.total_count:
-                detail = "🏁"
-            else:
-                detail = (
-                    f"{task_manager.completed_count + 1}/{task_manager.total_count}"
-                )
+            detail = str(tool_input.get("description", ""))
         case "Task":
             detail = str(tool_input.get("description", ""))
         case "Skill":
@@ -96,11 +88,12 @@ def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
     console.print(get_tool_call_detail(name, tool_input))
 
 
+def get_tool_result_preview(output: str, max_length: int = 200) -> str:
+    """Format tool result with prefix and aligned indentation for multi-line output."""
+    truncated = output[:max_length] + " ..." if len(output) > max_length else output
+    return "  ⎿  " + truncated.replace("\n", "\n     ")
+
+
 def print_tool_result(output: str, max_length: int = 200) -> None:
     """Print tool result preview in gray."""
-    preview_text = output[:max_length] + "..." if len(output) > max_length else output
-    table = Table.grid(padding=0)
-    table.add_column(width=5, no_wrap=True)
-    table.add_column()
-    table.add_row("  ⎿  ", preview_text)
-    console.print(table, style="muted")
+    console.print(get_tool_result_preview(output, max_length), style="accent")

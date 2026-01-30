@@ -43,8 +43,6 @@ class TaskManager(metaclass=Singleton):
     def __init__(self):
         self.tasks: list[Task] = []
         self.rounds_without_task = 0
-        self.completed_count = 0
-        self.total_count = 0
 
     def update(self, tasks: list[dict[str, str]]) -> str:
         """
@@ -117,11 +115,11 @@ class TaskManager(metaclass=Singleton):
             else:
                 lines.append(f"☐ {task.content}")
 
-        self.completed_count = sum(
+        completed_count = sum(
             1 for task in self.tasks if task.status == "completed"
         )
-        self.total_count = len(self.tasks)
-        lines.append(f"\n({self.completed_count}/{self.total_count} completed)")
+        total_count = len(self.tasks)
+        lines.append(f"\n({completed_count}/{total_count} completed)")
 
         return "\n".join(lines)
 
