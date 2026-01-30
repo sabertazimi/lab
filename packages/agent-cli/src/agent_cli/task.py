@@ -115,9 +115,7 @@ class TaskManager(metaclass=Singleton):
             else:
                 lines.append(f"☐ {task.content}")
 
-        completed_count = sum(
-            1 for task in self.tasks if task.status == "completed"
-        )
+        completed_count = sum(1 for task in self.tasks if task.status == "completed")
         total_count = len(self.tasks)
         lines.append(f"\n({completed_count}/{total_count} completed)")
 
