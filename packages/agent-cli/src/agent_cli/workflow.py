@@ -7,7 +7,12 @@ from anthropic.types import (
 )
 
 from .llm import MODEL, client
-from .output import print_interrupted, print_text, print_tool_call, print_tool_result
+from .output import (
+    print_interrupted,
+    print_response,
+    print_tool_call,
+    print_tool_result,
+)
 from .system import SYSTEM
 from .task import task_manager
 from .tools import ALL_TOOLS, execute_tool
@@ -39,7 +44,7 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
             tool_calls: list[ToolUseBlock] = []
             for block in response.content:
                 if isinstance(block, TextBlock):
-                    print_text(block.text)
+                    print_response(block.text)
                 if isinstance(block, ToolUseBlock):
                     tool_calls.append(block)
 

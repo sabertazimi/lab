@@ -1,5 +1,6 @@
 from anthropic.types import MessageParam, TextBlockParam
 
+from .command import handle_slash_command
 from .context import load_system_reminder
 from .llm import MODEL, WORKDIR
 from .output import print_banner, print_error, print_newline
@@ -21,8 +22,19 @@ def main() -> None:
 
         if not user_input:
             continue
-        if user_input.lower() == "/exit":
-            break
+
+        result = handle_slash_command(user_input)
+        match result:
+            case "exit":
+                break
+            case "clear":
+                history.clear()
+                first_turn = True
+                continue
+            case "continue":
+                continue
+            case _:
+                pass
 
         content: list[TextBlockParam] = []
 
