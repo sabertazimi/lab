@@ -4,7 +4,6 @@ from typing import Literal
 from .llm import MODEL, WORKDIR
 from .output import print_accent, print_error, print_newline, print_text
 from .skill import skill_loader
-from .task import task_manager
 
 type CommandResult = Literal["continue", "exit", "clear"]
 
@@ -63,17 +62,6 @@ def cmd_skills() -> CommandResult:
                 tokens = len(name + skill["description"]) // 4
                 print_text(f"  {name} · ~{tokens} tokens")
 
-    print_newline()
-    return "continue"
-
-
-@command("/tasks", "Show current task list")
-def cmd_tasks() -> CommandResult:
-    """Display the current task list."""
-    print_newline()
-    rendered = task_manager.render()
-    for line in rendered.split("\n"):
-        print_accent(f"  {line}")
     print_newline()
     return "continue"
 
