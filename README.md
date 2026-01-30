@@ -26,6 +26,11 @@ Experimental prototypes.
 
 - [Agent CLI](https://github.com/sabertazimi/lab/tree/main/packages/agent-cli): Minimal Claude Code with `Bash`/`Read`/`Write`/`Edit` tools, task planning, subagent orchestration, and skill system support.
 
+```bash
+uv tool install --editable packages/agent-cli
+ac # or `agent-cli`
+```
+
 ## Rust
 
 - [Rust Notes](https://lab.tazimi.dev/rust)

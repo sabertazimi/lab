@@ -13,8 +13,9 @@ from anthropic.types import (
 )
 
 from .agent import AGENTS, get_agent_description
+from .console import console
 from .llm import MODEL, WORKDIR, client
-from .output import console, get_tool_call_detail
+from .output import get_tool_call_detail
 from .skill import skill_loader
 from .task import task_manager
 

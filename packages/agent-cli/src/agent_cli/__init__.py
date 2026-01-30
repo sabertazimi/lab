@@ -1,17 +1,15 @@
 from anthropic.types import MessageParam, TextBlockParam
 
+from .console import console
 from .context import load_system_reminder
 from .llm import WORKDIR
-from .output import console, print_banner
+from .output import print_banner
 from .task import task_manager
 from .workflow import agent_loop
 
 
 def main() -> None:
     print_banner()
-    console.print(f"  📂 {WORKDIR}", style="accent")
-    console.print()
-    console.print("  Type '/exit' to quit.\n")
 
     history: list[MessageParam] = []
     first_turn = True
