@@ -15,7 +15,7 @@ from anthropic.types import (
 from .agent import AGENTS, get_agent_description
 from .console import console
 from .llm import MODEL, WORKDIR, client
-from .output import get_tool_call_detail
+from .output import get_tool_call_detail, get_tool_result_preview
 from .skill import skill_loader
 from .task import task_manager
 
@@ -181,8 +181,12 @@ BASE_TOOLS: list[ToolParam] = [
                         "required": ["content", "status", "active_form"],
                     },
                 },
+                "description": {
+                    "type": "string",
+                    "description": "Short title (3-5 words) for task list",
+                },
             },
-            "required": ["tasks"],
+            "required": ["tasks", "description"],
         },
     },
 ]
@@ -437,7 +441,7 @@ Complete the task and return a clear, concise summary."""
 
     tool_count = 0
 
-    with console.status(f"Preparing ${agent_type} agent...") as status:
+    with console.status(f"Preparing {agent_type} agent...") as status:
         while True:
             response = client.messages.create(
                 model=MODEL,
@@ -466,7 +470,8 @@ Complete the task and return a clear, concise summary."""
                     }
                 )
                 status.update(
-                    f"{get_tool_call_detail(tool_call.name, tool_call.input)}"
+                    f"{get_tool_call_detail(tool_call.name, tool_call.input)}\n"
+                    f"[accent]{get_tool_result_preview(output, 100)}[/accent]",
                 )
 
             messages.append({"role": "assistant", "content": response.content})
