@@ -1,9 +1,13 @@
+import json
 import re
 from pathlib import Path
 from typing import TypedDict
 
 from .llm import WORKDIR
 from .singleton import Singleton
+
+SKILLS_DIR = WORKDIR / ".claude" / "skills"
+PLUGINS_DIR = Path.home() / ".claude" / "plugins"
 
 
 class Skill(TypedDict):
@@ -22,8 +26,9 @@ class SkillLoader(metaclass=Singleton):
     The markdown body provides detailed instructions.
     """
 
-    def __init__(self, skills_dir: Path):
+    def __init__(self, skills_dir: Path, plugins_dir: Path):
         self.skills_dir = skills_dir
+        self.plugins_dir = plugins_dir
         self.skills: dict[str, Skill] = {}
         self.load_skills()
 
@@ -61,15 +66,25 @@ class SkillLoader(metaclass=Singleton):
 
     def load_skills(self):
         """
-        Scan skills directory and load all valid SKILL.md files.
+        Load skills from local directory and Claude Code Plugins.
 
+        Local skills are loaded first and have priority over plugin skills.
         Only loads metadata at startup - body is loaded on-demand.
         This keeps the initial context lean.
         """
-        if not self.skills_dir.exists():
+        self._load_skills_from_dir(self.skills_dir)
+        self._load_plugin_skills()
+
+    def _load_skills_from_dir(self, skills_dir: Path):
+        """
+        Scan a skills directory and load all valid SKILL.md files.
+
+        Won't override existing skills with the same name.
+        """
+        if not skills_dir.exists():
             return
 
-        for skill_dir in self.skills_dir.iterdir():
+        for skill_dir in skills_dir.iterdir():
             if not skill_dir.is_dir():
                 continue
 
@@ -78,8 +93,32 @@ class SkillLoader(metaclass=Singleton):
                 continue
 
             skill = self.parse_skill(skill_md)
-            if skill:
+            if skill and skill["name"] not in self.skills:
                 self.skills[skill["name"]] = skill
+
+    def _load_plugin_skills(self):
+        """
+        Load skills from Claude Code Plugins.
+
+        Reads installed_plugins.json to find plugin install paths,
+        then loads skills from each plugin's skills directory.
+        """
+        installed_plugins = self.plugins_dir / "installed_plugins.json"
+        if not installed_plugins.exists():
+            return
+
+        try:
+            data = json.loads(installed_plugins.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return
+
+        for plugin_entries in data.get("plugins", {}).values():
+            for entry in plugin_entries:
+                install_path = entry.get("installPath", "")
+                if not install_path:
+                    continue
+                skills_dir = Path(install_path) / "skills"
+                self._load_skills_from_dir(skills_dir)
 
     def get_descriptions(self) -> str:
         """
@@ -136,4 +175,4 @@ class SkillLoader(metaclass=Singleton):
         return list(self.skills.keys())
 
 
-skill_loader = SkillLoader(WORKDIR / ".claude" / "skills")
+skill_loader = SkillLoader(SKILLS_DIR, PLUGINS_DIR)
