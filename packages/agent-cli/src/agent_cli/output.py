@@ -1,20 +1,9 @@
-from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
-from rich.theme import Theme
 
+from .console import console
+from .llm import MODEL, WORKDIR
 from .task import task_manager
-
-console = Console(
-    theme=Theme(
-        {
-            "primary": "green",
-            "accent": "grey62",
-            "muted": "bright_black",
-            "error": "red",
-        }
-    )
-)
 
 
 def print_banner() -> None:
@@ -52,9 +41,14 @@ def print_banner() -> None:
 
     console.print()
     console.print("  ┌─────────────────────────────────────────┐", style="accent")
-    console.print("  │       🤖 AI-Powered Coding Agent        │", style="accent")
+    console.print("  │         AI-Powered Coding Agent         │", style="accent")
     console.print("  └─────────────────────────────────────────┘", style="accent")
     console.print()
+
+    console.print(f"  {MODEL}", style="accent")
+    console.print(f"  {WORKDIR}", style="accent")
+    console.print()
+    console.print("  Type '/exit' to quit.\n")
 
 
 def print_text(text: str) -> None:

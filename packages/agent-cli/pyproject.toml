@@ -13,6 +13,7 @@ dependencies = [
 
 [project.scripts]
 agent-cli = "agent_cli:main"
+ac = "agent_cli:main"
 
 [[tool.uv.index]]
 url = "https://mirrors.aliyun.com/pypi/simple/"

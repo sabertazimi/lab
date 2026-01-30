@@ -7,30 +7,7 @@
 [![Coverage](https://img.shields.io/codecov/c/github/sabertazimi/lab?logo=codecov&style=for-the-badge)](https://codecov.io/gh/sabertazimi/lab)
 [![CI](https://img.shields.io/github/actions/workflow/status/sabertazimi/lab/ci.yml?branch=main&style=for-the-badge&logo=github)](https://github.com/sabertazimi/lab/actions/workflows/ci.yml)
 
-Experimental prototypes.
-
-## React
-
-- [M.League Reviewer](https://lab.tazimi.dev/m-league-reviewer/): Reviewer for M.League daily games.
-- [DBLP Search](https://lab.tazimi.dev/dblp/): Search for DBLP papers.
-- [React Renderer](https://lab.tazimi.dev/react-renderer/): Custom renderer for React components.
-
-## Vue
-
-- [Mortal UI](https://lab.tazimi.dev/mortal-ui/): GUI for Mortal Mahjong AI reviewer.
-- [Echarts Dashboard](https://lab.tazimi.dev/echarts-dashboard/): Dashboard with Echarts.
-- [Vue Trello](https://lab.tazimi.dev/vue-trello/): Trello clone with Vue.
-- [Vue Design](https://lab.tazimi.dev/vue-design/): Vue built-in reactive system.
-
-## Python
-
-- [Agent CLI](https://github.com/sabertazimi/lab/tree/main/packages/agent-cli): Minimal Claude Code with `Bash`/`Read`/`Write`/`Edit` tools, task planning, subagent orchestration, and skill system support.
-
-## Rust
-
-- [Rust Notes](https://lab.tazimi.dev/rust)
-- [Rust Snippets](https://github.com/sabertazimi/lab/tree/main/crates/basis)
-- [Rustlings Solutions](https://github.com/sabertazimi/lab/tree/main/crates/rustlings/exercises)
+Portfolio [website](https://lab.tazimi.dev) for experimental prototypes.
 
 ## Contributing
 
