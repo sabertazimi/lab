@@ -13,9 +13,14 @@ from anthropic.types import (
 )
 
 from .agent import AGENTS, get_agent_description
-from .console import console
 from .llm import MODEL, WORKDIR, client
-from .output import get_tool_call_detail, get_tool_result_preview
+from .output import (
+    get_tool_call_detail,
+    get_tool_result_preview,
+    print_accent,
+    print_interrupted,
+    print_status,
+)
 from .skill import skill_loader
 from .task import task_manager
 
@@ -417,12 +422,6 @@ def run_task(agent_type: str, prompt: str, description: str) -> str:
     5. Return ONLY the final text (not intermediate details)
 
     The parent agent sees just the summary, keeping its context clean.
-
-    Progress Display:
-    ----------------
-    While running, we show:
-      [Explore] find auth files ... 5 tools, 3.2s
-
     This gives visibility without polluting the main conversation.
     """
     if agent_type not in AGENTS:
@@ -440,51 +439,61 @@ Complete the task and return a clear, concise summary."""
     ]
 
     tool_count = 0
+    interrupted = False
+    response = None
 
-    with console.status(f"Preparing {agent_type} agent...") as status:
-        while True:
-            response = client.messages.create(
-                model=MODEL,
-                system=system_prompt,
-                messages=messages,
-                tools=tools,
-                max_tokens=8000,
-            )
-
-            if response.stop_reason != "tool_use":
-                break
-
-            tool_calls: list[ToolUseBlock] = [
-                block for block in response.content if isinstance(block, ToolUseBlock)
-            ]
-            results: list[ToolResultBlockParam] = []
-
-            for tool_call in tool_calls:
-                tool_count += 1
-                output = execute_tool(tool_call.name, tool_call.input)
-                results.append(
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": tool_call.id,
-                        "content": output,
-                    }
-                )
-                status.update(
-                    f"{get_tool_call_detail(tool_call.name, tool_call.input)}\n"
-                    f"[accent]{get_tool_result_preview(output, 100)}[/accent]",
+    try:
+        with print_status(f"Preparing {agent_type} agent...") as status:
+            while True:
+                response = client.messages.create(
+                    model=MODEL,
+                    system=system_prompt,
+                    messages=messages,
+                    tools=tools,
+                    max_tokens=8000,
                 )
 
-            messages.append({"role": "assistant", "content": response.content})
-            messages.append({"role": "user", "content": results})
+                if response.stop_reason != "tool_use":
+                    break
 
-    console.print(
-        f"  {tool_count} tools used",
-        style="accent",
-    )
+                tool_calls: list[ToolUseBlock] = [
+                    block
+                    for block in response.content
+                    if isinstance(block, ToolUseBlock)
+                ]
+                results: list[ToolResultBlockParam] = []
 
-    for block in response.content:
-        if isinstance(block, TextBlock):
-            return block.text
+                for tool_call in tool_calls:
+                    tool_count += 1
+                    output = execute_tool(tool_call.name, tool_call.input)
+                    results.append(
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": tool_call.id,
+                            "content": output,
+                        }
+                    )
+                    status.update(
+                        f"{get_tool_call_detail(tool_call.name, tool_call.input)}\n"
+                        f"[accent]{get_tool_result_preview(output, 100)}[/accent]",
+                    )
+
+                messages.append({"role": "assistant", "content": response.content})
+                messages.append({"role": "user", "content": results})
+
+    except KeyboardInterrupt:
+        interrupted = True
+        print_interrupted()
+
+    print_accent(f"  {tool_count} tools used")
+
+    if interrupted:
+        return f"(subagent interrupted by user after {tool_count} tool calls)"
+
+    if response is not None:
+        for block in response.content:
+            if isinstance(block, TextBlock):
+                return block.text
 
     return "(subagent returned no text)"
 
