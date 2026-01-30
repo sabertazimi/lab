@@ -22,6 +22,10 @@ def print_newline() -> None:
     console.print()
 
 
+def print_text(message: str) -> None:
+    console.print(message)
+
+
 def print_accent(message: str) -> None:
     console.print(message, style="accent")
 
@@ -77,7 +81,7 @@ def print_tool_result(output: str, max_length: int = 200) -> None:
     console.print(get_tool_result_preview(output, max_length), style="accent")
 
 
-def print_text(text: str) -> None:
+def print_response(text: str) -> None:
     """Print model text output with bullet prefix, rendering Markdown."""
     console.print()
     table = Table.grid(padding=0)
@@ -126,7 +130,7 @@ def print_banner(model: str, workdir: Path) -> None:
     console.print("  └─────────────────────────────────────────┘", style="accent")
     console.print()
 
-    console.print(f"  {model}", style="accent")
-    console.print(f"  {workdir}", style="accent")
+    console.print(f"  Model:    {model}", style="accent")
+    console.print(f"  Workdir:  {workdir}", style="accent")
     console.print()
-    console.print("  Type '/exit' to quit.\n")
+    console.print("  Type '/help' to see available commands.\n")
