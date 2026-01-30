@@ -1,11 +1,23 @@
+from pathlib import Path
+
+from rich.console import Console
 from rich.markdown import Markdown
 from rich.table import Table
+from rich.theme import Theme
 
-from .console import console
-from .llm import MODEL, WORKDIR
+console = Console(
+    theme=Theme(
+        {
+            "primary": "green",
+            "accent": "grey62",
+            "muted": "bright_black",
+            "error": "red",
+        }
+    )
+)
 
 
-def print_banner() -> None:
+def print_banner(model: str, workdir: Path):
     """Print ASCII art banner with gradient effect."""
     logo_lines = [
         r"   ██████╗██╗   ██╗██████╗ ███████╗██████╗ ",
@@ -44,13 +56,13 @@ def print_banner() -> None:
     console.print("  └─────────────────────────────────────────┘", style="accent")
     console.print()
 
-    console.print(f"  {MODEL}", style="accent")
-    console.print(f"  {WORKDIR}", style="accent")
+    console.print(f"  {model}", style="accent")
+    console.print(f"  {workdir}", style="accent")
     console.print()
     console.print("  Type '/exit' to quit.\n")
 
 
-def print_text(text: str) -> None:
+def print_text(text: str):
     """Print model text output with bullet prefix, rendering Markdown."""
     console.print()
     table = Table.grid(padding=0)
@@ -60,7 +72,7 @@ def print_text(text: str) -> None:
     console.print(table)
 
 
-def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
+def get_tool_call_detail(name: str, tool_input: dict[str, object]):
     match name:
         case "Bash":
             detail = str(tool_input.get("command", ""))
@@ -81,19 +93,39 @@ def get_tool_call_detail(name: str, tool_input: dict[str, object]) -> str:
     return f"{name}({detail})"
 
 
-def print_tool_call(name: str, tool_input: dict[str, object]) -> None:
+def print_tool_call(name: str, tool_input: dict[str, object]):
     """Print tool call: ToolName(key_arg)."""
     console.print("\n", end="")
     console.print("● ", style="primary", end="")
     console.print(get_tool_call_detail(name, tool_input))
 
 
-def get_tool_result_preview(output: str, max_length: int = 200) -> str:
+def get_tool_result_preview(output: str, max_length: int = 200):
     """Format tool result with prefix and aligned indentation for multi-line output."""
-    truncated = output[:max_length] + " ..." if len(output) > max_length else output
+    truncated = output[:max_length] + "..." if len(output) > max_length else output
     return "  ⎿  " + truncated.replace("\n", "\n     ")
 
 
-def print_tool_result(output: str, max_length: int = 200) -> None:
+def print_tool_result(output: str, max_length: int = 200):
     """Print tool result preview in gray."""
     console.print(get_tool_result_preview(output, max_length), style="accent")
+
+
+def print_newline():
+    console.print()
+
+
+def print_accent(message: str):
+    console.print(message, style="accent")
+
+
+def print_error(message: str):
+    console.print(message, style="error")
+
+
+def print_status(message: str):
+    return console.status(message)
+
+
+def print_interrupted():
+    print_error("\n  [Interrupted]")

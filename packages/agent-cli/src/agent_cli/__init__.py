@@ -1,15 +1,14 @@
 from anthropic.types import MessageParam, TextBlockParam
 
-from .console import console
 from .context import load_system_reminder
-from .llm import WORKDIR
-from .output import print_banner
+from .llm import MODEL, WORKDIR
+from .output import print_banner, print_error, print_newline
 from .task import task_manager
 from .workflow import agent_loop
 
 
 def main() -> None:
-    print_banner()
+    print_banner(MODEL, WORKDIR)
 
     history: list[MessageParam] = []
     first_turn = True
@@ -40,6 +39,6 @@ def main() -> None:
         try:
             agent_loop(history)
         except Exception as e:
-            console.print(f"Error: {e}", style="error")
+            print_error(f"Error: {e}")
 
-        console.print()
+        print_newline()

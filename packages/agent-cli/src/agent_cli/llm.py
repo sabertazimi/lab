@@ -14,9 +14,10 @@ from typing import Literal, TypedDict
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
-from .console import console
+from .output import print_error
 
 load_dotenv(override=True)
+
 
 WORKDIR = Path.cwd()
 CONFIG_FILE = Path.home() / ".claude" / "settings.json"
@@ -41,7 +42,7 @@ def _parse_config() -> EnvConfig:
                 config: Config = json.load(f)
                 return config.get("env", {})
     except (json.JSONDecodeError, OSError):
-        console.print(f"Error: parsing config file at {CONFIG_FILE}", style="error")
+        print_error(f"Error: parsing config file at {CONFIG_FILE}")
     return {}
 
 
