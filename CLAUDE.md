@@ -27,6 +27,8 @@ pnpm rust:lint        # rustfmt + clippy
 pnpm rust:test        # cargo test
 ```
 
+**IMPORTANT**: Always use `pnpm` over `npm`, use `uv` over `pip`.
+
 ## Architecture
 
 **Web (packages/)**: `dblp`, `m-league-reviewer`, `react-renderer`, `mortal-ui`, `vue-design`, `vue-trello`, `echarts-dashboard`, `vue-challenges`, `portfolio`
