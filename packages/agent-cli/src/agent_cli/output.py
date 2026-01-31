@@ -49,7 +49,7 @@ class Output:
     def text(self, message: RenderableType) -> None:
         if self.chat is None:
             self.chat = self.context.query_one("#chat", RichLog)
-        self.chat.write(message)
+        self.chat.write(message, animate=True)
 
     def newline(self) -> None:
         self.text("")
