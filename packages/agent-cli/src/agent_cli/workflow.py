@@ -1,3 +1,6 @@
+import threading
+from typing import TYPE_CHECKING
+
 from anthropic.types import (
     MessageParam,
     TextBlock,
@@ -7,18 +10,39 @@ from anthropic.types import (
 )
 
 from .llm import MODEL, client
-from .output import (
-    print_interrupted,
-    print_response,
-    print_tool_call,
-    print_tool_result,
-)
 from .system import SYSTEM
 from .task import task_manager
 from .tools import ALL_TOOLS, execute_tool
 
+if TYPE_CHECKING:
+    from .tui import AgentApp
 
-def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
+# Thread-safe interrupt flag for TUI mode
+_interrupt_lock = threading.Lock()
+_interrupt_requested = False
+
+
+def request_interrupt() -> None:
+    """Request interruption of the agent loop (thread-safe)."""
+    global _interrupt_requested
+    with _interrupt_lock:
+        _interrupt_requested = True
+
+
+def clear_interrupt() -> None:
+    """Clear the interrupt flag."""
+    global _interrupt_requested
+    with _interrupt_lock:
+        _interrupt_requested = False
+
+
+def is_interrupt_requested() -> bool:
+    """Check if interrupt has been requested."""
+    with _interrupt_lock:
+        return _interrupt_requested
+
+
+def agent_loop(ctx: "AgentApp", messages: list[MessageParam]) -> list[MessageParam]:
     """
     This is the pattern that ALL coding agents share:
 
@@ -29,8 +53,15 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
 
     Handles Ctrl+C to gracefully interrupt the loop.
     """
+    # Clear any previous interrupt request
+    clear_interrupt()
+
     try:
         while True:
+            # Check for interrupt request (TUI mode)
+            if is_interrupt_requested():
+                raise KeyboardInterrupt
+
             # Step 1: Call the model
             response = client.messages.create(
                 model=MODEL,
@@ -40,11 +71,15 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
                 max_tokens=8000,
             )
 
+            # Check for interrupt after API call
+            if is_interrupt_requested():
+                raise KeyboardInterrupt
+
             # Step 2: Collect any tool calls and print text output
             tool_calls: list[ToolUseBlock] = []
             for block in response.content:
                 if isinstance(block, TextBlock):
-                    print_response(block.text)
+                    ctx.output.response(block.text)
                 if isinstance(block, ToolUseBlock):
                     tool_calls.append(block)
 
@@ -58,9 +93,13 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
             used_task = False
 
             for tool_call in tool_calls:
-                print_tool_call(tool_call.name, tool_call.input)
-                output = execute_tool(tool_call.name, tool_call.input)
-                print_tool_result(output)
+                # Check for interrupt before each tool execution
+                if is_interrupt_requested():
+                    raise KeyboardInterrupt
+
+                ctx.output.tool_call(tool_call.name, tool_call.input)
+                output = execute_tool(ctx, tool_call.name, tool_call.input)
+                ctx.output.tool_result(output)
 
                 results.append(
                     {
@@ -85,7 +124,7 @@ def agent_loop(messages: list[MessageParam]) -> list[MessageParam]:
             messages.append({"role": "user", "content": results})
 
     except KeyboardInterrupt:
-        print_interrupted()
+        ctx.output.interrupted()
         messages.append(
             {
                 "role": "user",

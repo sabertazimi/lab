@@ -2,7 +2,7 @@ import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from anthropic.types import (
     MessageParam,
@@ -14,15 +14,12 @@ from anthropic.types import (
 
 from .agent import AGENTS, get_agent_description
 from .llm import MODEL, WORKDIR, client
-from .output import (
-    get_tool_call_detail,
-    get_tool_result_preview,
-    print_accent,
-    print_interrupted,
-    print_status,
-)
+from .output import get_tool_call_detail, get_tool_result_preview
 from .skill import skill_loader
 from .task import task_manager
+
+if TYPE_CHECKING:
+    from .tui import AgentApp
 
 
 @dataclass
@@ -409,7 +406,7 @@ def run_task_update(tasks: list[dict[str, str]]) -> str:
         return f"Error: {e}"
 
 
-def run_task(agent_type: str, prompt: str, description: str) -> str:
+def run_task(ctx: "AgentApp", agent_type: str, prompt: str, description: str) -> str:
     """
     Execute a subagent task with isolated context.
 
@@ -443,49 +440,47 @@ Complete the task and return a clear, concise summary."""
     response = None
 
     try:
-        with print_status(f"Preparing {agent_type} agent...") as status:
-            while True:
-                response = client.messages.create(
-                    model=MODEL,
-                    system=system_prompt,
-                    messages=messages,
-                    tools=tools,
-                    max_tokens=8000,
+        ctx.output.status(f"Preparing {agent_type} agent...")
+        while True:
+            response = client.messages.create(
+                model=MODEL,
+                system=system_prompt,
+                messages=messages,
+                tools=tools,
+                max_tokens=8000,
+            )
+
+            if response.stop_reason != "tool_use":
+                break
+
+            tool_calls: list[ToolUseBlock] = [
+                block for block in response.content if isinstance(block, ToolUseBlock)
+            ]
+            results: list[ToolResultBlockParam] = []
+
+            for tool_call in tool_calls:
+                tool_count += 1
+                output = execute_tool(ctx, tool_call.name, tool_call.input)
+                results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_call.id,
+                        "content": output,
+                    }
+                )
+                ctx.output.status(
+                    f"{get_tool_call_detail(tool_call.name, tool_call.input)} "
+                    f"({get_tool_result_preview(output, 50)})",
                 )
 
-                if response.stop_reason != "tool_use":
-                    break
-
-                tool_calls: list[ToolUseBlock] = [
-                    block
-                    for block in response.content
-                    if isinstance(block, ToolUseBlock)
-                ]
-                results: list[ToolResultBlockParam] = []
-
-                for tool_call in tool_calls:
-                    tool_count += 1
-                    output = execute_tool(tool_call.name, tool_call.input)
-                    results.append(
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": tool_call.id,
-                            "content": output,
-                        }
-                    )
-                    status.update(
-                        f"{get_tool_call_detail(tool_call.name, tool_call.input)}\n"
-                        f"[accent]{get_tool_result_preview(output, 100)}[/accent]",
-                    )
-
-                messages.append({"role": "assistant", "content": response.content})
-                messages.append({"role": "user", "content": results})
+            messages.append({"role": "assistant", "content": response.content})
+            messages.append({"role": "user", "content": results})
 
     except KeyboardInterrupt:
         interrupted = True
-        print_interrupted()
+        ctx.output.interrupted()
 
-    print_accent(f"  {tool_count} tools used")
+    ctx.output.accent(f"  {tool_count} tools used")
 
     if interrupted:
         return f"(subagent interrupted by user after {tool_count} tool calls)"
@@ -523,7 +518,7 @@ def run_skill(skill_name: str) -> str:
 Follow the instructions in the skill above to complete the user's task."""
 
 
-def execute_tool(name: str, args: dict[str, object]) -> str:
+def execute_tool(ctx: "AgentApp", name: str, args: dict[str, object]) -> str:
     """
     Dispatch tool call to the appropriate implementation.
 
@@ -566,7 +561,7 @@ def execute_tool(name: str, args: dict[str, object]) -> str:
                 prompt=str(args["prompt"]),
                 description=str(args["description"]),
             )
-            return run_task(tool.agent_type, tool.prompt, tool.description)
+            return run_task(ctx, tool.agent_type, tool.prompt, tool.description)
         case "Skill":
             tool = SkillToolCall(name="Skill", skill_name=str(args["skill_name"]))
             return run_skill(tool.skill_name)
