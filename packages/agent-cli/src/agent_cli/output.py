@@ -132,4 +132,3 @@ class Output:
         log.write(Text(f"  Workdir:  {workdir}", style="grey62"))
         log.write("")
         log.write("  Type '/help' to see available commands.")
-        log.write("")

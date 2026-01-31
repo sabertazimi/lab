@@ -35,7 +35,7 @@ def cmd_help(ctx: "AgentApp") -> CommandResult:
     return "continue"
 
 
-@command("/exit", "Exit the program")
+@command("/exit", "[bold green](Ctrl+W)[/] Exit the program")
 def cmd_exit(ctx: "AgentApp") -> CommandResult:
     """Exit the program."""
     return "exit"
@@ -69,8 +69,8 @@ def cmd_skills(ctx: "AgentApp") -> CommandResult:
     return "continue"
 
 
-@command("/model", "Show model and config info")
-def cmd_model(ctx: "AgentApp") -> CommandResult:
+@command("/config", "Show config info")
+def cmd_config(ctx: "AgentApp") -> CommandResult:
     """Display current model and working directory."""
     ctx.output.newline()
     ctx.output.accent("  Current configuration:")

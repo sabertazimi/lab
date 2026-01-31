@@ -3,6 +3,7 @@
 from anthropic.types import MessageParam, TextBlockParam
 from textual import on, work
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.widgets import Input, RichLog, Static
 
 from .command import handle_slash_command
@@ -18,11 +19,11 @@ class StatusBar(Static):
 
     DEFAULT_CSS = """
     StatusBar {
-        dock: bottom;
         height: 1;
         background: $surface;
         color: $text-muted;
         padding: 0 1;
+        border-top: solid $primary;
     }
     """
 
@@ -31,9 +32,17 @@ class AgentApp(App[None]):
     """Main TUI application for agent-cli."""
 
     CSS = """
+    Screen {
+        layout: vertical;
+    }
+
     RichLog {
         height: 1fr;
         scrollbar-gutter: stable;
+    }
+
+    StatusBar {
+        height: 1;
     }
 
     Input {
@@ -42,7 +51,9 @@ class AgentApp(App[None]):
     """
 
     BINDINGS = [
-        ("escape", "interrupt", "Interrupt"),
+        Binding("ctrl+c", "interrupt", "Interrupt"),
+        Binding("ctrl+w", "quit", "Quit", priority=True),
+        Binding("ctrl+l", "clear", "Clear"),
     ]
 
     def __init__(self) -> None:
@@ -80,6 +91,7 @@ class AgentApp(App[None]):
             return
 
         # Show user input in chat
+        chat.write("")
         chat.write(f"[bold green]❯[/] {user_input}")
 
         # Handle slash commands
@@ -135,13 +147,3 @@ class AgentApp(App[None]):
         if self._is_running:
             request_interrupt()
             self.output.status("Interrupting...")
-
-
-def main() -> None:
-    """Entry point for TUI mode."""
-    app = AgentApp()
-    app.run()
-
-
-if __name__ == "__main__":
-    main()

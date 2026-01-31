@@ -1,3 +1,7 @@
-from .tui import main
+from .tui import AgentApp
 
-__all__ = ["main"]
+
+def main() -> None:
+    """Entry point for TUI mode."""
+    app = AgentApp()
+    app.run()
