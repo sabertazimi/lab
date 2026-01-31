@@ -1,20 +1,23 @@
 from collections.abc import Callable
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from .llm import MODEL, WORKDIR
-from .output import print_accent, print_error, print_newline, print_text
 from .skill import skill_loader
 
+if TYPE_CHECKING:
+    from .tui import AgentApp
+
 type CommandResult = Literal["continue", "exit", "clear"]
+type CommandHandler = Callable[["AgentApp"], CommandResult]
 
 # Command registry: command name -> (handler, description)
-COMMANDS: dict[str, tuple[Callable[[], CommandResult], str]] = {}
+COMMANDS: dict[str, tuple[CommandHandler, str]] = {}
 
 
 def command(name: str, description: str):
     """Decorator to register a command."""
 
-    def decorator(func: Callable[[], CommandResult]) -> Callable[[], CommandResult]:
+    def decorator(func: CommandHandler) -> CommandHandler:
         COMMANDS[name] = (func, description)
         return func
 
@@ -22,66 +25,67 @@ def command(name: str, description: str):
 
 
 @command("/help", "Show available commands")
-def cmd_help() -> CommandResult:
+def cmd_help(ctx: "AgentApp") -> CommandResult:
     """Display all available commands."""
-    print_newline()
-    print_accent("  Available commands:")
+    ctx.output.newline()
+    ctx.output.accent("  Available commands:")
     for cmd_name, (_, desc) in sorted(COMMANDS.items()):
-        print_text(f"  {cmd_name:<12} {desc}")
-    print_newline()
+        ctx.output.text(f"  {cmd_name:<12} {desc}")
+    ctx.output.newline()
     return "continue"
 
 
-@command("/exit", "Exit the program")
-def cmd_exit() -> CommandResult:
+@command("/exit", "[bold green](ctrl+w)[/] Exit the program")
+def cmd_exit(ctx: "AgentApp") -> CommandResult:
     """Exit the program."""
     return "exit"
 
 
 @command("/clear", "Clear conversation history")
-def cmd_clear() -> CommandResult:
+def cmd_clear(ctx: "AgentApp") -> CommandResult:
     """Clear conversation history and reset state."""
-    print_newline()
-    print_accent("  Conversation cleared")
-    print_newline()
+    ctx.output.newline()
+    ctx.output.accent("  Conversation cleared")
+    ctx.output.newline()
     return "clear"
 
 
 @command("/skills", "List loaded skills")
-def cmd_skills() -> CommandResult:
+def cmd_skills(ctx: "AgentApp") -> CommandResult:
     """Display all loaded skills."""
-    print_newline()
+    ctx.output.newline()
     skills = skill_loader.list_skills()
     if not skills:
-        print_accent("  No skills loaded")
+        ctx.output.accent("  No skills loaded")
     else:
-        print_accent(f"  Loaded skills ({len(skills)}):")
+        ctx.output.accent(f"  Loaded skills ({len(skills)}):")
         for name in skills:
             skill = skill_loader.skills.get(name)
             if skill:
                 tokens = len(name + skill["description"]) // 4
-                print_text(f"  {name} · ~{tokens} tokens")
+                ctx.output.text(f"  {name} · ~{tokens} tokens")
 
-    print_newline()
+    ctx.output.newline()
     return "continue"
 
 
-@command("/model", "Show model and config info")
-def cmd_model() -> CommandResult:
+@command("/config", "Show config info")
+def cmd_config(ctx: "AgentApp") -> CommandResult:
     """Display current model and working directory."""
-    print_newline()
-    print_accent("  Current configuration:")
-    print_text(f"  Model:    {MODEL}")
-    print_text(f"  Workdir:  {WORKDIR}")
-    print_newline()
+    ctx.output.newline()
+    ctx.output.accent("  Current configuration:")
+    ctx.output.text(f"  Model:    {MODEL}")
+    ctx.output.text(f"  Workdir:  {WORKDIR}")
+    ctx.output.newline()
     return "continue"
 
 
-def handle_slash_command(user_input: str) -> CommandResult | None:
+def handle_slash_command(ctx: "AgentApp", user_input: str) -> CommandResult | None:
     """
     Process user input and handle commands.
 
     Args:
+        ctx: The AgentApp instance
         user_input: The raw user input string
 
     Returns:
@@ -95,9 +99,9 @@ def handle_slash_command(user_input: str) -> CommandResult | None:
 
     if cmd in COMMANDS:
         handler, _ = COMMANDS[cmd]
-        return handler()
+        return handler(ctx)
 
     # Unknown command: show help
-    print_newline()
-    print_error(f"  Unknown command: {cmd}")
-    return cmd_help()
+    ctx.output.newline()
+    ctx.output.error(f"  Unknown command: {cmd}")
+    return cmd_help(ctx)
