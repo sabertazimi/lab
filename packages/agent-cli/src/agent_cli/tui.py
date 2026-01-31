@@ -154,3 +154,4 @@ class AgentApp(App[None]):
     def action_clear(self) -> None:
         """Handle clear action (Ctrl+L key)."""
         self.output.clear()
+        self.output.banner(MODEL, WORKDIR)
