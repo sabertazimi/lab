@@ -32,7 +32,7 @@
     "claude"
   ],
   "scripts": {
-    "dev": "uv run agent-cli",
+    "dev": "pnpm python:dev",
     "lint": "pnpm python:lint",
     "release": "lerna version --force-publish --sign-git-commit --sign-git-tag",
     "web:build": "pnpm -r run build && node scripts/post-build.js && cp -fr CNAME dist/ && cp -fr vercel.json dist/",

@@ -51,7 +51,7 @@ def agent_loop(ctx: "AgentApp", messages: list[MessageParam]) -> list[MessagePar
             if no tool calls: return
             execute tools, append results, continue
 
-    Handles Ctrl+C to gracefully interrupt the loop.
+    Handles ctrl+c to gracefully interrupt the loop.
     """
     # Clear any previous interrupt request
     clear_interrupt()
@@ -129,7 +129,7 @@ def agent_loop(ctx: "AgentApp", messages: list[MessageParam]) -> list[MessagePar
             {
                 "role": "user",
                 "content": """<system_notification type="task_interrupted">
-User has pressed Ctrl+C to interrupt the current task.
+User has pressed ctrl+c to interrupt the current task.
 Please acknowledge the interruption and summarize what was completed.
 </system_notification>""",
             }

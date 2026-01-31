@@ -17,42 +17,15 @@ from .workflow import agent_loop, request_interrupt
 class StatusBar(Static):
     """Status bar widget showing current state."""
 
-    DEFAULT_CSS = """
-    StatusBar {
-        height: 1;
-        background: $surface;
-        color: $text-muted;
-        padding: 0 1;
-        border-top: solid $primary;
-    }
-    """
-
 
 class AgentApp(App[None]):
     """Main TUI application for agent-cli."""
 
-    CSS = """
-    Screen {
-        layout: vertical;
-    }
-
-    RichLog {
-        height: 1fr;
-        scrollbar-gutter: stable;
-    }
-
-    StatusBar {
-        height: 1;
-    }
-
-    Input {
-        dock: bottom;
-    }
-    """
+    CSS_PATH = "tui.tcss"
 
     BINDINGS = [
-        Binding("ctrl+c", "interrupt", "Interrupt"),
-        Binding("ctrl+l", "clear", "Clear"),
+        Binding("ctrl+c", "interrupt", "Interrupt", priority=True),
+        Binding("ctrl+l", "clear", "Clear Screen"),
         Binding("ctrl+q", "none", "No Operation", show=False),
         Binding("ctrl+w", "quit", "Quit", priority=True),
     ]
@@ -67,7 +40,7 @@ class AgentApp(App[None]):
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield RichLog(id="chat", highlight=True, markup=True, wrap=True)
-        yield StatusBar("Ready", id="status")
+        yield StatusBar("", id="status")
         yield Input(placeholder="Type a message or /help for commands...", id="input")
         yield Footer()
 
@@ -89,7 +62,7 @@ class AgentApp(App[None]):
         # Don't accept new input while agent is running
         if self._is_running:
             self.output.text(
-                "[yellow]Agent is still running. Press Ctrl+C to interrupt.[/]"
+                "\n  [yellow]Agent is still running. Press ctrl+c to interrupt.[/]"
             )
             return
 
@@ -146,12 +119,12 @@ class AgentApp(App[None]):
             self.call_from_thread(self.output.status, "Ready")
 
     def action_interrupt(self) -> None:
-        """Handle interrupt action (Ctrl+C key)."""
+        """ctrl+c: interrupt agent loop"""
         if self._is_running:
-            request_interrupt()
             self.output.status("Interrupting...")
+            request_interrupt()
 
     def action_clear(self) -> None:
-        """Handle clear action (Ctrl+L key)."""
+        """ctrl+l: clear terminal screen"""
         self.output.clear()
         self.output.banner(MODEL, WORKDIR)

@@ -95,7 +95,7 @@ class Output:
         """Update the status bar."""
         from .tui import StatusBar
 
-        self.context.query_one("#status", StatusBar).update(message)
+        self.context.query_one("#status", StatusBar).update(f" {message}")
 
     def banner(self, model: str, workdir: Path) -> None:
         """Print ASCII art banner with gradient effect."""

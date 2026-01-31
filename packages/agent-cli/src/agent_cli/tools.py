@@ -14,7 +14,7 @@ from anthropic.types import (
 
 from .agent import AGENTS, get_agent_description
 from .llm import MODEL, WORKDIR, client
-from .output import get_tool_call_detail, get_tool_result_preview
+from .output import get_tool_call_detail
 from .skill import skill_loader
 from .task import task_manager
 
@@ -468,10 +468,7 @@ Complete the task and return a clear, concise summary."""
                         "content": output,
                     }
                 )
-                ctx.output.status(
-                    f"{get_tool_call_detail(tool_call.name, tool_call.input)} "
-                    f"({get_tool_result_preview(output, 50)})",
-                )
+                ctx.output.status(f"{get_tool_call_detail(tool_call.name, tool_call.input)}")
 
             messages.append({"role": "assistant", "content": response.content})
             messages.append({"role": "user", "content": results})

@@ -35,7 +35,7 @@ def cmd_help(ctx: "AgentApp") -> CommandResult:
     return "continue"
 
 
-@command("/exit", "[bold green](Ctrl+W)[/] Exit the program")
+@command("/exit", "[bold green](ctrl+w)[/] Exit the program")
 def cmd_exit(ctx: "AgentApp") -> CommandResult:
     """Exit the program."""
     return "exit"

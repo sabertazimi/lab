@@ -1,0 +1,21 @@
+Screen {
+    layout: vertical;
+}
+
+RichLog {
+    height: 1fr;
+    scrollbar-gutter: stable;
+    scrollbar-size: 1 1;
+    scrollbar-visibility: hidden;
+}
+
+StatusBar {
+    padding: 1;
+    background: $surface;
+    color: #d97767;
+}
+
+Input {
+    padding: 0 1;
+    border: hkey $primary;
+}
