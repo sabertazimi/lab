@@ -83,16 +83,17 @@ class AgentApp(App[None]):
             return
 
         event.input.clear()
-        chat = self.query_one("#chat", RichLog)
 
         # Don't accept new input while agent is running
         if self._is_running:
-            chat.write("[yellow]Agent is still running. Press Ctrl+C to interrupt.[/]")
+            self.output.text(
+                "[yellow]Agent is still running. Press Ctrl+C to interrupt.[/]"
+            )
             return
 
-        # Show user input in chat
-        chat.write("")
-        chat.write(f"[bold green]❯[/] {user_input}")
+        # Show user input
+        self.output.newline()
+        self.output.text(f"[bold green]❯[/] {user_input}")
 
         # Handle slash commands
         result = handle_slash_command(self, user_input)
@@ -103,7 +104,7 @@ class AgentApp(App[None]):
                 case "clear":
                     self.history.clear()
                     self.first_turn = True
-                    chat.clear()
+                    self.output.clear()
                     self.output.banner(MODEL, WORKDIR)
                 case "continue":
                     pass
@@ -150,4 +151,4 @@ class AgentApp(App[None]):
 
     def action_clear(self) -> None:
         """Handle clear action (Ctrl+L key)."""
-        self.query_one("#chat", RichLog).clear()
+        self.output.clear()

@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.table import Table
 from rich.text import Text
+from textual.widgets import RichLog
 
 if TYPE_CHECKING:
     from .tui import AgentApp
@@ -42,38 +44,43 @@ class Output:
 
     def __init__(self, app: "AgentApp") -> None:
         self.context = app
+        self.chat = None
 
-    def _get_log(self):
-        """Get the RichLog widget from context."""
-        from textual.widgets import RichLog
-
-        return self.context.query_one("#chat", RichLog)
+    def text(self, message: RenderableType) -> None:
+        if self.chat is None:
+            self.chat = self.context.query_one("#chat", RichLog)
+        self.chat.write(message)
 
     def newline(self) -> None:
-        self._get_log().write("")
+        self.text("")
 
-    def text(self, message: str) -> None:
-        self._get_log().write(message)
+    def clear(self) -> None:
+        if self.chat is None:
+            self.chat = self.context.query_one("#chat", RichLog)
+        self.chat.clear()
+
+    def primary(self, message: str) -> None:
+        self.text(Text(message, style="green"))
 
     def accent(self, message: str) -> None:
-        self._get_log().write(Text(message, style="grey62"))
+        self.text(Text(message, style="grey62"))
 
     def error(self, message: str) -> None:
-        self._get_log().write(Text(message, style="red"))
+        self.text(Text(message, style="red"))
 
     def interrupted(self) -> None:
-        self.error("\n  [Interrupted]")
+        self.error("\n   ⎿  Interrupted by user")
 
     def tool_call(self, name: str, tool_input: dict[str, object]) -> None:
         """Print tool call: ToolName(key_arg)."""
         detail = get_tool_call_detail(name, tool_input)
         self.newline()
-        self._get_log().write(Text.assemble(("● ", "green"), detail))
+        self.text(Text.assemble(("● ", "green"), detail))
 
     def tool_result(self, output: str, max_length: int = 200) -> None:
         """Print tool result preview in gray."""
         preview = get_tool_result_preview(output, max_length)
-        self._get_log().write(Text(preview, style="grey62"))
+        self.accent(preview)
 
     def response(self, text: str) -> None:
         """Print model text output, rendering Markdown with proper indentation."""
@@ -82,7 +89,7 @@ class Output:
         table.add_column(width=2, no_wrap=True)
         table.add_column()
         table.add_row("● ", Markdown(text))
-        self._get_log().write(table)
+        self.text(table)
 
     def status(self, message: str) -> None:
         """Update the status bar."""
@@ -92,7 +99,6 @@ class Output:
 
     def banner(self, model: str, workdir: Path) -> None:
         """Print ASCII art banner with gradient effect."""
-        log = self._get_log()
         logo_lines = [
             r"   ██████╗██╗   ██╗██████╗ ███████╗██████╗ ",
             r"  ██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗",
@@ -120,15 +126,15 @@ class Output:
         repeats = (len(logo_lines) + len(base_colors) - 1) // len(base_colors)
         gradient = (base_colors * repeats)[: len(logo_lines)]
 
-        log.write("")
+        self.newline()
         for line, color in zip(logo_lines, gradient, strict=False):
-            log.write(Text(line, style=f"bold {color}"))
-        log.write("")
-        log.write(Text("  ┌─────────────────────────────────────────┐", style="grey62"))
-        log.write(Text("  │         AI-Powered Coding Agent         │", style="grey62"))
-        log.write(Text("  └─────────────────────────────────────────┘", style="grey62"))
-        log.write("")
-        log.write(Text(f"  Model:    {model}", style="grey62"))
-        log.write(Text(f"  Workdir:  {workdir}", style="grey62"))
-        log.write("")
-        log.write("  Type '/help' to see available commands.")
+            self.text(Text(line, style=f"bold {color}"))
+        self.newline()
+        self.accent("  ┌─────────────────────────────────────────┐")
+        self.accent("  │         AI-Powered Coding Agent         │")
+        self.accent("  └─────────────────────────────────────────┘")
+        self.newline()
+        self.accent(f"  Model:    {model}")
+        self.accent(f"  Workdir:  {workdir}")
+        self.newline()
+        self.text("  Type '/help' to see available commands.")
