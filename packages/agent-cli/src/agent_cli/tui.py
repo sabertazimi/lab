@@ -4,7 +4,7 @@ from anthropic.types import MessageParam, TextBlockParam
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.widgets import Input, RichLog, Static
+from textual.widgets import Footer, Input, RichLog, Static
 
 from .command import handle_slash_command
 from .context import load_system_reminder
@@ -52,8 +52,9 @@ class AgentApp(App[None]):
 
     BINDINGS = [
         Binding("ctrl+c", "interrupt", "Interrupt"),
-        Binding("ctrl+w", "quit", "Quit", priority=True),
         Binding("ctrl+l", "clear", "Clear"),
+        Binding("ctrl+q", "none", "No Operation", show=False),
+        Binding("ctrl+w", "quit", "Quit", priority=True),
     ]
 
     def __init__(self) -> None:
@@ -68,6 +69,7 @@ class AgentApp(App[None]):
         yield RichLog(id="chat", highlight=True, markup=True, wrap=True)
         yield StatusBar("Ready", id="status")
         yield Input(placeholder="Type a message or /help for commands...", id="input")
+        yield Footer()
 
     def on_mount(self) -> None:
         """Called when app is mounted."""

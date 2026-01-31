@@ -69,7 +69,7 @@ class Output:
         self.text(Text(message, style="red"))
 
     def interrupted(self) -> None:
-        self.error("\n   ⎿  Interrupted by user")
+        self.error("\n  ⎿  Interrupted by user")
 
     def tool_call(self, name: str, tool_input: dict[str, object]) -> None:
         """Print tool call: ToolName(key_arg)."""
