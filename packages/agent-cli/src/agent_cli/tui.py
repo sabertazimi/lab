@@ -87,7 +87,7 @@ class AgentApp(App[None]):
 
         # Don't accept new input while agent is running
         if self._is_running:
-            chat.write("[yellow]Agent is still running. Press ESC to interrupt.[/]")
+            chat.write("[yellow]Agent is still running. Press Ctrl+C to interrupt.[/]")
             return
 
         # Show user input in chat
@@ -143,7 +143,11 @@ class AgentApp(App[None]):
             self.call_from_thread(self.output.status, "Ready")
 
     def action_interrupt(self) -> None:
-        """Handle interrupt action (ESC key)."""
+        """Handle interrupt action (Ctrl+C key)."""
         if self._is_running:
             request_interrupt()
             self.output.status("Interrupting...")
+
+    def action_clear(self) -> None:
+        """Handle clear action (Ctrl+L key)."""
+        self.query_one("#chat", RichLog).clear()
