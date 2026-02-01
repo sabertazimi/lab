@@ -442,7 +442,7 @@ def get_tools_for_agent(agent_type: str) -> list[ToolParam]:
     return [tool for tool in BASE_TOOLS if tool["name"] in allowed_tools]
 
 
-def run_bash(command: str, timeout: float = 60) -> str:
+def run_bash(command: str | None, timeout: float = 60) -> str:
     """
     Execute shell command with safety checks.
 
@@ -452,6 +452,9 @@ def run_bash(command: str, timeout: float = 60) -> str:
 
     On Windows, uses git-bash for better Unix command compatibility.
     """
+    if command is None:
+        return "Error: Command is required"
+
     dangerous_commands = ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/"]
     if any(dangerous in command for dangerous in dangerous_commands):
         return "Error: Dangerous command blocked"
