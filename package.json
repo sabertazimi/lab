@@ -34,6 +34,7 @@
   "scripts": {
     "dev": "pnpm python:dev",
     "lint": "pnpm python:lint",
+    "test": "pnpm python:test",
     "release": "lerna version --force-publish --sign-git-commit --sign-git-tag",
     "web:build": "pnpm -r run build && node scripts/post-build.js && cp -fr CNAME dist/ && cp -fr vercel.json dist/",
     "web:dev": "pnpm web:dev:portfolio",
@@ -46,6 +47,7 @@
     "python:dev:agent-cli": "uv run agent-cli",
     "python:lint": "uv run pyright && uv run ruff check",
     "python:lint:fix": "uv run ruff check --fix",
+    "python:test": "uv run pytest",
     "rust:build": "cargo build --release",
     "rust:deps": "cargo install mdbook cargo-edit cargo-release cargo-workspace",
     "rust:dev": "pnpm rust:dev:rustlings",
