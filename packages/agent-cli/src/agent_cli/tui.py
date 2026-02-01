@@ -55,7 +55,9 @@ class AgentApp(App[None]):
         """Create child widgets for the app."""
         yield RichLog(id="chat", highlight=True, markup=True, wrap=True)
         yield StatusBar("", id="status")
-        input_widget = Input(placeholder="Type a message or /help for commands...", id="input")
+        input_widget = Input(
+            placeholder="Type a message or /help for commands...", id="input"
+        )
         yield input_widget
         yield CommandAutoComplete(input_widget, candidates=self._get_command_candidates)
         yield Footer()
@@ -64,10 +66,7 @@ class AgentApp(App[None]):
         """Return slash command candidates when input starts with /"""
         if not state.text.startswith("/"):
             return []
-        return [
-            DropdownItem(main=cmd)
-            for cmd, (_, _) in sorted(COMMANDS.items())
-        ]
+        return [DropdownItem(main=cmd[0]) for cmd in sorted(COMMANDS.items())]
 
     def on_mount(self) -> None:
         """Called when app is mounted."""
