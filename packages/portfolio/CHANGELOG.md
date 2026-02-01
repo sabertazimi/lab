@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/sabertazimi/lab/compare/v3.1.0...v3.2.0) (2026-02-01)
+
+### Features
+
+- **agent-cli:** add config file support ([#953](https://github.com/sabertazimi/lab/issues/953)) ([d16e75c](https://github.com/sabertazimi/lab/commit/d16e75ce50eab2df3eac720b4ea21a8d609857b3))
+- **agent-tools:** add Glob, Grep, WebSearch, and WebReader tools ([#959](https://github.com/sabertazimi/lab/issues/959)) ([3776f3a](https://github.com/sabertazimi/lab/commit/3776f3af039316a3e090be43a11ad0c199cbfcef))
+
 # [3.1.0](https://github.com/sabertazimi/lab/compare/v3.0.0...v3.1.0) (2026-01-29)
 
 ### Features
