@@ -25,7 +25,7 @@ Rules:
 - Prefer tools over prose. Act, don't just explain.
 - After finishing, summarize what changed.
 
-IMPORTANT: DON'T use `webReader` (`server_tool_use` type) to fetch web pages, use `WebReader` (`tool_use` type) tool instead.
+IMPORTANT: Use the `WebReader` tool listed above to fetch web pages; do not use any other similarly named tools for web access.
 
 Commit footer: When you make changes that get committed, add this footer:
 Co-authored-by: Cyber Code <me@tazimi.dev>"""
