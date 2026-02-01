@@ -4,14 +4,28 @@ from anthropic.types import MessageParam, TextBlockParam
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
+from textual.geometry import Offset
 from textual.widgets import Footer, Input, RichLog, Static
+from textual_autocomplete import AutoComplete, DropdownItem, TargetState
 
-from .command import handle_slash_command
+from .command import COMMANDS, handle_slash_command
 from .context import load_system_reminder
 from .llm import MODEL, WORKDIR, report_config_errors
 from .output import Output
 from .task import task_manager
 from .workflow import agent_loop, request_interrupt
+
+
+class CommandAutoComplete(AutoComplete):
+    """AutoComplete that opens upward for bottom-docked Input."""
+
+    def _align_to_target(self) -> None:
+        """Align dropdown above the target cursor position."""
+        x, y = self.target.cursor_screen_offset
+        dropdown = self.option_list
+        _width, height = dropdown.outer_size
+        # Position above the input: y - height instead of y + 1
+        self.absolute_offset = Offset(x - 1, y - height)
 
 
 class StatusBar(Static):
@@ -41,8 +55,19 @@ class AgentApp(App[None]):
         """Create child widgets for the app."""
         yield RichLog(id="chat", highlight=True, markup=True, wrap=True)
         yield StatusBar("", id="status")
-        yield Input(placeholder="Type a message or /help for commands...", id="input")
+        input_widget = Input(placeholder="Type a message or /help for commands...", id="input")
+        yield input_widget
+        yield CommandAutoComplete(input_widget, candidates=self._get_command_candidates)
         yield Footer()
+
+    def _get_command_candidates(self, state: TargetState) -> list[DropdownItem]:
+        """Return slash command candidates when input starts with /"""
+        if not state.text.startswith("/"):
+            return []
+        return [
+            DropdownItem(main=cmd)
+            for cmd, (_, _) in sorted(COMMANDS.items())
+        ]
 
     def on_mount(self) -> None:
         """Called when app is mounted."""
