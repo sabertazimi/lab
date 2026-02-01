@@ -707,12 +707,12 @@ def run_web_search(
 
 
 @functools.lru_cache(maxsize=128)
-def _fetch_cached(url: str, cache_time: int) -> str:
+def fetch_cached(url: str, cache_time: int) -> str:
     """Cached fetch with timestamp to invalidate after 15 minutes."""
-    return _fetch_uncached(url)
+    return fetch_uncached(url)
 
 
-def _fetch_uncached(url: str) -> str:
+def fetch_uncached(url: str) -> str:
     """Fetch and convert HTML to markdown."""
     import httpx
     from markdownify import markdownify as md
@@ -738,7 +738,7 @@ def run_web_fetch(url: str, prompt: str) -> str:
     try:
         # 15-minute cache (900 seconds)
         cache_time = int(time.time() / 900)
-        content = _fetch_cached(url, cache_time)
+        content = fetch_cached(url, cache_time)
 
         # Note: The prompt is for context - full implementation would pass to LLM
         # For now, return raw markdown content

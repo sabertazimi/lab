@@ -20,6 +20,7 @@ pnpm web:dev          # Start portfolio (default)
 # Python
 pnpm python:dev       # Run agent-cli
 pnpm python:lint      # pyright + ruff
+pnpm python:test      # pytest
 
 # Rust
 pnpm rust:build       # Cargo build --release
