@@ -20,7 +20,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - **agent:** add branding banner and custom semantic theme ([#951](https://github.com/sabertazimi/lab/issues/951)) ([a462230](https://github.com/sabertazimi/lab/commit/a4622308a7bff307ba5eceb4b194a32c8c0010d6))
 - **agent:** implement agent loop and tool call ([#943](https://github.com/sabertazimi/lab/issues/943)) ([155e452](https://github.com/sabertazimi/lab/commit/155e452237bb22106aea1b147f7b66c13c86a017))
 - **agent:** implement CLI agent with tool loop and REPL ([#940](https://github.com/sabertazimi/lab/issues/940)) ([972345f](https://github.com/sabertazimi/lab/commit/972345f3262046b85e9663c574fb14e5770293e3))
-- **bash-agent:** initialize minimal Claude Code learning project ([#938](https://github.com/sabertazimi/lab/issues/938)) ([3e7dd4f](https://github.com/sabertazimi/lab/commit/3e7dd4f86fb00176ca69294d39af751e3b29286a))
+- **bash-agent:** initialize Claude Code learning project ([#938](https://github.com/sabertazimi/lab/issues/938)) ([3e7dd4f](https://github.com/sabertazimi/lab/commit/3e7dd4f86fb00176ca69294d39af751e3b29286a))
 - **pnpm:** add python and rust packages to pnpm workspace ([#944](https://github.com/sabertazimi/lab/issues/944)) ([4be9748](https://github.com/sabertazimi/lab/commit/4be97484e842bb72ea65894f99e495ce08c3edc7))
 - **python-ruff:** setup ruff linter for Python ([b5426c0](https://github.com/sabertazimi/lab/commit/b5426c0fee2b6a2d5998cf5a567d660eefd475ca))
 - **python-type:** setup type hint static check ([#942](https://github.com/sabertazimi/lab/issues/942)) ([e0e1a2c](https://github.com/sabertazimi/lab/commit/e0e1a2cbb8d53ed482eec2ab30e8aa94cdeefc65))

@@ -7,7 +7,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- **bash-agent:** initialize minimal Claude Code learning project ([#938](https://github.com/sabertazimi/lab/issues/938)) ([3e7dd4f](https://github.com/sabertazimi/lab/commit/3e7dd4f86fb00176ca69294d39af751e3b29286a))
+- **bash-agent:** initialize Claude Code learning project ([#938](https://github.com/sabertazimi/lab/issues/938)) ([3e7dd4f](https://github.com/sabertazimi/lab/commit/3e7dd4f86fb00176ca69294d39af751e3b29286a))
 
 ### Performance Improvements
 

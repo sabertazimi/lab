@@ -6,9 +6,7 @@ type TaskStatus = Literal["pending", "in_progress", "completed"]
 
 
 class Task:
-    """
-    A task to be completed.
-    """
+    """A task to be completed."""
 
     def __init__(self, content: str, status: TaskStatus, active_form: str):
         self.content = content
@@ -109,7 +107,7 @@ class TaskManager(metaclass=Singleton):
         lines: list[str] = []
         for task in self.tasks:
             if task.status == "completed":
-                lines.append(f"☑ {task.content}")
+                lines.append(f"✔ {task.content}")
             elif task.status == "in_progress":
                 lines.append(f"▣ {task.content} <- {task.active_form}")
             else:
@@ -122,21 +120,15 @@ class TaskManager(metaclass=Singleton):
         return "\n".join(lines)
 
     def increment(self) -> None:
-        """
-        Increment the number of rounds without a task.
-        """
+        """Increment the number of rounds without a task."""
         self.rounds_without_task += 1
 
     def reset(self) -> None:
-        """
-        Reset the number of rounds without a task.
-        """
+        """Reset the number of rounds without a task."""
         self.rounds_without_task = 0
 
     def too_long_without_task(self) -> bool:
-        """
-        Check if the agent has been working on tasks for too long.
-        """
+        """Check if the agent has been working on tasks for too long."""
         return self.rounds_without_task > 10
 
     def dict_to_task(self, task: dict[str, str]) -> Task:

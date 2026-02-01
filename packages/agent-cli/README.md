@@ -1,6 +1,6 @@
 # Agent CLI
 
-Minimal Claude Code with `Bash`/`Read`/`Write`/`Edit` tools, task planning, subagent orchestration, and skill system support.
+Minimal Claude Code with rich tools, task planning, subagent orchestration, and skill system support.
 
 ## Getting Started
 
@@ -28,6 +28,20 @@ ANTHROPIC_AUTH_TOKEN="your_anthropic_api_key"
 ANTHROPIC_BASE_URL="https://api.anthropic.com"
 ANTHROPIC_MODEL="claude-opus-4-5-20251101"
 ```
+
+## Built-in Tools
+
+- Bash
+- Read
+- Write
+- Edit
+- Glob
+- Grep
+- WebSearch
+- WebReader
+- TaskUpdate
+- Task
+- Skill
 
 ## References
 
