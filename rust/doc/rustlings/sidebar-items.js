@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["VERSION"],"enum":["Subcommands","WatchStatus"],"fn":["find_exercise","main","rustc_exists","spawn_watch_shell","watch"],"mod":["exercise","run","ui","verify"],"struct":["Args","HintArgs","ListArgs","RunArgs","VerifyArgs","WatchArgs"]};
