@@ -929,12 +929,12 @@ def execute_tool(ctx: "AgentApp", name: str, args: dict[str, object]) -> str:
             return run_grep(
                 tool.pattern,
                 tool.path,
-                tool.output_mode or "content",
+                tool.output_mode if tool.output_mode is not None else "content",
                 tool.glob,
-                tool.i or False,
-                tool.n or True,
-                tool.head_limit or 0,
-                tool.offset or 0,
+                tool.i if tool.i is not None else False,
+                tool.n if tool.n is not None else True,
+                tool.head_limit if tool.head_limit is not None else 0,
+                tool.offset if tool.offset is not None else 0,
             )
         case "WebSearch":
             allowed = (
@@ -963,7 +963,6 @@ def execute_tool(ctx: "AgentApp", name: str, args: dict[str, object]) -> str:
                 prompt=str(args["prompt"]),
             )
             return run_web_fetch(tool.url, tool.prompt)
-
         case "TaskUpdate":
             tasks = cast(list[dict[str, str]], args.get("tasks", []))
             tool = TaskUpdateToolCall(name="TaskUpdate", tasks=tasks)
