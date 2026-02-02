@@ -1,6 +1,6 @@
-"""Unit tests for agent-cli agent module."""
+"""Unit tests for agent-cli agent_types module."""
 
-from agent_cli.agent import AGENTS, get_agent_description
+from agent_cli.subagent import AGENTS, get_agent_description
 
 
 class TestGetAgentDescription:

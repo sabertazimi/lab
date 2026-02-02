@@ -7,66 +7,44 @@ import pytest
 
 
 @pytest.fixture
-def tmp_workdir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+def tmp_workdir(tmp_path: Path) -> Path:
     """
-    Create a temporary working directory and patch WORKDIR.
-
-    This fixture:
-    1. Creates an isolated temp directory for each test
-    2. Patches llm.WORKDIR to point to the temp directory
-    3. Patches tools.WORKDIR (imported from llm) as well
+    Create a temporary working directory for testing.
 
     Returns the temp path for test assertions.
     """
-    # Patch the WORKDIR in llm module (source of truth)
-    from agent_cli import llm
-
-    monkeypatch.setattr(llm, "WORKDIR", tmp_path)
-
-    # Also need to patch it in tools module since it imports at module level
-    from agent_cli import tools
-
-    monkeypatch.setattr(tools, "WORKDIR", tmp_path)
-
     return tmp_path
 
 
 @pytest.fixture
-def mock_task_manager(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
+def mock_task_manager() -> MagicMock:
     """
-    Mock the task_manager singleton.
+    Create a mock TaskManager.
 
     Returns a MagicMock that can be configured for specific test scenarios.
     """
-    from agent_cli import task as task_module
-    from agent_cli import tools
-
     mock = MagicMock()
     mock.update.return_value = "Tasks updated"
-
-    monkeypatch.setattr(task_module, "task_manager", mock)
-    monkeypatch.setattr(tools, "task_manager", mock)
-
+    mock.INITIAL_REMINDER = "<reminder>Use TaskUpdate for multi-step tasks.</reminder>"
+    mock.NAG_REMINDER = (
+        "<reminder>10+ turns without task update. Please update tasks.</reminder>"
+    )
+    mock.too_long_without_task.return_value = False
     return mock
 
 
 @pytest.fixture
-def mock_skill_loader(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
+def mock_skill_loader(tmp_workdir: Path) -> MagicMock:
     """
-    Mock the skill_loader singleton.
+    Create a mock SkillLoader.
 
     Returns a MagicMock that can be configured for specific test scenarios.
     """
-    from agent_cli import skill as skill_module
-    from agent_cli import tools
-
     mock = MagicMock()
     mock.get_skill.return_value = None
     mock.list_skills.return_value = []
-
-    monkeypatch.setattr(skill_module, "skill_loader", mock)
-    monkeypatch.setattr(tools, "skill_loader", mock)
-
+    mock.get_descriptions.return_value = "(no skills available)"
+    mock.skills = {}
     return mock
 
 
@@ -134,30 +112,25 @@ class MyClass:
 
 
 @pytest.fixture
-def mock_output() -> tuple[object, MagicMock]:
+def mock_ui() -> MagicMock:
     """
-    Create an Output instance with mocked AgentApp context.
+    Create a mock IAgentUI implementation.
 
-    Returns:
-        A tuple of (Output instance, MagicMock mock_app).
+    Returns a MagicMock that implements the IAgentUI protocol.
     """
-    from agent_cli.output import Output
-
-    # Mock the AgentApp context
-    mock_app = MagicMock()
-    mock_app.thinking_history = []
-    mock_app.show_thinking = False
-
-    # Mock query_one to return mock RichLog widgets
-    mock_chat_log = MagicMock()
-    mock_thinking_log = MagicMock()
-
-    def _query_one(selector: str, _cls: object = None) -> MagicMock:
-        return mock_chat_log if selector == "#chat" else mock_thinking_log
-
-    mock_app.query_one.side_effect = _query_one
-
-    # Create Output instance
-    output = Output(mock_app)
-
-    return output, mock_app
+    mock = MagicMock()
+    mock.text = MagicMock()
+    mock.newline = MagicMock()
+    mock.clear = MagicMock()
+    mock.primary = MagicMock()
+    mock.accent = MagicMock()
+    mock.error = MagicMock()
+    mock.debug = MagicMock()
+    mock.thinking = MagicMock()
+    mock.response = MagicMock()
+    mock.tool_call = MagicMock()
+    mock.tool_result = MagicMock()
+    mock.interrupted = MagicMock()
+    mock.status = MagicMock()
+    mock.banner = MagicMock()
+    return mock

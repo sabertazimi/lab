@@ -1,30 +1,33 @@
+"""Tool definitions and execution for agent-cli.
+
+This module defines all available tools and their execution logic.
+Tools are decoupled from global state and accept dependencies as parameters.
+"""
+
+from __future__ import annotations
+
 import fnmatch
 import functools
 import os
 import re
 import subprocess
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, cast
 
-from anthropic.types import (
-    MessageParam,
-    TextBlock,
-    ToolParam,
-    ToolResultBlockParam,
-    ToolUseBlock,
-)
-
-from .agent import AGENTS, get_agent_description
-from .llm import MAX_THINKING_TOKENS, MODEL, WORKDIR, client
-from .output import get_tool_call_detail
-from .skill import skill_loader
-from .task import task_manager
+from anthropic.types import ToolParam
 
 if TYPE_CHECKING:
-    from .tui import AgentApp
+    from .interfaces import IAgentUI
+    from .skill import SkillLoader
+    from .task import TaskManager
+
+
+# Type alias for subagent spawning callback
+SpawnSubagentFn = Callable[[str, str, str], str]
 
 
 @dataclass
@@ -362,9 +365,21 @@ IMPORTANT: Today's date is {CURRENT_DATE} - use this date when forming queries f
     },
 ]
 
-TASK_TOOL: ToolParam = {
-    "name": "Task",
-    "description": f"""Spawn a subagent for a focused subtask.
+
+def build_task_tool(agent_types: dict[str, dict[str, str | list[str]]]) -> ToolParam:
+    """Build the Task tool definition with agent type descriptions.
+
+    Args:
+        agent_types: Dictionary of agent type configurations.
+
+    Returns:
+        Task tool parameter definition.
+    """
+    from .subagent import get_agent_description
+
+    return {
+        "name": "Task",
+        "description": f"""Spawn a subagent for a focused subtask.
 
 Subagents run in ISOLATED context - they don't see parent's history.
 Use this to keep the main conversation clean.
@@ -377,30 +392,40 @@ Example uses:
 - Task(Plan): "Design a migration strategy for the database"
 - Task(Code): "Implement the user registration form"
 """,
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "agent_type": {
-                "type": "string",
-                "enum": list(AGENTS.keys()),
-                "description": "The type of agent to spawn",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "agent_type": {
+                    "type": "string",
+                    "enum": list(agent_types.keys()),
+                    "description": "The type of agent to spawn",
+                },
+                "prompt": {
+                    "type": "string",
+                    "description": "Detailed instructions for the subagent",
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Short task name (3-5 words) for progress display",
+                },
             },
-            "prompt": {
-                "type": "string",
-                "description": "Detailed instructions for the subagent",
-            },
-            "description": {
-                "type": "string",
-                "description": "Short task name (3-5 words) for progress display",
-            },
+            "required": ["agent_type", "prompt", "description"],
         },
-        "required": ["agent_type", "prompt", "description"],
-    },
-}
+    }
 
-SKILL_TOOL: ToolParam = {
-    "name": "Skill",
-    "description": f"""<skills_instructions>
+
+def build_skill_tool(skill_loader: SkillLoader) -> ToolParam:
+    """Build the Skill tool definition with available skills.
+
+    Args:
+        skill_loader: Skill loader instance.
+
+    Returns:
+        Skill tool parameter definition.
+    """
+    return {
+        "name": "Skill",
+        "description": f"""<skills_instructions>
 When users ask you to perform tasks, check if any of the available skills below can help complete the task more effectively.
 
 How to use skills:
@@ -419,58 +444,71 @@ IMPORTANT:
 <available_skills>
 {skill_loader.get_descriptions()}
 </available_skills>""",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "skill_name": {
-                "type": "string",
-                "description": "The name of the skill to load",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "skill_name": {
+                    "type": "string",
+                    "description": "The name of the skill to load",
+                },
             },
+            "required": ["skill_name"],
         },
-        "required": ["skill_name"],
-    },
-}
-
-ALL_TOOLS = BASE_TOOLS + [TASK_TOOL, SKILL_TOOL]
+    }
 
 
-def safe_path(path: str) -> Path:
+def build_all_tools(skill_loader: SkillLoader) -> list[ToolParam]:
+    """Build the complete list of tools including Task and Skill.
+
+    Args:
+        skill_loader: Skill loader instance.
+
+    Returns:
+        Complete list of tool parameter definitions.
     """
-    Ensure path stays within workspace (security measure).
+    from .subagent import AGENTS
+
+    return BASE_TOOLS + [build_task_tool(AGENTS), build_skill_tool(skill_loader)]
+
+
+def safe_path(path: str, workdir: Path) -> Path:
+    """Ensure path stays within workspace (security measure).
 
     Prevents the model from accessing files outside the project directory.
     Resolves relative paths and checks they don't escape via '../'.
+
+    Args:
+        path: Relative path string.
+        workdir: Working directory to resolve against.
+
+    Returns:
+        Resolved absolute path.
+
+    Raises:
+        ValueError: If path escapes workspace.
     """
-    resolved_path = (WORKDIR / path).resolve()
-    if not resolved_path.is_relative_to(WORKDIR):
+    resolved_path = (workdir / path).resolve()
+    if not resolved_path.is_relative_to(workdir):
         raise ValueError(f"Path escapes workspace: {path}")
     return resolved_path
 
 
-def get_tools_for_agent(agent_type: str) -> list[ToolParam]:
-    """
-    Filter tools based on agent type.
-
-    Each agent type has a whitelist of allowed tools.
-    '*' means all tools (but subagents don't get Task to prevent infinite recursion).
-    """
-    allowed_tools = AGENTS.get(agent_type, {}).get("tools", "*")
-
-    if allowed_tools == "*":
-        return BASE_TOOLS
-
-    return [tool for tool in BASE_TOOLS if tool["name"] in allowed_tools]
-
-
-def run_bash(command: str | None, timeout: float = 60) -> str:
-    """
-    Execute shell command with safety checks.
+def run_bash(command: str | None, workdir: Path, timeout: float = 60) -> str:
+    """Execute shell command with safety checks.
 
     Security: Blocks obviously dangerous commands.
     Timeout: 60 seconds to prevent hanging.
     Output: Truncated to 50KB to prevent context overflow.
 
     On Windows, uses git-bash for better Unix command compatibility.
+
+    Args:
+        command: Shell command to execute.
+        workdir: Working directory for command execution.
+        timeout: Command timeout in seconds (default: 60).
+
+    Returns:
+        Command output or error message.
     """
     if command is None:
         return "Error: Command is required"
@@ -484,7 +522,7 @@ def run_bash(command: str | None, timeout: float = 60) -> str:
             # Windows: use git-bash for Unix command compatibility
             result = subprocess.run(
                 [r"C:\Program Files\Git\bin\bash.exe", "-c", command],
-                cwd=WORKDIR,
+                cwd=workdir,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -494,7 +532,7 @@ def run_bash(command: str | None, timeout: float = 60) -> str:
             result = subprocess.run(
                 command,
                 shell=True,
-                cwd=WORKDIR,
+                cwd=workdir,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -507,15 +545,22 @@ def run_bash(command: str | None, timeout: float = 60) -> str:
         return f"Error: {e}"
 
 
-def run_read(path: str, limit: int | None = None) -> str:
-    """
-    Read file content with optional line limit.
+def run_read(path: str, workdir: Path, limit: int | None = None) -> str:
+    """Read file content with optional line limit.
 
     For large files, use limit to read just the first N lines.
     Output truncated to 50KB to prevent context overflow.
+
+    Args:
+        path: Relative path to the file.
+        workdir: Working directory.
+        limit: Maximum lines to read (default: all).
+
+    Returns:
+        File content or error message.
     """
     try:
-        text = safe_path(path).read_text(encoding="utf-8", newline="\n")
+        text = safe_path(path, workdir).read_text(encoding="utf-8", newline="\n")
         lines = text.splitlines()
         total_lines = len(lines)
 
@@ -528,15 +573,22 @@ def run_read(path: str, limit: int | None = None) -> str:
         return f"Error: {e}"
 
 
-def run_write(path: str, content: str) -> str:
-    """
-    Write content to a file, creating parent directories if needed.
+def run_write(path: str, content: str, workdir: Path) -> str:
+    """Write content to a file, creating parent directories if needed.
 
     This is for complete file creation/overwrite.
     For partial edits, use Edit tool instead.
+
+    Args:
+        path: Relative path for the file.
+        content: Content to write.
+        workdir: Working directory.
+
+    Returns:
+        Success message or error.
     """
     try:
-        file_path = safe_path(path)
+        file_path = safe_path(path, workdir)
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_text(content, encoding="utf-8", newline="\n")
         return f"Wrote {len(content)} bytes to {path}"
@@ -544,15 +596,23 @@ def run_write(path: str, content: str) -> str:
         return f"Error: {e}"
 
 
-def run_edit(path: str, old_text: str, new_text: str) -> str:
-    """
-    Replace exact text in a file (surgical edit).
+def run_edit(path: str, old_text: str, new_text: str, workdir: Path) -> str:
+    """Replace exact text in a file (surgical edit).
 
     Uses exact string matching - the old_text must appear verbatim.
     Only replaces the first occurrence to prevent accidental mass changes.
+
+    Args:
+        path: Relative path to the file.
+        old_text: Exact text to find.
+        new_text: Replacement text.
+        workdir: Working directory.
+
+    Returns:
+        Success message or error.
     """
     try:
-        file_path = safe_path(path)
+        file_path = safe_path(path, workdir)
         content = file_path.read_text(encoding="utf-8", newline="\n")
 
         if old_text not in content:
@@ -565,16 +625,23 @@ def run_edit(path: str, old_text: str, new_text: str) -> str:
         return f"Error: {e}"
 
 
-def run_glob(pattern: str, path: str | None = None) -> str:
-    """
-    Find files matching a glob pattern.
+def run_glob(pattern: str, workdir: Path, path: str | None = None) -> str:
+    """Find files matching a glob pattern.
 
     Returns files sorted by modification time (newest first).
     Excludes common large/irrelevant directories for performance.
     Output truncated to 50KB to prevent context overflow.
+
+    Args:
+        pattern: Glob pattern to match.
+        workdir: Working directory.
+        path: Directory to search in (default: workdir).
+
+    Returns:
+        Matched files or error message.
     """
     try:
-        search_path = safe_path(path or ".")
+        search_path = safe_path(path or ".", workdir)
 
         all_files: list[Path] = []
         for root, dirnames, filenames in os.walk(search_path):
@@ -594,6 +661,7 @@ def run_glob(pattern: str, path: str | None = None) -> str:
 
 def run_grep(
     pattern: str,
+    workdir: Path,
     path: str | None = None,
     output_mode: str = "content",
     glob: str | None = None,
@@ -602,11 +670,24 @@ def run_grep(
     head_limit: int = 0,
     offset: int = 0,
 ) -> str:
-    """
-    Search for pattern in files using pure Python regex.
+    """Search for pattern in files using pure Python regex.
 
     Supports multiple output modes and filtering options.
     Output truncated to 50KB to prevent context overflow.
+
+    Args:
+        pattern: Regex pattern to search for.
+        workdir: Working directory.
+        path: File or directory to search (default: workdir).
+        output_mode: Output format (content/files_with_matches/count).
+        glob: Filter files by glob pattern.
+        i: Case insensitive search.
+        n: Show line numbers.
+        head_limit: Limit output to first N results.
+        offset: Skip first N results.
+
+    Returns:
+        Search results or error message.
     """
     try:
         flags = re.IGNORECASE if i else 0
@@ -615,7 +696,7 @@ def run_grep(
         except re.error:
             return f"Error: Invalid regex pattern: {pattern}"
 
-        search_path = safe_path(path or ".")
+        search_path = safe_path(path or ".", workdir)
 
         if search_path.is_file():
             files = [search_path]
@@ -671,16 +752,16 @@ def run_grep(
         if output_mode == "content":
             result = "\n".join(content_matches)
             if offset > 0:
-                lines = result.splitlines()
-                result = "\n".join(lines[offset:])
+                lines_list = result.splitlines()
+                result = "\n".join(lines_list[offset:])
             if head_limit > 0:
-                lines = result.splitlines()
-                result = "\n".join(lines[:head_limit])
+                lines_list = result.splitlines()
+                result = "\n".join(lines_list[:head_limit])
         elif output_mode == "files_with_matches":
             result = "\n".join(sorted(file_matches))
         elif output_mode == "count":
-            lines = [f"{f}:{count}" for f, count in sorted(count_matches.items())]
-            result = "\n".join(lines)
+            lines_list = [f"{f}:{count}" for f, count in sorted(count_matches.items())]
+            result = "\n".join(lines_list)
         else:
             result = f"Error: Unknown output_mode '{output_mode}'"
 
@@ -694,11 +775,18 @@ def run_web_search(
     allowed_domains: list[str] | None = None,
     blocked_domains: list[str] | None = None,
 ) -> str:
-    """
-    Search the web using DuckDuckGo.
+    """Search the web using DuckDuckGo.
 
     Returns results as markdown with title links and snippets.
     Output truncated to 50KB to prevent context overflow.
+
+    Args:
+        query: Search query string.
+        allowed_domains: Domains to include in results.
+        blocked_domains: Domains to exclude from results.
+
+    Returns:
+        Search results or error message.
     """
     try:
         from ddgs import DDGS  # type: ignore 3rd-party package
@@ -760,11 +848,17 @@ def fetch_uncached(url: str) -> str:
 
 
 def run_web_fetch(url: str, prompt: str) -> str:
-    """
-    Fetch web content and convert to markdown.
+    """Fetch web content and convert to markdown.
 
     Uses 15-minute cache for repeated requests.
     Output truncated to 50KB to prevent context overflow.
+
+    Args:
+        url: URL to fetch.
+        prompt: Context for the fetch (informational).
+
+    Returns:
+        Markdown content or error message.
     """
     try:
         # 15-minute cache (900 seconds)
@@ -778,12 +872,18 @@ def run_web_fetch(url: str, prompt: str) -> str:
         return f"Fetch failed: {e}"
 
 
-def run_task_update(tasks: list[dict[str, str]]) -> str:
-    """
-    Update the task list.
+def run_task_update(tasks: list[dict[str, str]], task_manager: TaskManager) -> str:
+    """Update the task list.
 
     The model sends a complete new list (not a diff).
-    We validate it and return the renderer view.
+    We validate it and return the rendered view.
+
+    Args:
+        tasks: List of task dictionaries.
+        task_manager: Task manager instance.
+
+    Returns:
+        Rendered task list or error message.
     """
     try:
         return task_manager.update(tasks)
@@ -791,102 +891,21 @@ def run_task_update(tasks: list[dict[str, str]]) -> str:
         return f"Error: {e}"
 
 
-def run_task(ctx: AgentApp, agent_type: str, prompt: str, description: str) -> str:
-    """
-    Execute a subagent task with isolated context.
-
-    This is the core of the subagent mechanism:
-
-    1. Create isolated message history (KEY: no parent context!)
-    2. Use agent-specific system prompt
-    3. Filter available tools based on agent type
-    4. Run the same query loop as main agent
-    5. Return ONLY the final text (not intermediate details)
-
-    The parent agent sees just the summary, keeping its context clean.
-    This gives visibility without polluting the main conversation.
-    """
-    if agent_type not in AGENTS:
-        return f"Error: Unknown agent type '{agent_type}'"
-
-    config = AGENTS[agent_type]
-    system_prompt = f"""You are a {agent_type} subagent at {WORKDIR}.
-
-{config["prompt"]}
-
-Complete the task and return a clear, concise summary."""
-    tools = get_tools_for_agent(agent_type)
-    messages: list[MessageParam] = [
-        {"role": "user", "content": prompt},
-    ]
-
-    tool_count = 0
-    interrupted = False
-    response = None
-
-    try:
-        ctx.output.status(f"Preparing {agent_type} agent...")
-        while True:
-            response = client.messages.create(
-                model=MODEL,
-                system=system_prompt,
-                messages=messages,
-                tools=tools,
-                max_tokens=8000,
-                thinking={"type": "enabled", "budget_tokens": MAX_THINKING_TOKENS},
-            )
-
-            if response.stop_reason != "tool_use":
-                break
-
-            tool_calls: list[ToolUseBlock] = [
-                block for block in response.content if isinstance(block, ToolUseBlock)
-            ]
-            results: list[ToolResultBlockParam] = []
-
-            for tool_call in tool_calls:
-                tool_count += 1
-                output = execute_tool(ctx, tool_call.name, tool_call.input)
-                results.append(
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": tool_call.id,
-                        "content": output,
-                    }
-                )
-                ctx.output.status(
-                    f"{get_tool_call_detail(tool_call.name, tool_call.input)}"
-                )
-
-            messages.append({"role": "assistant", "content": response.content})
-            messages.append({"role": "user", "content": results})
-
-    except KeyboardInterrupt:
-        interrupted = True
-        ctx.output.interrupted()
-
-    ctx.output.accent(f"  {tool_count} tools used")
-
-    if interrupted:
-        return f"(subagent interrupted by user after {tool_count} tool calls)"
-
-    if response is not None:
-        for block in response.content:
-            if isinstance(block, TextBlock):
-                return block.text
-
-    return "(subagent returned no text)"
-
-
-def run_skill(skill_name: str) -> str:
-    """
-    Load a skill and inject it into the conversation.
+def run_skill(skill_name: str, skill_loader: SkillLoader) -> str:
+    """Load a skill and inject it into the conversation.
 
     This is the key mechanism:
     1. Get skill content (SKILL.md body + resource hints)
     2. Return it wrapped in <skill-loaded> tags
     3. Model receives this as tool_result (user message)
     4. Model now "knows" how to do the task
+
+    Args:
+        skill_name: Name of the skill to load.
+        skill_loader: Skill loader instance.
+
+    Returns:
+        Skill content or error message.
     """
     content = skill_loader.get_skill(skill_name)
 
@@ -903,17 +922,37 @@ def run_skill(skill_name: str) -> str:
 Follow the instructions in the skill above to complete the user's task."""
 
 
-def execute_tool(ctx: AgentApp, name: str, args: dict[str, object]) -> str:
-    """
-    Dispatch tool call to the appropriate implementation.
+def execute_tool(
+    ui: IAgentUI,
+    name: str,
+    args: dict[str, object],
+    *,
+    workdir: Path,
+    skill_loader: SkillLoader,
+    spawn_subagent: SpawnSubagentFn | None = None,
+    task_manager: TaskManager | None = None,
+) -> str:
+    """Dispatch tool call to the appropriate implementation.
 
     This is the bridge between the model's tool calls and the actual execution.
     Each tool returns a string result that goes back to the model.
+
+    Args:
+        ui: UI interface for output (currently unused but kept for consistency).
+        name: Tool name.
+        args: Tool arguments.
+        workdir: Working directory.
+        skill_loader: Skill loader instance.
+        spawn_subagent: Optional callback to spawn subagents.
+        task_manager: Optional task manager instance.
+
+    Returns:
+        Tool execution result.
     """
     match name:
         case "Bash":
             tool = BashToolCall(name="Bash", command=str(args["command"]))
-            return run_bash(tool.command)
+            return run_bash(tool.command, workdir)
         case "Read":
             limit = args.get("limit")
             tool = ReadToolCall(
@@ -921,12 +960,12 @@ def execute_tool(ctx: AgentApp, name: str, args: dict[str, object]) -> str:
                 path=str(args["path"]),
                 limit=int(limit) if isinstance(limit, (int, float, str)) else None,
             )
-            return run_read(tool.path, tool.limit)
+            return run_read(tool.path, workdir, tool.limit)
         case "Write":
             tool = WriteToolCall(
                 name="Write", path=str(args["path"]), content=str(args["content"])
             )
-            return run_write(tool.path, tool.content)
+            return run_write(tool.path, tool.content, workdir)
         case "Edit":
             tool = EditToolCall(
                 name="Edit",
@@ -934,14 +973,14 @@ def execute_tool(ctx: AgentApp, name: str, args: dict[str, object]) -> str:
                 old_text=str(args["old_text"]),
                 new_text=str(args["new_text"]),
             )
-            return run_edit(tool.path, tool.old_text, tool.new_text)
+            return run_edit(tool.path, tool.old_text, tool.new_text, workdir)
         case "Glob":
             tool = GlobToolCall(
                 name="Glob",
                 pattern=str(args["pattern"]),
                 path=str(args["path"]) if "path" in args else None,
             )
-            return run_glob(tool.pattern, tool.path)
+            return run_glob(tool.pattern, workdir, tool.path)
         case "Grep":
             tool = GrepToolCall(
                 name="Grep",
@@ -960,6 +999,7 @@ def execute_tool(ctx: AgentApp, name: str, args: dict[str, object]) -> str:
             )
             return run_grep(
                 tool.pattern,
+                workdir,
                 tool.path,
                 tool.output_mode if tool.output_mode is not None else "content",
                 tool.glob,
@@ -996,19 +1036,23 @@ def execute_tool(ctx: AgentApp, name: str, args: dict[str, object]) -> str:
             )
             return run_web_fetch(tool.url, tool.prompt)
         case "TaskUpdate":
+            if task_manager is None:
+                return "Error: TaskUpdate not available in this context"
             tasks = cast(list[dict[str, str]], args.get("tasks", []))
             tool = TaskUpdateToolCall(name="TaskUpdate", tasks=tasks)
-            return run_task_update(tool.tasks)
+            return run_task_update(tool.tasks, task_manager)
         case "Task":
+            if spawn_subagent is None:
+                return "Error: Task tool not available in this context"
             tool = TaskToolCall(
                 name="Task",
                 agent_type=str(args["agent_type"]),
                 prompt=str(args["prompt"]),
                 description=str(args["description"]),
             )
-            return run_task(ctx, tool.agent_type, tool.prompt, tool.description)
+            return spawn_subagent(tool.agent_type, tool.prompt, tool.description)
         case "Skill":
             tool = SkillToolCall(name="Skill", skill_name=str(args["skill_name"]))
-            return run_skill(tool.skill_name)
+            return run_skill(tool.skill_name, skill_loader)
         case _:
             return f"Unknown tool: {name}"

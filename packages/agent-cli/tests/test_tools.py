@@ -4,10 +4,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+from agent_cli.subagent import get_tools_for_agent
 from agent_cli.tools import (
     BASE_TOOLS,
     execute_tool,
-    get_tools_for_agent,
     run_bash,
     run_edit,
     run_glob,
@@ -37,7 +37,7 @@ class TestSafePath:
         self, tmp_workdir: Path, path: str, expected_suffix: str
     ) -> None:
         """Valid relative paths should resolve correctly."""
-        result = safe_path(path)
+        result = safe_path(path, tmp_workdir)
         assert result == tmp_workdir / expected_suffix
 
     @pytest.mark.parametrize(
@@ -51,7 +51,7 @@ class TestSafePath:
     def test_safe_path_escape_error(self, tmp_workdir: Path, path: str) -> None:
         """Paths escaping workspace should raise ValueError."""
         with pytest.raises(ValueError, match="Path escapes workspace"):
-            safe_path(path)
+            safe_path(path, tmp_workdir)
 
 
 class TestGetToolsForAgent:
@@ -74,9 +74,9 @@ class TestGetToolsForAgent:
 class TestRunBash:
     """Tests for run_bash() function."""
 
-    def test_bash_normal_command(self) -> None:
+    def test_bash_normal_command(self, tmp_workdir: Path) -> None:
         """Normal commands should return output."""
-        result = run_bash("echo hello")
+        result = run_bash("echo hello", tmp_workdir)
         assert "hello" in result
 
     @pytest.mark.parametrize(
@@ -88,46 +88,52 @@ class TestRunBash:
             "reboot",
         ],
     )
-    def test_bash_dangerous_blocked(self, command: str) -> None:
+    def test_bash_dangerous_blocked(self, tmp_workdir: Path, command: str) -> None:
         """Dangerous commands should be blocked."""
-        result = run_bash(command)
+        result = run_bash(command, tmp_workdir)
         assert "Error: Dangerous command blocked" in result
 
-    def test_bash_timeout(self) -> None:
+    def test_bash_timeout(self, tmp_workdir: Path) -> None:
         """Command that takes too long should timeout."""
-        result = run_bash("sleep 5", timeout=0.1)
+        result = run_bash("sleep 5", tmp_workdir, timeout=0.1)
         assert "Error: Command timed out" in result
 
-    def test_bash_no_command(self) -> None:
+    def test_bash_no_command(self, tmp_workdir: Path) -> None:
         """None command should return error."""
-        result = run_bash(None)  # type: ignore[arg-type]
+        result = run_bash(None, tmp_workdir)  # type: ignore[arg-type]
         assert "Error: Command is required" in result
 
-    def test_bash_no_output(self) -> None:
+    def test_bash_no_output(self, tmp_workdir: Path) -> None:
         """Command with no output should return (no output)."""
-        result = run_bash("true")
+        result = run_bash("true", tmp_workdir)
         assert result == "(no output)"
 
 
 class TestRunRead:
     """Tests for run_read() function."""
 
-    def test_read_normal(self, sample_files: dict[str, Path]) -> None:
+    def test_read_normal(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Normal file read should return content."""
-        result = run_read("simple.txt")
+        result = run_read("simple.txt", tmp_workdir)
         assert "line1" in result
         assert "line5" in result
 
-    def test_read_with_limit(self, sample_files: dict[str, Path]) -> None:
+    def test_read_with_limit(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Reading with limit should truncate output."""
-        result = run_read("simple.txt", limit=2)
+        result = run_read("simple.txt", tmp_workdir, limit=2)
         assert "line1" in result
         assert "... (3 more lines)" in result
         assert "line5" not in result
 
-    def test_read_nested_file(self, sample_files: dict[str, Path]) -> None:
+    def test_read_nested_file(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Reading nested file should work."""
-        result = run_read("subdir/nested.txt")
+        result = run_read("subdir/nested.txt", tmp_workdir)
         assert "nested content" in result
 
     @pytest.mark.parametrize(
@@ -136,7 +142,7 @@ class TestRunRead:
     )
     def test_read_error(self, tmp_workdir: Path, path: str) -> None:
         """Invalid paths should return error."""
-        result = run_read(path)
+        result = run_read(path, tmp_workdir)
         assert "Error" in result
 
 
@@ -145,7 +151,7 @@ class TestRunWrite:
 
     def test_write_new_file(self, tmp_workdir: Path) -> None:
         """Writing new file should create it with correct content."""
-        result = run_write("new_file.txt", "Hello, World!")
+        result = run_write("new_file.txt", "Hello, World!", tmp_workdir)
         assert "Wrote" in result
         assert "13 bytes" in result
 
@@ -155,36 +161,42 @@ class TestRunWrite:
 
     def test_write_create_dirs(self, tmp_workdir: Path) -> None:
         """Writing should create parent directories if needed."""
-        result = run_write("deep/nested/dir/file.txt", "content")
+        result = run_write("deep/nested/dir/file.txt", "content", tmp_workdir)
         assert "Wrote" in result
         assert (tmp_workdir / "deep" / "nested" / "dir" / "file.txt").exists()
 
-    def test_write_overwrite(self, sample_files: dict[str, Path]) -> None:
+    def test_write_overwrite(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Writing existing file should overwrite it."""
-        run_write("simple.txt", "new content")
+        run_write("simple.txt", "new content", tmp_workdir)
         assert sample_files["simple.txt"].read_text(encoding="utf-8") == "new content"
 
     def test_write_outside_workdir(self, tmp_workdir: Path) -> None:
         """Writing outside workspace should return error."""
-        result = run_write("../outside.txt", "content")
+        result = run_write("../outside.txt", "content", tmp_workdir)
         assert "Error" in result
 
 
 class TestRunEdit:
     """Tests for run_edit() function."""
 
-    def test_edit_replace(self, sample_files: dict[str, Path]) -> None:
+    def test_edit_replace(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Editing should replace text correctly."""
-        result = run_edit("simple.txt", "line2", "modified_line2")
+        result = run_edit("simple.txt", "line2", "modified_line2", tmp_workdir)
         assert "Edited" in result
 
         content = sample_files["simple.txt"].read_text(encoding="utf-8")
         assert "modified_line2" in content
         assert "line1" in content
 
-    def test_edit_not_found(self, sample_files: dict[str, Path]) -> None:
+    def test_edit_not_found(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Editing with nonexistent text should return error."""
-        result = run_edit("simple.txt", "nonexistent_text", "replacement")
+        result = run_edit("simple.txt", "nonexistent_text", "replacement", tmp_workdir)
         assert "Error: Text not found" in result
 
     def test_edit_first_occurrence(self, tmp_workdir: Path) -> None:
@@ -192,7 +204,7 @@ class TestRunEdit:
         test_file = tmp_workdir / "repeated.txt"
         test_file.write_text("hello hello hello", encoding="utf-8")
 
-        run_edit("repeated.txt", "hello", "goodbye")
+        run_edit("repeated.txt", "hello", "goodbye", tmp_workdir)
         assert test_file.read_text(encoding="utf-8") == "goodbye hello hello"
 
     @pytest.mark.parametrize(
@@ -201,7 +213,7 @@ class TestRunEdit:
     )
     def test_edit_error(self, tmp_workdir: Path, path: str) -> None:
         """Invalid paths should return error."""
-        result = run_edit(path, "old", "new")
+        result = run_edit(path, "old", "new", tmp_workdir)
         assert "Error" in result
 
 
@@ -216,79 +228,105 @@ class TestRunGlob:
         ],
     )
     def test_glob_match(
-        self, sample_files: dict[str, Path], pattern: str, expected: str
+        self,
+        tmp_workdir: Path,
+        sample_files: dict[str, Path],
+        pattern: str,
+        expected: str,
     ) -> None:
         """Glob should match files with pattern."""
-        result = run_glob(pattern)
+        result = run_glob(pattern, tmp_workdir)
         assert expected in result
 
-    def test_glob_recursive(self, sample_files: dict[str, Path]) -> None:
+    def test_glob_recursive(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Glob with ** should match recursively."""
-        result = run_glob("**/*.py")
+        result = run_glob("**/*.py", tmp_workdir)
         assert "sample.py" in result
         assert "module.py" in result
 
-    def test_glob_no_match(self, sample_files: dict[str, Path]) -> None:
+    def test_glob_no_match(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Glob with no matches should return (no matches)."""
-        result = run_glob("*.nonexistent")
+        result = run_glob("*.nonexistent", tmp_workdir)
         assert result == "(no matches)"
 
-    def test_glob_with_path(self, sample_files: dict[str, Path]) -> None:
+    def test_glob_with_path(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Glob with specific path should search only that directory."""
-        result = run_glob("*.py", "subdir")
+        result = run_glob("*.py", tmp_workdir, "subdir")
         assert "module.py" in result
         assert "sample.py" not in result
 
     def test_glob_outside_workdir(self, tmp_workdir: Path) -> None:
         """Glob outside workspace should return error."""
-        result = run_glob("*", "../")
+        result = run_glob("*", tmp_workdir, "../")
         assert "Error" in result
 
 
 class TestRunGrep:
     """Tests for run_grep() function."""
 
-    def test_grep_content_mode(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_content_mode(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep in content mode should return matching lines with line numbers."""
-        result = run_grep("def hello")
+        result = run_grep("def hello", tmp_workdir)
         assert "sample.py" in result
         assert "def hello" in result
 
-    def test_grep_files_mode(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_files_mode(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep in files_with_matches mode should return only file names."""
-        result = run_grep("def", output_mode="files_with_matches")
+        result = run_grep("def", tmp_workdir, output_mode="files_with_matches")
         assert "sample.py" in result
         assert "def hello" not in result
 
-    def test_grep_count_mode(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_count_mode(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep in count mode should return match counts."""
-        result = run_grep("def", output_mode="count")
+        result = run_grep("def", tmp_workdir, output_mode="count")
         assert "sample.py" in result
 
-    def test_grep_case_insensitive(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_case_insensitive(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep with i=True should be case insensitive."""
-        result = run_grep("HELLO", i=True)
+        result = run_grep("HELLO", tmp_workdir, i=True)
         assert "sample.py" in result
 
-    def test_grep_with_glob_filter(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_with_glob_filter(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep with glob filter should only search matching files."""
-        result = run_grep("content", glob="*.txt")
+        result = run_grep("content", tmp_workdir, glob="*.txt")
         assert "nested.txt" in result
         assert "sample.py" not in result
 
-    def test_grep_head_limit(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_head_limit(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep with head_limit should limit results."""
-        result = run_grep("def", head_limit=1)
+        result = run_grep("def", tmp_workdir, head_limit=1)
         assert len(result.strip().split("\n")) == 1
 
-    def test_grep_invalid_regex(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_invalid_regex(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep with invalid regex should return error."""
-        result = run_grep("[invalid")
+        result = run_grep("[invalid", tmp_workdir)
         assert "Error: Invalid regex pattern" in result
 
-    def test_grep_no_matches(self, sample_files: dict[str, Path]) -> None:
+    def test_grep_no_matches(
+        self, tmp_workdir: Path, sample_files: dict[str, Path]
+    ) -> None:
         """Grep with no matches should return (no matches)."""
-        result = run_grep("xyz123nonexistent")
+        result = run_grep("xyz123nonexistent", tmp_workdir)
         assert result == "(no matches)"
 
 
@@ -398,7 +436,7 @@ class TestTaskUpdate:
             {"content": "Task 1", "status": "pending", "active_form": "Working on 1"},
         ]
 
-        result = run_task_update(tasks)
+        result = run_task_update(tasks, mock_task_manager)
 
         mock_task_manager.update.assert_called_once_with(tasks)
         assert result == "Tasks updated"
@@ -407,7 +445,8 @@ class TestTaskUpdate:
         """Task update error should return error message."""
         mock_task_manager.update.side_effect = ValueError("Invalid status")
         result = run_task_update(
-            [{"content": "Task", "status": "invalid", "active_form": "X"}]
+            [{"content": "Task", "status": "invalid", "active_form": "X"}],
+            mock_task_manager,
         )
         assert "Error" in result
 
@@ -419,7 +458,7 @@ class TestRunSkill:
         """Found skill should return wrapped content."""
         mock_skill_loader.get_skill.return_value = "# Skill Content\nInstructions"
 
-        result = run_skill("test-skill")
+        result = run_skill("test-skill", mock_skill_loader)
 
         mock_skill_loader.get_skill.assert_called_once_with("test-skill")
         assert '<skill-loaded name="test-skill">' in result
@@ -442,7 +481,7 @@ class TestRunSkill:
         mock_skill_loader.get_skill.return_value = None
         mock_skill_loader.list_skills.return_value = available_skills
 
-        result = run_skill("nonexistent")
+        result = run_skill("nonexistent", mock_skill_loader)
 
         assert "Error: Unknown skill" in result
         assert expected_list in result
@@ -451,9 +490,16 @@ class TestRunSkill:
 class TestExecuteTool:
     """Tests for execute_tool() function - verifies tool dispatch."""
 
-    def test_execute_unknown_tool(self) -> None:
+    def test_execute_unknown_tool(
+        self, tmp_workdir: Path, mock_skill_loader: MagicMock
+    ) -> None:
         """Execute unknown tool should return error."""
-        mock_ctx = MagicMock()
-        mock_ctx.output = MagicMock()
-        result = execute_tool(mock_ctx, "UnknownTool", {})
+        mock_ui = MagicMock()
+        result = execute_tool(
+            mock_ui,
+            "UnknownTool",
+            {},
+            workdir=tmp_workdir,
+            skill_loader=mock_skill_loader,
+        )
         assert "Unknown tool: UnknownTool" in result

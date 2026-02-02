@@ -1,6 +1,13 @@
-"""Textual TUI for agent-cli."""
+"""Textual TUI for agent-cli.
 
-from anthropic.types import MessageParam, TextBlockParam
+This module provides the main TUI application that assembles all components
+and implements the ICommandContext interface.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
 from rich.text import Text
 from textual import on, work
 from textual.app import App, ComposeResult
@@ -9,12 +16,14 @@ from textual.geometry import Offset
 from textual.widgets import Footer, Input, RichLog, Static
 from textual_autocomplete import AutoComplete, DropdownItem, TargetState
 
+from .agent import Agent
 from .command import COMMANDS, handle_slash_command
-from .context import load_system_reminder
-from .llm import MODEL, WORKDIR, report_config_errors
-from .output import Output
-from .task import task_manager
-from .workflow import agent_loop, request_interrupt
+from .config import AgentConfig
+from .skill import SkillLoader
+from .system import build_system_prompt
+from .task import TaskManager
+from .tools import build_all_tools
+from .ui_textual import TextualOutput
 
 
 class CommandAutoComplete(AutoComplete):
@@ -34,7 +43,10 @@ class StatusBar(Static):
 
 
 class AgentApp(App[None]):
-    """Main TUI application for agent-cli."""
+    """Main TUI application for agent-cli.
+
+    Implements ICommandContext interface for slash commands.
+    """
 
     CSS_PATH = "tui.tcss"
 
@@ -48,12 +60,75 @@ class AgentApp(App[None]):
 
     def __init__(self) -> None:
         super().__init__()
-        self.output = Output(self)
-        self.history: list[MessageParam] = []
-        self.first_turn = True
-        self._is_running = False
+
+        # Load configuration
+        self.config = AgentConfig.from_settings()
+
+        # Initialize dependencies (non-singleton)
+        self.skill_loader = SkillLoader(self.config.workdir)
+        self.task_manager = TaskManager()
+
+        # UI output (lazy initialization)
+        self._output: TextualOutput | None = None
+
+        # Agent (lazy initialization)
+        self._agent: Agent | None = None
+
+        # State
         self.thinking_history: list[Text] = []
         self.show_thinking = False
+        self._is_running = False
+
+    # ICommandContext implementation
+    @property
+    def ui(self) -> TextualOutput:
+        """Get the UI output interface."""
+        return self.output
+
+    def clear_history(self) -> None:
+        """Clear conversation history and reset state."""
+        self._agent = self._create_agent()
+        self.thinking_history.clear()
+
+    def get_model(self) -> str:
+        """Get the current model name."""
+        return self.config.model
+
+    def get_workdir(self) -> Path:
+        """Get the current working directory."""
+        return self.config.workdir
+
+    def get_skill_loader(self) -> SkillLoader:
+        """Get the skill loader instance."""
+        return self.skill_loader
+
+    @property
+    def output(self) -> TextualOutput:
+        """Get or create the TextualOutput instance."""
+        if self._output is None:
+            self._output = TextualOutput(
+                get_chat_log=lambda: self.query_one("#chat", RichLog),
+                get_status_bar=lambda: self.query_one("#status", StatusBar),
+                get_thinking_log=lambda: self.query_one("#thinking", RichLog),
+                store_thinking=lambda t: self.thinking_history.append(t),
+                is_thinking_view=lambda: self.show_thinking,
+            )
+        return self._output
+
+    def _create_agent(self) -> Agent:
+        """Create a new Agent instance."""
+        system_prompt = build_system_prompt(
+            self.config.workdir,
+            self.skill_loader,
+        )
+        return Agent(
+            ui=self.output,
+            config=self.config,
+            system_prompt=system_prompt,
+            tools=build_all_tools(self.skill_loader),
+            skill_loader=self.skill_loader,
+            task_manager=self.task_manager,
+        )
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
@@ -77,8 +152,16 @@ class AgentApp(App[None]):
 
     def on_mount(self) -> None:
         """Called when app is mounted."""
-        report_config_errors(self)
-        self.output.banner(MODEL, WORKDIR)
+        # Report any config errors
+        self.config.report_errors(self.output)
+
+        # Show banner
+        self.output.banner(self.config.model, self.config.workdir)
+
+        # Create agent
+        self._agent = self._create_agent()
+
+        # Focus input
         self.query_one("#input", Input).focus()
 
     @on(Input.Submitted)
@@ -108,10 +191,9 @@ class AgentApp(App[None]):
                 case "exit":
                     self.exit(return_code=0)
                 case "clear":
-                    self.history.clear()
-                    self.first_turn = True
+                    self.clear_history()
                     self.output.clear()
-                    self.output.banner(MODEL, WORKDIR)
+                    self.output.banner(self.config.model, self.config.workdir)
                 case "continue":
                     pass
             return
@@ -126,21 +208,8 @@ class AgentApp(App[None]):
         self.call_from_thread(self.output.status, "Thinking...")
 
         try:
-            # Build message content
-            content: list[TextBlockParam] = []
-
-            if self.first_turn:
-                system_reminder = load_system_reminder(WORKDIR)
-                if system_reminder:
-                    content.append({"type": "text", "text": system_reminder})
-                content.append({"type": "text", "text": task_manager.INITIAL_REMINDER})
-                self.first_turn = False
-
-            content.append({"type": "text", "text": user_input})
-            self.history.append({"role": "user", "content": content})
-
-            # Run agent loop
-            agent_loop(self, self.history)
+            assert self._agent is not None
+            self._agent.run(user_input)
 
         except Exception as e:
             self.call_from_thread(self.output.error, f"Error: {e}")
@@ -151,14 +220,14 @@ class AgentApp(App[None]):
 
     def action_interrupt(self) -> None:
         """ctrl+c: interrupt agent loop"""
-        if self._is_running:
+        if self._is_running and self._agent is not None:
             self.output.status("Interrupting...")
-            request_interrupt()
+            self._agent.request_interrupt()
 
     def action_clear(self) -> None:
         """ctrl+l: clear terminal screen"""
         self.output.clear()
-        self.output.banner(MODEL, WORKDIR)
+        self.output.banner(self.config.model, self.config.workdir)
 
     def action_toggle_thinking(self) -> None:
         """ctrl+o: toggle thinking view"""

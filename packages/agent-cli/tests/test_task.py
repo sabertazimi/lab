@@ -18,10 +18,6 @@ class TestTask:
 class TestTaskManager:
     """Tests for TaskManager class."""
 
-    @pytest.fixture(autouse=True)
-    def setup(self, clear_singleton: None) -> None:
-        """Ensure fresh TaskManager for each test."""
-
     def test_update_valid_tasks(self) -> None:
         """Valid tasks should be stored and rendered."""
         manager = TaskManager()
@@ -121,9 +117,10 @@ class TestTaskManager:
         assert manager.too_long_without_task()
 
     def test_dict_to_task_strips_whitespace(self) -> None:
-        """dict_to_task should strip whitespace from values."""
+        """_dict_to_task should strip whitespace from values."""
         manager = TaskManager()
-        task = manager.dict_to_task(
+        # pyright: ignore[reportPrivateUsage]
+        task = manager._dict_to_task(  # pyright: ignore[reportPrivateUsage]
             {"content": "  Task  ", "status": "  pending  ", "active_form": "  X  "}
         )
         assert task.content == "Task"
