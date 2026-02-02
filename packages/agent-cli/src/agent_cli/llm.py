@@ -23,20 +23,25 @@ load_dotenv(override=True)
 WORKDIR = Path.cwd()
 CONFIG_FILE = Path.home() / ".claude" / "settings.json"
 
-EnvConfigKey = Literal["ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_MODEL"]
+EnvConfigKey = Literal[
+    "ANTHROPIC_AUTH_TOKEN",
+    "ANTHROPIC_BASE_URL",
+    "ANTHROPIC_MODEL",
+    "MAX_THINKING_TOKENS",
+]
 
 
 class EnvConfig(TypedDict, total=False):
     ANTHROPIC_AUTH_TOKEN: str
     ANTHROPIC_BASE_URL: str
     ANTHROPIC_MODEL: str
+    MAX_THINKING_TOKENS: str
 
 
 class Config(TypedDict, total=False):
     env: EnvConfig
 
 
-# Deferred initialization state
 _env_config: EnvConfig | None = None
 _config_error: str | None = None
 
@@ -64,6 +69,22 @@ def _get_config_value(key: EnvConfigKey, default: str = "") -> str:
     return os.getenv(key, default)
 
 
+def _get_config_int_value(
+    key: EnvConfigKey, default: int, min_value: int | None = None
+) -> int:
+    """Get config value as integer with optional minimum validation."""
+    str_value = _get_config_value(key, "")
+    if not str_value:
+        return default
+    try:
+        value = int(str_value)
+        if min_value is not None and value < min_value:
+            return min_value
+        return value
+    except ValueError:
+        return default
+
+
 def _load_config() -> None:
     """Load config (called on first access)."""
     global _env_config, _config_error
@@ -78,6 +99,9 @@ def report_config_errors(ctx: AgentApp) -> None:
 
 _load_config()
 MODEL = _get_config_value("ANTHROPIC_MODEL", "glm-4.7")
+MAX_THINKING_TOKENS = _get_config_int_value(
+    "MAX_THINKING_TOKENS", 31999, min_value=1024
+)
 
 client = Anthropic(
     api_key=_get_config_value("ANTHROPIC_AUTH_TOKEN"),

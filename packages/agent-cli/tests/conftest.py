@@ -131,3 +131,33 @@ class MyClass:
     files["subdir/module.py"] = nested_py
 
     return files
+
+
+@pytest.fixture
+def mock_output() -> tuple[object, MagicMock]:
+    """
+    Create an Output instance with mocked AgentApp context.
+
+    Returns:
+        A tuple of (Output instance, MagicMock mock_app).
+    """
+    from agent_cli.output import Output
+
+    # Mock the AgentApp context
+    mock_app = MagicMock()
+    mock_app.thinking_history = []
+    mock_app.show_thinking = False
+
+    # Mock query_one to return mock RichLog widgets
+    mock_chat_log = MagicMock()
+    mock_thinking_log = MagicMock()
+
+    def _query_one(selector: str, _cls: object = None) -> MagicMock:
+        return mock_chat_log if selector == "#chat" else mock_thinking_log
+
+    mock_app.query_one.side_effect = _query_one
+
+    # Create Output instance
+    output = Output(mock_app)
+
+    return output, mock_app

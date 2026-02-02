@@ -1,6 +1,7 @@
 """Textual TUI for agent-cli."""
 
 from anthropic.types import MessageParam, TextBlockParam
+from rich.text import Text
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -40,6 +41,7 @@ class AgentApp(App[None]):
     BINDINGS = [
         Binding("ctrl+c", "interrupt", "Interrupt", priority=True),
         Binding("ctrl+l", "clear", "Clear Screen"),
+        Binding("ctrl+o", "toggle_thinking", "Thinking View"),
         Binding("ctrl+q", "none", "No Operation", show=False),
         Binding("ctrl+w", "quit", "Quit", priority=True),
     ]
@@ -50,10 +52,15 @@ class AgentApp(App[None]):
         self.history: list[MessageParam] = []
         self.first_turn = True
         self._is_running = False
+        self.thinking_history: list[Text] = []
+        self.show_thinking = False
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield RichLog(id="chat", highlight=True, markup=True, wrap=True)
+        yield RichLog(
+            id="thinking", highlight=True, markup=True, wrap=True, classes="hidden"
+        )
         yield StatusBar("", id="status")
         input_widget = Input(
             placeholder="Type a message or /help for commands...", id="input"
@@ -152,3 +159,27 @@ class AgentApp(App[None]):
         """ctrl+l: clear terminal screen"""
         self.output.clear()
         self.output.banner(MODEL, WORKDIR)
+
+    def action_toggle_thinking(self) -> None:
+        """ctrl+o: toggle thinking view"""
+        chat_log = self.query_one("#chat", RichLog)
+        thinking_log = self.query_one("#thinking", RichLog)
+
+        self.show_thinking = not self.show_thinking
+
+        if self.show_thinking:
+            # Switch to thinking view
+            chat_log.add_class("hidden")
+            thinking_log.remove_class("hidden")
+            thinking_log.clear()
+            if self.thinking_history:
+                for thinking in self.thinking_history:
+                    thinking_log.write(thinking)
+            else:
+                thinking_log.write("[dim]No thinking content yet.[/]")
+            self.output.status("Thinking View (ctrl+o to return)")
+        else:
+            # Switch back to chat view
+            thinking_log.add_class("hidden")
+            chat_log.remove_class("hidden")
+            self.output.status("Ready" if not self._is_running else "Thinking...")
