@@ -112,7 +112,9 @@ class AgentConfig:
         env_config, config_error = _parse_config(CONFIG_FILE)
 
         return cls(
-            model=_get_config_value(env_config, "ANTHROPIC_MODEL", "glm-4.7"),
+            model=_get_config_value(
+                env_config, "ANTHROPIC_MODEL", "claude-opus-4-5-20251101"
+            ),
             max_thinking_tokens=_get_config_int_value(
                 env_config, "MAX_THINKING_TOKENS", 31999, min_value=1024
             ),

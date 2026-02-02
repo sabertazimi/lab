@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     from .skill import SkillLoader
     from .task import TaskManager
 
-# Type alias for subagent spawning callback
 SpawnSubagentFn = Callable[[str, str, str], str]
 
 
