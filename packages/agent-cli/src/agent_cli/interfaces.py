@@ -72,7 +72,12 @@ class IAgentUI(Protocol):
 
     # Status management
     def status(self, message: str | None, spinning: bool = False) -> None:
-        """Update the status bar."""
+        """Update the status bar.
+
+        Args:
+            message: Status message to display, or None to clear the status.
+            spinning: Whether to show a spinner animation alongside the message.
+        """
         ...
 
     def banner(self, model: str, workdir: Path) -> None:
