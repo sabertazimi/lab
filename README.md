@@ -31,6 +31,8 @@ uv tool install --editable packages/agent-cli
 ac # or `agent-cli`
 ```
 
+[![Cyber Code](./.github/agent-cli.png 'Cyber Code')](https://github.com/sabertazimi/lab/tree/main/packages/agent-cli)
+
 ## Rust
 
 - [Rust Notes](https://lab.tazimi.dev/rust)
