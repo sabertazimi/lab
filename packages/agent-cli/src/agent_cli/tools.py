@@ -791,7 +791,7 @@ def run_task_update(tasks: list[dict[str, str]]) -> str:
         return f"Error: {e}"
 
 
-def run_task(ctx: "AgentApp", agent_type: str, prompt: str, description: str) -> str:
+def run_task(ctx: AgentApp, agent_type: str, prompt: str, description: str) -> str:
     """
     Execute a subagent task with isolated context.
 
@@ -902,7 +902,7 @@ def run_skill(skill_name: str) -> str:
 Follow the instructions in the skill above to complete the user's task."""
 
 
-def execute_tool(ctx: "AgentApp", name: str, args: dict[str, object]) -> str:
+def execute_tool(ctx: AgentApp, name: str, args: dict[str, object]) -> str:
     """
     Dispatch tool call to the appropriate implementation.
 

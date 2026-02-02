@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Experimental prototypes written in Python."
 readme = "README.md"
 authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [ "agent-cli" ]
 
 [dependency-groups]

@@ -1,5 +1,5 @@
 class Singleton(type):
-    _instances: "dict[Singleton, object]" = {}
+    _instances: dict[Singleton, object] = {}
 
     def __call__(cls, *args: object, **kwargs: object):
         """

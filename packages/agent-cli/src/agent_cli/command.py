@@ -25,7 +25,7 @@ def command(name: str, description: str):
 
 
 @command("/help", "Show available commands")
-def cmd_help(ctx: "AgentApp") -> CommandResult:
+def cmd_help(ctx: AgentApp) -> CommandResult:
     """Display all available commands."""
     ctx.output.newline()
     ctx.output.accent("  Available commands:")
@@ -36,13 +36,13 @@ def cmd_help(ctx: "AgentApp") -> CommandResult:
 
 
 @command("/exit", "[bold green](ctrl+w)[/] Exit the program")
-def cmd_exit(ctx: "AgentApp") -> CommandResult:
+def cmd_exit(ctx: AgentApp) -> CommandResult:
     """Exit the program."""
     return "exit"
 
 
 @command("/clear", "Clear conversation history")
-def cmd_clear(ctx: "AgentApp") -> CommandResult:
+def cmd_clear(ctx: AgentApp) -> CommandResult:
     """Clear conversation history and reset state."""
     ctx.output.newline()
     ctx.output.accent("  Conversation cleared")
@@ -51,7 +51,7 @@ def cmd_clear(ctx: "AgentApp") -> CommandResult:
 
 
 @command("/skills", "List loaded skills")
-def cmd_skills(ctx: "AgentApp") -> CommandResult:
+def cmd_skills(ctx: AgentApp) -> CommandResult:
     """Display all loaded skills."""
     ctx.output.newline()
     skills = skill_loader.list_skills()
@@ -70,7 +70,7 @@ def cmd_skills(ctx: "AgentApp") -> CommandResult:
 
 
 @command("/config", "Show config info")
-def cmd_config(ctx: "AgentApp") -> CommandResult:
+def cmd_config(ctx: AgentApp) -> CommandResult:
     """Display current model and working directory."""
     ctx.output.newline()
     ctx.output.accent("  Current configuration:")
@@ -80,7 +80,7 @@ def cmd_config(ctx: "AgentApp") -> CommandResult:
     return "continue"
 
 
-def handle_slash_command(ctx: "AgentApp", user_input: str) -> CommandResult | None:
+def handle_slash_command(ctx: AgentApp, user_input: str) -> CommandResult | None:
     """
     Process user input and handle commands.
 

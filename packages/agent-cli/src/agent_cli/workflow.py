@@ -42,7 +42,7 @@ def is_interrupt_requested() -> bool:
         return _interrupt_requested
 
 
-def agent_loop(ctx: "AgentApp", messages: list[MessageParam]) -> list[MessageParam]:
+def agent_loop(ctx: AgentApp, messages: list[MessageParam]) -> list[MessageParam]:
     """
     This is the pattern that ALL coding agents share:
 

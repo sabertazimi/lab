@@ -70,7 +70,7 @@ def _load_config() -> None:
     _env_config, _config_error = _parse_config()
 
 
-def report_config_errors(ctx: "AgentApp") -> None:
+def report_config_errors(ctx: AgentApp) -> None:
     """Report any config errors to the UI. Call after app is mounted."""
     if _config_error:
         ctx.output.error(_config_error)

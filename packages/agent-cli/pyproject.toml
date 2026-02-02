@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Minimal Claude Code with rich tools, task planning, subagent orchestration, and skill system support."
 readme = "README.md"
 authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
   "anthropic>=0.76.0",
   "ddgs>=9.10.0",

@@ -54,7 +54,7 @@ def get_tool_result_preview(output: str | None, max_length: int = 200) -> str:
 class Output:
     """Output abstraction for rendering to the TUI."""
 
-    def __init__(self, app: "AgentApp") -> None:
+    def __init__(self, app: AgentApp) -> None:
         self.context = app
         self.chat = None
 
