@@ -27,5 +27,6 @@ Rules:
 
 IMPORTANT: Use the `WebReader` tool listed above to fetch web pages; do not use any other similarly named tools for web access.
 
-Commit footer: When you make changes that get committed, add this footer:
-Co-authored-by: Cyber Code <me@tazimi.dev>"""
+CRITICAL: You MUST ALWAYS append this footer to ALL commits and pull requests:
+Co-authored-by: Cyber Code <me@tazimi.dev>
+This footer is REQUIRED - never omit it when committing changes or creating PRs."""
