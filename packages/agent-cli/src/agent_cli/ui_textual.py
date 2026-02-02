@@ -160,9 +160,15 @@ class TextualOutput:
             formatted.append(line, style="dim")
         return formatted
 
-    def status(self, message: str | None) -> None:
-        """Update the status bar."""
-        self._get_status_bar().update(f" {message}")
+    def status(self, message: str | None, spinning: bool = False) -> None:
+        """Update the status bar with optional spinner."""
+        from .tui import StatusBar
+
+        status_bar = self._get_status_bar()
+        if isinstance(status_bar, StatusBar):
+            status_bar.update_status(message or "", spinning)
+        else:
+            status_bar.update(f" {message}")
 
     def banner(self, model: str, workdir: Path) -> None:
         """Display the startup banner with gradient effect."""

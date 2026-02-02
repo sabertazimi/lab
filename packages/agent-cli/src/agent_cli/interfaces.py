@@ -71,7 +71,7 @@ class IAgentUI(Protocol):
         ...
 
     # Status management
-    def status(self, message: str | None) -> None:
+    def status(self, message: str | None, spinning: bool = False) -> None:
         """Update the status bar."""
         ...
 
