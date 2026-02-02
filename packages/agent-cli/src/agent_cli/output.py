@@ -121,6 +121,48 @@ class Output:
         table.add_row("● ", Markdown(text))
         self.text(table)
 
+    def thinking(self, content: str | None, duration: float | None = None) -> None:
+        """Store thinking content and show indicator in chat.
+
+        Thinking content is stored in the app's thinking_history list
+        and can be viewed by pressing ctrl+o to toggle thinking view.
+        """
+        if content is None:
+            return
+
+        # Store in thinking history
+        formatted = self._format_thinking_block(content)
+        self.context.thinking_history.append(formatted)
+
+        # Show indicator in main chat
+        self.newline()
+        duration_str = f" ({duration:.1f}s)" if duration is not None else ""
+        self.text(
+            Text.assemble(
+                ("● ", "blue"),
+                (f"Thinking{duration_str}", "blue"),
+                (" - press ", "dim"),
+                ("ctrl+o", "bold dim"),
+                (" to view details", "dim"),
+            )
+        )
+
+        # If currently in thinking view, update the thinking log
+        if self.context.show_thinking:
+            thinking_log = self.context.query_one("#thinking", RichLog)
+            thinking_log.write(formatted)
+
+    def _format_thinking_block(self, content: str) -> Text:
+        """Format thinking content with blue bullet and indentation."""
+        lines = content.split("\n")
+        formatted = Text()
+        formatted.append("● ", style="blue")
+        formatted.append(lines[0] if lines else "", style="dim")
+        for line in lines[1:]:
+            formatted.append("\n  ", style="")  # 2 spaces indent for alignment
+            formatted.append(line, style="dim")
+        return formatted
+
     def status(self, message: str | None) -> None:
         """Update the status bar."""
         from .tui import StatusBar

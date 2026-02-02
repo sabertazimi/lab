@@ -18,7 +18,7 @@ from anthropic.types import (
 )
 
 from .agent import AGENTS, get_agent_description
-from .llm import MODEL, WORKDIR, client
+from .llm import MAX_THINKING_TOKENS, MODEL, WORKDIR, client
 from .output import get_tool_call_detail
 from .skill import skill_loader
 from .task import task_manager
@@ -833,6 +833,7 @@ Complete the task and return a clear, concise summary."""
                 messages=messages,
                 tools=tools,
                 max_tokens=8000,
+                thinking={"type": "enabled", "budget_tokens": MAX_THINKING_TOKENS},
             )
 
             if response.stop_reason != "tool_use":

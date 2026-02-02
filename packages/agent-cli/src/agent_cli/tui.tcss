@@ -9,6 +9,14 @@ RichLog {
     scrollbar-visibility: hidden;
 }
 
+RichLog.hidden {
+    display: none;
+}
+
+#thinking {
+    background: $surface;
+}
+
 StatusBar {
     padding: 1;
     background: $surface;

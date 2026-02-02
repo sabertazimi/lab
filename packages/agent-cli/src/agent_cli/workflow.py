@@ -1,15 +1,17 @@
 import threading
+import time
 from typing import TYPE_CHECKING
 
 from anthropic.types import (
     MessageParam,
     TextBlock,
     TextBlockParam,
+    ThinkingBlock,
     ToolResultBlockParam,
     ToolUseBlock,
 )
 
-from .llm import MODEL, client
+from .llm import MAX_THINKING_TOKENS, MODEL, client
 from .system import SYSTEM
 from .task import task_manager
 from .tools import ALL_TOOLS, execute_tool
@@ -63,13 +65,16 @@ def agent_loop(ctx: AgentApp, messages: list[MessageParam]) -> list[MessageParam
                 raise KeyboardInterrupt
 
             # Step 1: Call the model
+            start_time = time.time()
             response = client.messages.create(
                 model=MODEL,
                 system=SYSTEM,
                 messages=messages,
                 tools=ALL_TOOLS,
                 max_tokens=8000,
+                thinking={"type": "enabled", "budget_tokens": MAX_THINKING_TOKENS},
             )
+            elapsed_time = time.time() - start_time
 
             # Check for interrupt after API call
             if is_interrupt_requested():
@@ -78,9 +83,11 @@ def agent_loop(ctx: AgentApp, messages: list[MessageParam]) -> list[MessageParam
             # Step 2: Collect any tool calls and print text output
             tool_calls: list[ToolUseBlock] = []
             for block in response.content:
-                if isinstance(block, TextBlock):
+                if isinstance(block, ThinkingBlock):
+                    ctx.output.thinking(block.thinking, duration=elapsed_time)
+                elif isinstance(block, TextBlock):
                     ctx.output.response(block.text)
-                if isinstance(block, ToolUseBlock):
+                elif isinstance(block, ToolUseBlock):
                     tool_calls.append(block)
 
             # Step 3: If not tool calls, task is complete
