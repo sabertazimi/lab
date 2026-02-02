@@ -82,6 +82,13 @@ class StatusBar(Static):
             # One space padding
             self.update(f" {self._message}")
 
+    def on_unmount(self) -> None:
+        """Clean up timer when widget is unmounted."""
+        if self._interval:
+            self._interval.stop()
+            self._interval = None
+        self._spinning = False
+
 
 class AgentApp(App[None]):
     """Main TUI application for agent-cli.
