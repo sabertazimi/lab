@@ -71,7 +71,10 @@ class TestSkillLoader:
         loader = SkillLoader(skills_dir, Path("/nonexistent"))
 
         assert "test-skill" in loader.skills
-        assert loader.skills["test-skill"]["description"] == "A test skill for unit testing"
+        assert (
+            loader.skills["test-skill"]["description"]
+            == "A test skill for unit testing"
+        )
 
     def test_load_skills_empty_dir(self, tmp_path: Path) -> None:
         """load_skills should handle empty or nonexistent directory."""
@@ -92,22 +95,42 @@ class TestSkillLoader:
         loader = SkillLoader(tmp_path / "nonexistent", Path("/nonexistent"))
         assert loader.get_descriptions() == "(no skills available)"
 
-    def test_get_skill_found(self, skills_dir: Path, valid_skill: Path) -> None:
-        """get_skill should return full content for existing skill."""
+    def test_get_skill_body_with_h1(self, skills_dir: Path, valid_skill: Path) -> None:
+        """get_skill should use body directly when it starts with H1."""
         loader = SkillLoader(skills_dir, Path("/nonexistent"))
 
         result = loader.get_skill("test-skill")
 
         assert result is not None
-        assert "# Skill: test-skill" in result
-        assert "# Test Skill" in result
+        assert result.startswith("# Test Skill")
+        assert "This is the body of the test skill." in result
+        assert "# Skill:" not in result
+
+    def test_get_skill_body_without_h1(self, skills_dir: Path) -> None:
+        """get_skill should add '# Skill: name' prefix when body lacks H1."""
+        skill_dir = skills_dir / "no-h1-skill"
+        skill_dir.mkdir()
+        (skill_dir / "SKILL.md").write_text(
+            "---\nname: no-h1-skill\ndescription: Skill without H1\n---\n\nJust plain text body.",
+            encoding="utf-8",
+            newline="\n",
+        )
+        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+
+        result = loader.get_skill("no-h1-skill")
+
+        assert result is not None
+        assert result.startswith("# Skill: no-h1-skill")
+        assert "Just plain text body." in result
 
     def test_get_skill_not_found(self, skills_dir: Path) -> None:
         """get_skill should return None for nonexistent skill."""
         loader = SkillLoader(skills_dir, Path("/nonexistent"))
         assert loader.get_skill("nonexistent") is None
 
-    def test_get_skill_with_resources(self, skills_dir: Path, valid_skill: Path) -> None:
+    def test_get_skill_with_resources(
+        self, skills_dir: Path, valid_skill: Path
+    ) -> None:
         """get_skill should list available resources."""
         # Create resource directories
         skill_dir = valid_skill.parent
