@@ -2,6 +2,8 @@
 
 Minimal Claude Code with rich tools, task planning, subagent orchestration, and skill system support.
 
+![Cyber Code](../../.github/agent-cli.png 'Cyber Code')
+
 ## Getting Started
 
 ```bash

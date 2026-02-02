@@ -3,7 +3,8 @@
 from unittest.mock import MagicMock
 
 import pytest
-from agent_cli.output import Output, get_tool_call_detail, get_tool_result_preview
+from agent_cli.output import get_tool_call_detail, get_tool_result_preview
+from agent_cli.ui_textual import TextualOutput
 from rich.text import Text
 
 
@@ -75,25 +76,39 @@ class TestGetToolResultPreview:
         assert result.endswith("content")
 
 
-class TestOutputThinking:
-    """Tests for Output.thinking() method."""
+class TestTextualOutputThinking:
+    """Tests for TextualOutput.thinking() method."""
 
     @pytest.fixture(autouse=True)
-    def setup(self, mock_output: tuple[Output, MagicMock]) -> None:
+    def setup(self) -> None:
         """Set up output instance for each test."""
-        self.output, self.mock_app = mock_output
+        # Create mocks for callbacks
+        self.mock_chat_log = MagicMock()
+        self.mock_status_bar = MagicMock()
+        self.mock_thinking_log = MagicMock()
+        self.thinking_history: list[Text] = []
+        self.show_thinking = False
+
+        # Create TextualOutput with callback functions
+        self.output = TextualOutput(
+            get_chat_log=lambda: self.mock_chat_log,
+            get_status_bar=lambda: self.mock_status_bar,
+            get_thinking_log=lambda: self.mock_thinking_log,
+            store_thinking=lambda t: self.thinking_history.append(t),
+            is_thinking_view=lambda: self.show_thinking,
+        )
 
     def test_thinking_none_content(self) -> None:
         """None content should return early without side effects."""
         self.output.thinking(None)
-        assert len(self.mock_app.thinking_history) == 0
+        assert len(self.thinking_history) == 0
 
     def test_thinking_single_line(self) -> None:
         """Single-line content should be formatted and stored."""
         content = "Single line thinking"
         self.output.thinking(content)
-        assert len(self.mock_app.thinking_history) == 1
-        history_entry = self.mock_app.thinking_history[0]
+        assert len(self.thinking_history) == 1
+        history_entry = self.thinking_history[0]
         assert isinstance(history_entry, Text)
         assert "Single line thinking" in history_entry.plain
 
@@ -101,8 +116,8 @@ class TestOutputThinking:
         """Multi-line content should have proper indentation."""
         content = "First line\nSecond line\nThird line"
         self.output.thinking(content)
-        assert len(self.mock_app.thinking_history) == 1
-        history_entry = self.mock_app.thinking_history[0]
+        assert len(self.thinking_history) == 1
+        history_entry = self.thinking_history[0]
         plain = history_entry.plain
         assert "First line" in plain
         assert "Second line" in plain
@@ -113,48 +128,48 @@ class TestOutputThinking:
         content = "Thinking with duration"
         duration = 1.5
         self.output.thinking(content, duration=duration)
-        assert len(self.mock_app.thinking_history) == 1
+        assert len(self.thinking_history) == 1
         # Check that the chat log was written with duration info
-        mock_chat_log = self.mock_app.query_one("#chat")
-        assert mock_chat_log.write.called
-        written_text = str(mock_chat_log.write.call_args)
+        assert self.mock_chat_log.write.called
+        written_text = str(self.mock_chat_log.write.call_args)
         assert "1.5s" in written_text or "1.5" in written_text
 
     def test_thinking_history_updated(self) -> None:
         """thinking_history should contain formatted content."""
         content = "Test thinking content"
         self.output.thinking(content)
-        assert len(self.mock_app.thinking_history) == 1
-        history_entry = self.mock_app.thinking_history[0]
+        assert len(self.thinking_history) == 1
+        history_entry = self.thinking_history[0]
         assert isinstance(history_entry, Text)
         # Should have blue bullet indicator
         assert "Test thinking content" in history_entry.plain
 
     def test_thinking_updates_log_when_visible(self) -> None:
         """When show_thinking=True, log should be updated."""
-        self.mock_app.show_thinking = True
+        self.show_thinking = True
         content = "Thinking when visible"
         self.output.thinking(content)
         # Check that thinking log was written to
-        mock_thinking_log = self.mock_app.query_one("#thinking")
-        assert mock_thinking_log.write.called
+        assert self.mock_thinking_log.write.called
 
     def test_thinking_multiple_calls(self) -> None:
         """Multiple calls should append to history."""
         self.output.thinking("First thought")
         self.output.thinking("Second thought")
         self.output.thinking("Third thought")
-        assert len(self.mock_app.thinking_history) == 3
+        assert len(self.thinking_history) == 3
 
     def test_format_thinking_block_empty(self) -> None:
         """Empty content should handle gracefully."""
-        result = self.output.format_thinking_block("")
+        # pyright: ignore[reportPrivateUsage]
+        result = self.output._format_thinking_block("")  # pyright: ignore[reportPrivateUsage]
         assert isinstance(result, Text)
 
     def test_format_thinking_block_single_line(self) -> None:
         """Single line should have blue bullet."""
         content = "Single line"
-        result = self.output.format_thinking_block(content)
+        # pyright: ignore[reportPrivateUsage]
+        result = self.output._format_thinking_block(content)  # pyright: ignore[reportPrivateUsage]
         assert isinstance(result, Text)
         plain = result.plain
         assert "Single line" in plain
@@ -162,7 +177,8 @@ class TestOutputThinking:
     def test_format_thinking_block_multiline(self) -> None:
         """Multi-line should have proper indentation."""
         content = "Line 1\nLine 2\nLine 3"
-        result = self.output.format_thinking_block(content)
+        # pyright: ignore[reportPrivateUsage]
+        result = self.output._format_thinking_block(content)  # pyright: ignore[reportPrivateUsage]
         assert isinstance(result, Text)
         plain = result.plain
         assert "Line 1" in plain

@@ -9,16 +9,19 @@ from agent_cli.skill import SkillLoader
 class TestSkillLoader:
     """Tests for SkillLoader class."""
 
-    @pytest.fixture(autouse=True)
-    def setup(self, clear_singleton: None) -> None:
-        """Ensure fresh SkillLoader for each test."""
+    @pytest.fixture
+    def workdir(self, tmp_path: Path) -> Path:
+        """Create a temporary working directory with .claude/skills structure."""
+        workdir = tmp_path / "workdir"
+        workdir.mkdir()
+        skills_dir = workdir / ".claude" / "skills"
+        skills_dir.mkdir(parents=True)
+        return workdir
 
     @pytest.fixture
-    def skills_dir(self, tmp_path: Path) -> Path:
-        """Create a temporary skills directory."""
-        skills = tmp_path / "skills"
-        skills.mkdir()
-        return skills
+    def skills_dir(self, workdir: Path) -> Path:
+        """Get the skills directory path."""
+        return workdir / ".claude" / "skills"
 
     @pytest.fixture
     def valid_skill(self, skills_dir: Path) -> Path:
@@ -33,9 +36,11 @@ class TestSkillLoader:
         )
         return skill_md
 
-    def test_parse_skill_valid(self, skills_dir: Path, valid_skill: Path) -> None:
+    def test_parse_skill_valid(
+        self, workdir: Path, skills_dir: Path, valid_skill: Path
+    ) -> None:
         """parse_skill should extract metadata and body from valid SKILL.md."""
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
 
         skill = loader.parse_skill(valid_skill)
 
@@ -66,9 +71,11 @@ class TestSkillLoader:
         loader = SkillLoader(tmp_path, Path("/nonexistent"))
         assert loader.parse_skill(skill_md) is None
 
-    def test_load_skills_from_dir(self, skills_dir: Path, valid_skill: Path) -> None:
+    def test_load_skills_from_dir(
+        self, workdir: Path, skills_dir: Path, valid_skill: Path
+    ) -> None:
         """load_skills should load valid skills from directory."""
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
 
         assert "test-skill" in loader.skills
         assert (
@@ -81,9 +88,11 @@ class TestSkillLoader:
         loader = SkillLoader(tmp_path / "nonexistent", Path("/nonexistent"))
         assert loader.skills == {}
 
-    def test_get_descriptions(self, skills_dir: Path, valid_skill: Path) -> None:
+    def test_get_descriptions(
+        self, workdir: Path, skills_dir: Path, valid_skill: Path
+    ) -> None:
         """get_descriptions should return formatted skill list."""
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
 
         result = loader.get_descriptions()
 
@@ -95,9 +104,11 @@ class TestSkillLoader:
         loader = SkillLoader(tmp_path / "nonexistent", Path("/nonexistent"))
         assert loader.get_descriptions() == "(no skills available)"
 
-    def test_get_skill_body_with_h1(self, skills_dir: Path, valid_skill: Path) -> None:
+    def test_get_skill_body_with_h1(
+        self, workdir: Path, skills_dir: Path, valid_skill: Path
+    ) -> None:
         """get_skill should use body directly when it starts with H1."""
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
 
         result = loader.get_skill("test-skill")
 
@@ -106,7 +117,7 @@ class TestSkillLoader:
         assert "This is the body of the test skill." in result
         assert "# Skill:" not in result
 
-    def test_get_skill_body_without_h1(self, skills_dir: Path) -> None:
+    def test_get_skill_body_without_h1(self, workdir: Path, skills_dir: Path) -> None:
         """get_skill should add '# Skill: name' prefix when body lacks H1."""
         skill_dir = skills_dir / "no-h1-skill"
         skill_dir.mkdir()
@@ -115,7 +126,7 @@ class TestSkillLoader:
             encoding="utf-8",
             newline="\n",
         )
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
 
         result = loader.get_skill("no-h1-skill")
 
@@ -123,13 +134,13 @@ class TestSkillLoader:
         assert result.startswith("# Skill: no-h1-skill")
         assert "Just plain text body." in result
 
-    def test_get_skill_not_found(self, skills_dir: Path) -> None:
+    def test_get_skill_not_found(self, workdir: Path, skills_dir: Path) -> None:
         """get_skill should return None for nonexistent skill."""
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
         assert loader.get_skill("nonexistent") is None
 
     def test_get_skill_with_resources(
-        self, skills_dir: Path, valid_skill: Path
+        self, workdir: Path, skills_dir: Path, valid_skill: Path
     ) -> None:
         """get_skill should list available resources."""
         # Create resource directories
@@ -138,7 +149,7 @@ class TestSkillLoader:
         scripts_dir.mkdir()
         (scripts_dir / "setup.sh").write_text("#!/bin/bash", encoding="utf-8")
 
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
         result = loader.get_skill("test-skill")
 
         assert result is not None
@@ -146,9 +157,11 @@ class TestSkillLoader:
         assert "Scripts" in result
         assert "setup.sh" in result
 
-    def test_list_skills(self, skills_dir: Path, valid_skill: Path) -> None:
+    def test_list_skills(
+        self, workdir: Path, skills_dir: Path, valid_skill: Path
+    ) -> None:
         """list_skills should return list of skill names."""
-        loader = SkillLoader(skills_dir, Path("/nonexistent"))
+        loader = SkillLoader(workdir, Path("/nonexistent"))
         assert loader.list_skills() == ["test-skill"]
 
     def test_list_skills_empty(self, tmp_path: Path) -> None:

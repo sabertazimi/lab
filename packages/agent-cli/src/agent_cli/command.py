@@ -1,21 +1,29 @@
+"""Slash command system for agent-cli.
+
+This module provides the command registry and handlers for slash commands.
+Commands use the ICommandContext interface instead of direct AgentApp reference.
+"""
+
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Literal
 
-from .llm import MODEL, WORKDIR
-from .skill import skill_loader
-
 if TYPE_CHECKING:
-    from .tui import AgentApp
+    from .interfaces import ICommandContext
 
 type CommandResult = Literal["continue", "exit", "clear"]
-type CommandHandler = Callable[["AgentApp"], CommandResult]
+type CommandHandler = Callable[["ICommandContext"], CommandResult]
 
 # Command registry: command name -> (handler, description)
 COMMANDS: dict[str, tuple[CommandHandler, str]] = {}
 
 
 def command(name: str, description: str):
-    """Decorator to register a command."""
+    """Decorator to register a command.
+
+    Args:
+        name: Command name (e.g., "/help").
+        description: Command description for help display.
+    """
 
     def decorator(func: CommandHandler) -> CommandHandler:
         COMMANDS[name] = (func, description)
@@ -25,72 +33,72 @@ def command(name: str, description: str):
 
 
 @command("/help", "Show available commands")
-def cmd_help(ctx: AgentApp) -> CommandResult:
+def cmd_help(ctx: ICommandContext) -> CommandResult:
     """Display all available commands."""
-    ctx.output.newline()
-    ctx.output.accent("  Available commands:")
+    ctx.ui.newline()
+    ctx.ui.accent("  Available commands:")
     for cmd_name, (_, desc) in sorted(COMMANDS.items()):
-        ctx.output.text(f"  {cmd_name:<12} {desc}")
-    ctx.output.newline()
+        ctx.ui.text(f"  {cmd_name:<12} {desc}")
+    ctx.ui.newline()
     return "continue"
 
 
 @command("/exit", "[bold green](ctrl+w)[/] Exit the program")
-def cmd_exit(ctx: AgentApp) -> CommandResult:
+def cmd_exit(ctx: ICommandContext) -> CommandResult:
     """Exit the program."""
     return "exit"
 
 
 @command("/clear", "Clear conversation history")
-def cmd_clear(ctx: AgentApp) -> CommandResult:
+def cmd_clear(ctx: ICommandContext) -> CommandResult:
     """Clear conversation history and reset state."""
-    ctx.output.newline()
-    ctx.output.accent("  Conversation cleared")
-    ctx.output.newline()
+    ctx.ui.newline()
+    ctx.ui.accent("  Conversation cleared")
+    ctx.ui.newline()
     return "clear"
 
 
 @command("/skills", "List loaded skills")
-def cmd_skills(ctx: AgentApp) -> CommandResult:
+def cmd_skills(ctx: ICommandContext) -> CommandResult:
     """Display all loaded skills."""
-    ctx.output.newline()
+    ctx.ui.newline()
+    skill_loader = ctx.get_skill_loader()
     skills = skill_loader.list_skills()
     if not skills:
-        ctx.output.accent("  No skills loaded")
+        ctx.ui.accent("  No skills loaded")
     else:
-        ctx.output.accent(f"  Loaded skills ({len(skills)}):")
+        ctx.ui.accent(f"  Loaded skills ({len(skills)}):")
         for name in skills:
             skill = skill_loader.skills.get(name)
             if skill:
                 tokens = len(name + skill["description"]) // 4
-                ctx.output.text(f"  {name} · ~{tokens} tokens")
+                ctx.ui.text(f"  {name} · ~{tokens} tokens")
 
-    ctx.output.newline()
+    ctx.ui.newline()
     return "continue"
 
 
 @command("/config", "Show config info")
-def cmd_config(ctx: AgentApp) -> CommandResult:
+def cmd_config(ctx: ICommandContext) -> CommandResult:
     """Display current model and working directory."""
-    ctx.output.newline()
-    ctx.output.accent("  Current configuration:")
-    ctx.output.text(f"  Model:    {MODEL}")
-    ctx.output.text(f"  Workdir:  {WORKDIR}")
-    ctx.output.newline()
+    ctx.ui.newline()
+    ctx.ui.accent("  Current configuration:")
+    ctx.ui.text(f"  Model:    {ctx.get_model()}")
+    ctx.ui.text(f"  Workdir:  {ctx.get_workdir()}")
+    ctx.ui.newline()
     return "continue"
 
 
-def handle_slash_command(ctx: AgentApp, user_input: str) -> CommandResult | None:
-    """
-    Process user input and handle commands.
+def handle_slash_command(ctx: ICommandContext, user_input: str) -> CommandResult | None:
+    """Process user input and handle commands.
 
     Args:
-        ctx: The AgentApp instance
-        user_input: The raw user input string
+        ctx: The command context implementing ICommandContext.
+        user_input: The raw user input string.
 
     Returns:
-        - None if input is not a command (doesn't start with /)
-        - CommandResult signal for main loop control
+        None if input is not a command (doesn't start with /).
+        CommandResult signal for main loop control otherwise.
     """
     if not user_input.startswith("/"):
         return None
@@ -102,6 +110,6 @@ def handle_slash_command(ctx: AgentApp, user_input: str) -> CommandResult | None
         return handler(ctx)
 
     # Unknown command: show help
-    ctx.output.newline()
-    ctx.output.error(f"  Unknown command: {cmd}")
+    ctx.ui.newline()
+    ctx.ui.error(f"  Unknown command: {cmd}")
     return cmd_help(ctx)

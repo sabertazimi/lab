@@ -1,16 +1,19 @@
+"""Skill system for agent-cli.
+
+This module provides the SkillLoader class for loading and managing skills
+from SKILL.md files. The singleton pattern has been removed to support
+dependency injection.
+"""
+
 import json
 import re
 from pathlib import Path
 from typing import TypedDict
 
-from .llm import WORKDIR
-from .singleton import Singleton
-
-SKILLS_DIR = WORKDIR / ".claude" / "skills"
-PLUGINS_DIR = Path.home() / ".claude" / "plugins"
-
 
 class Skill(TypedDict):
+    """Skill definition loaded from SKILL.md."""
+
     name: str
     description: str
     body: str
@@ -18,26 +21,39 @@ class Skill(TypedDict):
     dir: Path
 
 
-class SkillLoader(metaclass=Singleton):
-    """
-    Loads and manages skills from SKILL.md files.
+class SkillLoader:
+    """Loads and manages skills from SKILL.md files.
 
     The YAML frontmatter provides metadata (name, description).
     The markdown body provides detailed instructions.
+
+    Attributes:
+        skills_dir: Directory for local skills.
+        plugins_dir: Directory for Claude Code Plugins.
+        skills: Dictionary of loaded skills.
     """
 
-    def __init__(self, skills_dir: Path, plugins_dir: Path):
-        self.skills_dir = skills_dir
-        self.plugins_dir = plugins_dir
+    def __init__(self, workdir: Path, plugins_dir: Path | None = None) -> None:
+        """Initialize the skill loader.
+
+        Args:
+            workdir: Working directory. Skills are loaded from {workdir}/.claude/skills.
+            plugins_dir: Claude Code Plugins directory (default: ~/.claude/plugins).
+        """
+        self.skills_dir = workdir / ".claude" / "skills"
+        self.plugins_dir = plugins_dir or Path.home() / ".claude" / "plugins"
         self.skills: dict[str, Skill] = {}
         self.load_skills()
 
     def parse_skill(self, path: Path) -> Skill | None:
-        """
-        Parse a SKILL.md file into metadata and body.
+        """Parse a SKILL.md file into metadata and body.
 
-        Returns dict with: name, description, body, path, dir
-        Returns None if file doesn't match format.
+        Args:
+            path: Path to the SKILL.md file.
+
+        Returns:
+            Skill dict with name, description, body, path, dir.
+            None if file doesn't match expected format.
         """
         content = path.read_text(encoding="utf-8", newline="\n")
 
@@ -64,9 +80,8 @@ class SkillLoader(metaclass=Singleton):
             "dir": path.parent,
         }
 
-    def load_skills(self):
-        """
-        Load skills from local directory and Claude Code Plugins.
+    def load_skills(self) -> None:
+        """Load skills from local directory and Claude Code Plugins.
 
         Local skills are loaded first and have priority over plugin skills.
         Only loads metadata at startup - body is loaded on-demand.
@@ -75,11 +90,13 @@ class SkillLoader(metaclass=Singleton):
         self._load_skills_from_dir(self.skills_dir)
         self._load_plugin_skills()
 
-    def _load_skills_from_dir(self, skills_dir: Path):
-        """
-        Scan a skills directory and load all valid SKILL.md files.
+    def _load_skills_from_dir(self, skills_dir: Path) -> None:
+        """Scan a skills directory and load all valid SKILL.md files.
 
         Won't override existing skills with the same name.
+
+        Args:
+            skills_dir: Directory to scan for skills.
         """
         if not skills_dir.exists():
             return
@@ -96,9 +113,8 @@ class SkillLoader(metaclass=Singleton):
             if skill and skill["name"] not in self.skills:
                 self.skills[skill["name"]] = skill
 
-    def _load_plugin_skills(self):
-        """
-        Load skills from Claude Code Plugins.
+    def _load_plugin_skills(self) -> None:
+        """Load skills from Claude Code Plugins.
 
         Reads installed_plugins.json to find plugin install paths,
         then loads skills from each plugin's skills directory.
@@ -121,11 +137,13 @@ class SkillLoader(metaclass=Singleton):
                 self._load_skills_from_dir(skills_dir)
 
     def get_descriptions(self) -> str:
-        """
-        Generate skill descriptions for system prompt.
+        """Generate skill descriptions for system prompt.
 
         This is Layer 1 - only name and description, ~100 tokens per skill.
         Full content (Layer 2) is loaded only when Skill tool is called.
+
+        Returns:
+            Formatted string of skill descriptions.
         """
         if not self.skills:
             return "(no skills available)"
@@ -135,13 +153,16 @@ class SkillLoader(metaclass=Singleton):
         )
 
     def get_skill(self, name: str) -> str | None:
-        """
-        Get full skill content for injection.
+        """Get full skill content for injection.
 
         This is Layer 2 - the complete SKILL.md body, plus any available
         resources (Layer 3 hints).
 
-        Returns None if skill not found.
+        Args:
+            name: Skill name to load.
+
+        Returns:
+            Full skill content, or None if skill not found.
         """
         if name not in self.skills:
             return None
@@ -174,8 +195,9 @@ class SkillLoader(metaclass=Singleton):
         return content
 
     def list_skills(self) -> list[str]:
-        """Return list of available skill names."""
+        """Return list of available skill names.
+
+        Returns:
+            List of skill names.
+        """
         return list(self.skills.keys())
-
-
-skill_loader = SkillLoader(SKILLS_DIR, PLUGINS_DIR)

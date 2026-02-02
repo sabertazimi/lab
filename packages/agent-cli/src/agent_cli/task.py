@@ -1,6 +1,10 @@
-from typing import Literal, cast
+"""Task management for agent-cli.
 
-from .singleton import Singleton
+This module provides the TaskManager class for tracking multi-step tasks.
+The singleton pattern has been removed to support dependency injection.
+"""
+
+from typing import Literal, cast
 
 type TaskStatus = Literal["pending", "in_progress", "completed"]
 
@@ -8,15 +12,14 @@ type TaskStatus = Literal["pending", "in_progress", "completed"]
 class Task:
     """A task to be completed."""
 
-    def __init__(self, content: str, status: TaskStatus, active_form: str):
+    def __init__(self, content: str, status: TaskStatus, active_form: str) -> None:
         self.content = content
         self.status = status
         self.active_form = active_form
 
 
-class TaskManager(metaclass=Singleton):
-    """
-    Manages a structured task list with enforced constraints.
+class TaskManager:
+    """Manages a structured task list with enforced constraints.
 
     Key Design Decisions:
     --------------------
@@ -38,13 +41,13 @@ class TaskManager(metaclass=Singleton):
     )
     MAX_TASKS = 20
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize an empty task manager."""
         self.tasks: list[Task] = []
         self.rounds_without_task = 0
 
     def update(self, tasks: list[dict[str, str]]) -> str:
-        """
-        Validate and update the task list.
+        """Validate and update the task list.
 
         The model sends a complete new list each time. We validate it,
         store it, and return a rendered view that the model will see.
@@ -55,14 +58,20 @@ class TaskManager(metaclass=Singleton):
         - Only ONE task can be in_progress at a time
         - Maximum 20 tasks allowed
 
+        Args:
+            tasks: List of task dictionaries.
+
         Returns:
-            Rendered text view of the task list
+            Rendered text view of the task list.
+
+        Raises:
+            ValueError: If validation fails.
         """
         validated_tasks: list[Task] = []
         in_progress_count = 0
 
         for i, task in enumerate(tasks):
-            resolved_task = self.dict_to_task(task)
+            resolved_task = self._dict_to_task(task)
             content = resolved_task.content
             status = resolved_task.status
             active_form = resolved_task.active_form
@@ -88,11 +97,10 @@ class TaskManager(metaclass=Singleton):
         return self.render()
 
     def render(self) -> str:
-        """
-        Render the task list as human-readable text.
+        """Render the task list as human-readable text.
 
         Format:
-            ☑ Completed task
+            ✔ Completed task
             ▣ In progress task <- Doing something...
             ☐ Pending task
 
@@ -100,6 +108,9 @@ class TaskManager(metaclass=Singleton):
 
         This rendered text is what the model sees as the tool result.
         It can then update the list based on its current state.
+
+        Returns:
+            Rendered task list string.
         """
         if not self.tasks:
             return "No tasks"
@@ -120,23 +131,32 @@ class TaskManager(metaclass=Singleton):
         return "\n".join(lines)
 
     def increment(self) -> None:
-        """Increment the number of rounds without a task."""
+        """Increment the number of rounds without a task update."""
         self.rounds_without_task += 1
 
     def reset(self) -> None:
-        """Reset the number of rounds without a task."""
+        """Reset the number of rounds without a task update."""
         self.rounds_without_task = 0
 
     def too_long_without_task(self) -> bool:
-        """Check if the agent has been working on tasks for too long."""
+        """Check if the agent has gone too long without updating tasks.
+
+        Returns:
+            True if more than 10 rounds without task update.
+        """
         return self.rounds_without_task > 10
 
-    def dict_to_task(self, task: dict[str, str]) -> Task:
+    def _dict_to_task(self, task: dict[str, str]) -> Task:
+        """Convert a dictionary to a Task object.
+
+        Args:
+            task: Task dictionary with content, status, active_form.
+
+        Returns:
+            Task object.
+        """
         return Task(
             content=str(task.get("content", "")).strip(),
             status=cast(TaskStatus, str(task.get("status", "pending")).strip()),
             active_form=str(task.get("active_form", "")).strip(),
         )
-
-
-task_manager = TaskManager()
