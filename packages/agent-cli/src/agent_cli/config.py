@@ -6,8 +6,6 @@ Configuration priority:
 3. Default constants
 """
 
-from __future__ import annotations
-
 import json
 import os
 from dataclasses import dataclass

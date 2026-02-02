@@ -5,8 +5,6 @@ from SKILL.md files. The singleton pattern has been removed to support
 dependency injection.
 """
 
-from __future__ import annotations
-
 import json
 import re
 from pathlib import Path

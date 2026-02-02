@@ -4,8 +4,6 @@ This module provides the TextualOutput class that implements the IAgentUI protoc
 using the Textual framework for terminal UI.
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from pathlib import Path
 from typing import cast

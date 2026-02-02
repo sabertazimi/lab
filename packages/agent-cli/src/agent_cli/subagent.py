@@ -3,8 +3,6 @@
 This module defines the available agent types for subagent spawning.
 """
 
-from __future__ import annotations
-
 from anthropic.types import ToolParam
 
 from .tools import BASE_TOOLS

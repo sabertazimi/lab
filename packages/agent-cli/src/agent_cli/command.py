@@ -4,8 +4,6 @@ This module provides the command registry and handlers for slash commands.
 Commands use the ICommandContext interface instead of direct AgentApp reference.
 """
 
-from __future__ import annotations
-
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Literal
 

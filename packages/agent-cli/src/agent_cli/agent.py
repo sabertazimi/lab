@@ -4,8 +4,6 @@ This module contains the Agent class that manages conversation and tool executio
 It consolidates the logic from workflow.py into an object-oriented design.
 """
 
-from __future__ import annotations
-
 import threading
 import time
 from collections.abc import Callable

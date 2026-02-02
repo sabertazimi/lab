@@ -4,8 +4,6 @@ This module provides the main TUI application that assembles all components
 and implements the ICommandContext interface.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 from rich.text import Text

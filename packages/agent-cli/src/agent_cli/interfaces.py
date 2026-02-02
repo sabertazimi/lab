@@ -4,8 +4,6 @@ This module defines the Protocol interfaces that enable loose coupling
 between the Agent core and UI implementations.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 

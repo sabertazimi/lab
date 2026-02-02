@@ -4,8 +4,6 @@ This module defines all available tools and their execution logic.
 Tools are decoupled from global state and accept dependencies as parameters.
 """
 
-from __future__ import annotations
-
 import fnmatch
 import functools
 import os

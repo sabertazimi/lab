@@ -4,8 +4,6 @@ This module provides functions to build the system prompt dynamically,
 accepting dependencies as parameters instead of using global state.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 from typing import TYPE_CHECKING
 

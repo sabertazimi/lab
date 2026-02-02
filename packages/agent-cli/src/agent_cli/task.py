@@ -4,8 +4,6 @@ This module provides the TaskManager class for tracking multi-step tasks.
 The singleton pattern has been removed to support dependency injection.
 """
 
-from __future__ import annotations
-
 from typing import Literal, cast
 
 type TaskStatus = Literal["pending", "in_progress", "completed"]
