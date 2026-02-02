@@ -147,7 +147,10 @@ class SkillLoader(metaclass=Singleton):
             return None
 
         skill = self.skills[name]
-        content = f"# Skill: {skill['name']}\n\n{skill['body']}"
+        if skill["body"].startswith("# "):
+            content = skill["body"]
+        else:
+            content = f"# Skill: {skill['name']}\n\n{skill['body']}"
 
         # Layer 3 hints: list available resources in skill directory
         resources: list[str] = []
