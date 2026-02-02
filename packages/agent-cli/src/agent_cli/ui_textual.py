@@ -156,7 +156,7 @@ class TextualOutput:
         """Format thinking content with blue bullet and indentation."""
         lines = content.split("\n")
         formatted = Text()
-        formatted.append("● ", style="blue")
+        formatted.append("\n● ", style="blue")
         formatted.append(lines[0] if lines else "", style="dim")
         for line in lines[1:]:
             formatted.append("\n  ", style="")  # 2 spaces indent for alignment
