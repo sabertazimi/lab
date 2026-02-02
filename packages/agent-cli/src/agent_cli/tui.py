@@ -203,7 +203,7 @@ class AgentApp(App[None]):
     def run_agent(self, user_input: str) -> None:
         """Run agent loop in a background thread."""
         self._is_running = True
-        self.call_from_thread(self.output.status, "Thinking...")
+        self.call_from_thread(self.output.status, "Thinking... (esc to interrupt)")
 
         try:
             assert self._agent is not None
@@ -243,10 +243,12 @@ class AgentApp(App[None]):
                 for thinking in self.thinking_history:
                     thinking_log.write(thinking)
             else:
-                thinking_log.write("[dim]No thinking content yet.[/]")
+                thinking_log.write("  [dim]No thinking content yet.[/]")
             self.output.status("Thinking View (ctrl+o to return)")
         else:
             # Switch back to chat view
             thinking_log.add_class("hidden")
             chat_log.remove_class("hidden")
-            self.output.status("Ready" if not self._is_running else "Thinking...")
+            self.output.status(
+                "Ready" if not self._is_running else "Thinking... (esc to interrupt)"
+            )

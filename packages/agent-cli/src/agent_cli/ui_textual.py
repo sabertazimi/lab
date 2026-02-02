@@ -135,14 +135,13 @@ class TextualOutput:
 
         # Show indicator in main chat
         self.newline()
-        duration_str = f" ({duration:.1f}s)" if duration is not None else ""
+        duration_str = f"{duration:.1f}s" if duration is not None else ""
         self.text(
             Text.assemble(
-                ("● ", "blue"),
-                (f"Thinking{duration_str}", "blue"),
-                (" - press ", "dim"),
-                ("ctrl+o", "bold dim"),
-                (" to view details", "dim"),
+                ("∴ ", "blue"),
+                (f"Thought for {duration_str}"),
+                (" (ctrl+o", "bold dim"),
+                (" to view details)", "dim"),
             )
         )
 
@@ -154,7 +153,7 @@ class TextualOutput:
         """Format thinking content with blue bullet and indentation."""
         lines = content.split("\n")
         formatted = Text()
-        formatted.append("\n● ", style="blue")
+        formatted.append("\n∴ ", style="blue")
         formatted.append(lines[0] if lines else "", style="dim")
         for line in lines[1:]:
             formatted.append("\n  ", style="")  # 2 spaces indent for alignment
