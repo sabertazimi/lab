@@ -6,11 +6,14 @@ and implements the ICommandContext interface.
 
 from pathlib import Path
 
+from rich.padding import Padding
+from rich.spinner import Spinner
 from rich.text import Text
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.geometry import Offset
+from textual.timer import Timer
 from textual.widgets import Footer, Input, RichLog, Static
 from textual_autocomplete import AutoComplete, DropdownItem, TargetState
 
@@ -37,7 +40,54 @@ class CommandAutoComplete(AutoComplete):
 
 
 class StatusBar(Static):
-    """Status bar widget showing current state."""
+    """Status bar widget with optional spinner animation."""
+
+    def __init__(
+        self,
+        renderable: str = "",
+        *,
+        id: str | None = None,  # noqa: A002
+        classes: str | None = None,
+    ) -> None:
+        super().__init__(renderable, id=id, classes=classes)
+        self._spinner = Spinner("dots")
+        self._message = ""
+        self._spinning = False
+        self._interval: Timer | None = None
+
+    def update_status(self, message: str, spinning: bool = False) -> None:
+        """Update status bar with optional spinner animation."""
+        self._message = message
+
+        if spinning and not self._spinning:
+            # Start spinning
+            self._spinning = True
+            self._interval = self.set_interval(1 / 60, self._update_display)
+        elif not spinning and self._spinning:
+            # Stop spinning
+            self._spinning = False
+            if self._interval:
+                self._interval.stop()
+                self._interval = None
+
+        self._update_display()
+
+    def _update_display(self) -> None:
+        """Render current state to the widget."""
+        if self._spinning:
+            # Spinner with text
+            self._spinner.update(text=f"{self._message}")
+            self.update(Padding(self._spinner, (0, 0, 0, 1)))
+        else:
+            # One space padding
+            self.update(f" {self._message}")
+
+    def on_unmount(self) -> None:
+        """Clean up timer when widget is unmounted."""
+        if self._interval:
+            self._interval.stop()
+            self._interval = None
+        self._spinning = False
 
 
 class AgentApp(App[None]):
@@ -76,6 +126,7 @@ class AgentApp(App[None]):
         self.thinking_history: list[Text] = []
         self.show_thinking = False
         self._is_running = False
+        self._is_interrupting = False
 
     # ICommandContext implementation
     @property
@@ -203,7 +254,9 @@ class AgentApp(App[None]):
     def run_agent(self, user_input: str) -> None:
         """Run agent loop in a background thread."""
         self._is_running = True
-        self.call_from_thread(self.output.status, "Thinking... (esc to interrupt)")
+        self.call_from_thread(
+            self.output.status, "Thinking... (ctrl+c to interrupt)", True
+        )
 
         try:
             assert self._agent is not None
@@ -214,12 +267,14 @@ class AgentApp(App[None]):
 
         finally:
             self._is_running = False
+            self._is_interrupting = False
             self.call_from_thread(self.output.status, "Ready")
 
     def action_interrupt(self) -> None:
         """ctrl+c: interrupt agent loop"""
         if self._is_running and self._agent is not None:
-            self.output.status("Interrupting...")
+            self._is_interrupting = True
+            self.output.status("Interrupting...", spinning=True)
             self._agent.request_interrupt()
 
     def action_clear(self) -> None:
@@ -249,6 +304,9 @@ class AgentApp(App[None]):
             # Switch back to chat view
             thinking_log.add_class("hidden")
             chat_log.remove_class("hidden")
-            self.output.status(
-                "Ready" if not self._is_running else "Thinking... (esc to interrupt)"
-            )
+            if self._is_interrupting:
+                self.output.status("Interrupting...", spinning=True)
+            elif self._is_running:
+                self.output.status("Thinking... (ctrl+c to interrupt)", spinning=True)
+            else:
+                self.output.status("Ready")
