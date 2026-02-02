@@ -1,3 +1,4 @@
+import fnmatch
 import functools
 import os
 import re
@@ -125,6 +126,25 @@ ToolCall = (
 
 
 CURRENT_DATE = datetime.now().strftime("%Y-%m-%d")
+
+
+DEFAULT_EXCLUDED_DIRS = {
+    ".git",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "dist",
+    "build",
+    ".next",
+    ".nuxt",
+    "coverage",
+    ".tox",
+    "eggs",
+    ".eggs",
+}
 
 BASE_TOOLS: list[ToolParam] = [
     {
@@ -550,14 +570,22 @@ def run_glob(pattern: str, path: str | None = None) -> str:
     Find files matching a glob pattern.
 
     Returns files sorted by modification time (newest first).
+    Excludes common large/irrelevant directories for performance.
     Output truncated to 50KB to prevent context overflow.
     """
     try:
         search_path = safe_path(path or ".")
-        files = sorted(
-            search_path.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True
-        )
 
+        all_files: list[Path] = []
+        for root, dirnames, filenames in os.walk(search_path):
+            # Prevent descending into excluded directories
+            dirnames[:] = [d for d in dirnames if d not in DEFAULT_EXCLUDED_DIRS]
+            for filename in filenames:
+                all_files.append(Path(root) / filename)
+
+        # Filter by glob pattern
+        matched_files = [f for f in all_files if fnmatch.fnmatch(str(f), f"*{pattern}")]
+        files = sorted(matched_files, key=lambda p: p.stat().st_mtime, reverse=True)
         result = "\n".join(str(f) for f in files)
         return result[:50000] if result else "(no matches)"
     except Exception as e:
@@ -592,15 +620,18 @@ def run_grep(
         if search_path.is_file():
             files = [search_path]
         else:
-            # Use rglob for recursive search
-            if glob:
-                # Filter by glob pattern
-                files = list(search_path.rglob(glob))
-            else:
-                # Search all files
-                files = list(search_path.rglob("*"))
+            all_files: list[Path] = []
+            for root, dirnames, filenames in os.walk(search_path):
+                # Prevent descending into excluded directories
+                dirnames[:] = [d for d in dirnames if d not in DEFAULT_EXCLUDED_DIRS]
+                for filename in filenames:
+                    all_files.append(Path(root) / filename)
 
-        files = [f for f in files if f.is_file()]
+            # Filter by glob pattern if specified
+            if glob:
+                files = [f for f in all_files if fnmatch.fnmatch(f.name, glob)]
+            else:
+                files = all_files
 
         content_matches: list[str] = []
         file_matches: set[str] = set()
