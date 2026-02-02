@@ -131,7 +131,7 @@ class Output:
             return
 
         # Store in thinking history
-        formatted = self._format_thinking_block(content)
+        formatted = self.format_thinking_block(content)
         self.context.thinking_history.append(formatted)
 
         # Show indicator in main chat
@@ -152,7 +152,7 @@ class Output:
             thinking_log = self.context.query_one("#thinking", RichLog)
             thinking_log.write(formatted)
 
-    def _format_thinking_block(self, content: str) -> Text:
+    def format_thinking_block(self, content: str) -> Text:
         """Format thinking content with blue bullet and indentation."""
         lines = content.split("\n")
         formatted = Text()
