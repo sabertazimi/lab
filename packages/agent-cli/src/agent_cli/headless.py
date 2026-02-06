@@ -36,8 +36,7 @@ class HeadlessApp:
         Args:
             prompt: The user prompt to execute.
         """
-        if self.config._config_error:
-            print(self.config._config_error, file=sys.stderr)
+        self.config.report_errors(self.ui)
 
         system_prompt = build_system_prompt(self.config.workdir, self.skill_loader)
         agent = Agent(

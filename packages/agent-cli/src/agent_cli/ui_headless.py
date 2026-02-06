@@ -4,6 +4,7 @@ Silent UI that suppresses all intermediate output. Used in headless mode
 (`-p/--print`) where only the final response is printed to stdout.
 """
 
+import sys
 from pathlib import Path
 
 
@@ -12,6 +13,7 @@ class HeadlessOutput:
 
     All methods are no-ops. The final response is extracted from
     the message history after agent.run() completes.
+    Errors are printed to stderr.
     """
 
     # Basic output
@@ -22,7 +24,12 @@ class HeadlessOutput:
     # Styled output
     def primary(self, message: str | None) -> None: pass
     def accent(self, message: str | None) -> None: pass
-    def error(self, message: str | None) -> None: pass
+
+    def error(self, message: str | None) -> None:
+        """Write error messages to stderr."""
+        if message is not None:
+            print(message, file=sys.stderr)
+
     def debug(self, message: str | None) -> None: pass
 
     # Agent-specific output
