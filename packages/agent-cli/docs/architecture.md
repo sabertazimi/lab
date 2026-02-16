@@ -1,4 +1,4 @@
-# Agent-CLI Architecture Documentation
+# Agent-CLI Architecture
 
 ## 项目概述
 
