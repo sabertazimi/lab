@@ -40,7 +40,7 @@ agent_cli/
 ├── command.py           # 斜杠命令系统
 ├── context.py           # 上下文加载（CLAUDE.md）
 ├── output.py            # 输出格式化工具
-├── singleton.py         # 单例工具（已弃用）
+├── singleton.py         # 单例工具
 ├── tui.py               # Textual TUI 应用
 └── ui_textual.py        # Textual UI 实现
 ```
