@@ -33,7 +33,7 @@
     "@vue/tsconfig": "^0.8.1",
     "eslint": "^9.39.2",
     "eslint-plugin-format": "^1.4.0",
-    "jsdom": "^27.4.0",
+    "jsdom": "^28.1.0",
     "npm-run-all2": "^8.0.4",
     "typescript": "^5.9.3",
     "unplugin-auto-import": "^21.0.0",
