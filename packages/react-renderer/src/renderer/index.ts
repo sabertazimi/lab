@@ -29,7 +29,6 @@ const Renderer = {
         () => {
           // Default transition indicator callback
         },
-        null,
       )
 
       root.render = function (element: ReactElement) {
