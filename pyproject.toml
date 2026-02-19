@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Experimental prototypes written in Python."
 readme = "README.md"
 authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
-requires-python = ">=3.14"
+requires-python = ">=3.14.3"
 dependencies = [ "agent-cli" ]
 
 [dependency-groups]
@@ -12,7 +12,7 @@ dev = [
   "pyright>=1.1.408",
   "pytest>=9.0.2",
   "pytest-cov>=7.0.0",
-  "ruff>=0.14.14",
+  "ruff>=0.15.1",
 ]
 
 [tool.uv.workspace]

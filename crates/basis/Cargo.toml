@@ -11,4 +11,4 @@ repository = "https://github.com/sabertazimi/lab"
 
 [dependencies]
 chrono = "0.4.43"
-git2 = "0.20.3"
+git2 = "0.20.4"
