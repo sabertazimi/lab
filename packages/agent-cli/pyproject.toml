@@ -4,14 +4,14 @@ version = "0.1.0"
 description = "Minimal Claude Code with rich tools, task planning, subagent orchestration, and skill system support."
 readme = "README.md"
 authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
-requires-python = ">=3.14"
+requires-python = ">=3.14.3"
 dependencies = [
-  "anthropic>=0.76.0",
+  "anthropic>=0.82.0",
   "ddgs>=9.10.0",
   "httpx>=0.28.1",
   "markdownify>=1.2.2",
   "python-dotenv>=1.2.1",
-  "rich>=14.3.1",
+  "rich>=14.3.2",
   "textual>=7.5.0",
   "textual-autocomplete>=4.0.6",
 ]
@@ -25,5 +25,5 @@ url = "https://mirrors.aliyun.com/pypi/simple/"
 default = true
 
 [build-system]
-requires = [ "uv_build>=0.9.27,<0.10.0" ]
+requires = [ "uv_build>=0.10.4,<0.10.5" ]
 build-backend = "uv_build"
