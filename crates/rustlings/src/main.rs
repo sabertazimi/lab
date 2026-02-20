@@ -3,8 +3,7 @@ use crate::run::run;
 use crate::verify::verify;
 use argh::FromArgs;
 use console::Emoji;
-use notify::DebouncedEvent;
-use notify::{RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{Config, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, prelude::*};
@@ -367,7 +366,7 @@ fn watch(exercises: &[Exercise], verbose: bool) -> notify::Result<WatchStatus> {
     let (tx, rx) = channel();
     let should_quit = Arc::new(AtomicBool::new(false));
 
-    let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_secs(2))?;
+    let mut watcher: RecommendedWatcher = Watcher::new(tx, Config::default())?;
     watcher.watch(Path::new("./exercises"), RecursiveMode::Recursive)?;
 
     clear_screen();
@@ -380,34 +379,45 @@ fn watch(exercises: &[Exercise], verbose: bool) -> notify::Result<WatchStatus> {
     spawn_watch_shell(&failed_exercise_hint, Arc::clone(&should_quit));
     loop {
         match rx.recv_timeout(Duration::from_secs(1)) {
-            Ok(event) => match event {
-                DebouncedEvent::Create(b) | DebouncedEvent::Chmod(b) | DebouncedEvent::Write(b) => {
-                    if b.extension() == Some(OsStr::new("rs")) && b.exists() {
-                        let filepath = b.as_path().canonicalize().unwrap();
-                        let pending_exercises = exercises
-                            .iter()
-                            .skip_while(|e| !filepath.ends_with(&e.path))
-                            // .filter(|e| filepath.ends_with(&e.path))
-                            .chain(
+            Ok(Ok(event)) => {
+                // Check for Create, Modify (Write), or Metadata change events
+                if matches!(
+                    event.kind,
+                    EventKind::Create(_)
+                        | EventKind::Modify(notify::event::ModifyKind::Data(
+                            notify::event::DataChange::Any
+                        ))
+                        | EventKind::Modify(notify::event::ModifyKind::Metadata(_))
+                ) {
+                    for path in event.paths {
+                        if path.extension() == Some(OsStr::new("rs")) && path.exists() {
+                            let filepath = path.canonicalize().unwrap();
+                            let pending_exercises =
                                 exercises
                                     .iter()
-                                    .filter(|e| !e.looks_done() && !filepath.ends_with(&e.path)),
-                            );
-                        clear_screen();
-                        match verify(pending_exercises, verbose) {
-                            Ok(_) => return Ok(WatchStatus::Finished),
-                            Err(exercise) => {
-                                let mut failed_exercise_hint = failed_exercise_hint.lock().unwrap();
-                                *failed_exercise_hint = Some(to_owned_hint(exercise));
+                                    .skip_while(|e| !filepath.ends_with(&e.path))
+                                    // .filter(|e| filepath.ends_with(&e.path))
+                                    .chain(exercises.iter().filter(|e| {
+                                        !e.looks_done() && !filepath.ends_with(&e.path)
+                                    }));
+                            clear_screen();
+                            match verify(pending_exercises, verbose) {
+                                Ok(_) => return Ok(WatchStatus::Finished),
+                                Err(exercise) => {
+                                    let mut failed_exercise_hint =
+                                        failed_exercise_hint.lock().unwrap();
+                                    *failed_exercise_hint = Some(to_owned_hint(exercise));
+                                }
                             }
+                            break; // Only handle the first .rs file path
                         }
                     }
                 }
-                _ => {}
-            },
+            }
             Err(RecvTimeoutError::Timeout) => {
                 // the timeout expired, just check the `should_quit` variable below then loop again
             }
+            Ok(Err(e)) => println!("watch error: {e:?}"),
             Err(e) => println!("watch error: {e:?}"),
         }
         // Check if we need to exit
