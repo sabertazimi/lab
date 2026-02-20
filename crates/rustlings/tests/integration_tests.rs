@@ -1,20 +1,18 @@
-use assert_cmd::prelude::*;
+use assert_cmd::Command;
 use glob::glob;
 use predicates::boolean::PredicateBooleanExt;
 use std::fs::File;
 use std::io::Read;
-use std::process::Command;
 
 #[test]
 fn runs_without_arguments() {
-    let mut cmd = Command::cargo_bin("rustlings").unwrap();
+    let mut cmd = Command::new(assert_cmd::cargo::cargo_bin!("rustlings"));
     cmd.assert().success();
 }
 
 #[test]
 fn fails_when_in_wrong_dir() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .current_dir("tests/")
         .assert()
         .code(1);
@@ -22,8 +20,7 @@ fn fails_when_in_wrong_dir() {
 
 #[test]
 fn verify_all_success() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .arg("verify")
         .current_dir("tests/fixture/success")
         .assert()
@@ -32,8 +29,7 @@ fn verify_all_success() {
 
 #[test]
 fn verify_fails_if_some_fails() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .arg("verify")
         .current_dir("tests/fixture/failure")
         .assert()
@@ -42,8 +38,7 @@ fn verify_fails_if_some_fails() {
 
 #[test]
 fn run_single_compile_success() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "compSuccess"])
         .current_dir("tests/fixture/success/")
         .assert()
@@ -52,8 +47,7 @@ fn run_single_compile_success() {
 
 #[test]
 fn run_single_compile_failure() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "compFailure"])
         .current_dir("tests/fixture/failure/")
         .assert()
@@ -62,8 +56,7 @@ fn run_single_compile_failure() {
 
 #[test]
 fn run_single_test_success() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "testSuccess"])
         .current_dir("tests/fixture/success/")
         .assert()
@@ -72,8 +65,7 @@ fn run_single_test_success() {
 
 #[test]
 fn run_single_test_failure() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "testFailure"])
         .current_dir("tests/fixture/failure/")
         .assert()
@@ -82,8 +74,7 @@ fn run_single_test_failure() {
 
 #[test]
 fn run_single_test_not_passed() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "testNotPassed.rs"])
         .current_dir("tests/fixture/failure/")
         .assert()
@@ -92,8 +83,7 @@ fn run_single_test_not_passed() {
 
 #[test]
 fn run_single_test_no_filename() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .arg("run")
         .current_dir("tests/fixture/")
         .assert()
@@ -102,8 +92,7 @@ fn run_single_test_no_filename() {
 
 #[test]
 fn run_single_test_no_exercise() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "compNoExercise.rs"])
         .current_dir("tests/fixture/failure")
         .assert()
@@ -112,8 +101,7 @@ fn run_single_test_no_exercise() {
 
 #[test]
 fn get_hint_for_single_test() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["hint", "testFailure"])
         .current_dir("tests/fixture/failure")
         .assert()
@@ -140,8 +128,7 @@ fn all_exercises_require_confirmation() {
 
 #[test]
 fn run_compile_exercise_does_not_prompt() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "pending_exercise"])
         .current_dir("tests/fixture/state")
         .assert()
@@ -151,8 +138,7 @@ fn run_compile_exercise_does_not_prompt() {
 
 #[test]
 fn run_test_exercise_does_not_prompt() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "pending_test_exercise"])
         .current_dir("tests/fixture/state")
         .assert()
@@ -162,8 +148,7 @@ fn run_test_exercise_does_not_prompt() {
 
 #[test]
 fn run_single_test_success_with_output() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["--nocapture", "run", "testSuccess"])
         .current_dir("tests/fixture/success/")
         .assert()
@@ -173,8 +158,7 @@ fn run_single_test_success_with_output() {
 
 #[test]
 fn run_single_test_success_without_output() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["run", "testSuccess"])
         .current_dir("tests/fixture/success/")
         .assert()
@@ -184,8 +168,7 @@ fn run_single_test_success_without_output() {
 
 #[test]
 fn run_rustlings_list() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["list"])
         .current_dir("tests/fixture/success")
         .assert()
@@ -194,8 +177,7 @@ fn run_rustlings_list() {
 
 #[test]
 fn run_rustlings_list_no_pending() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["list"])
         .current_dir("tests/fixture/success")
         .assert()
@@ -205,8 +187,7 @@ fn run_rustlings_list_no_pending() {
 
 #[test]
 fn run_rustlings_list_both_done_and_pending() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["list"])
         .current_dir("tests/fixture/state")
         .assert()
@@ -216,8 +197,7 @@ fn run_rustlings_list_both_done_and_pending() {
 
 #[test]
 fn run_rustlings_list_without_pending() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["list", "--solved"])
         .current_dir("tests/fixture/state")
         .assert()
@@ -227,8 +207,7 @@ fn run_rustlings_list_without_pending() {
 
 #[test]
 fn run_rustlings_list_without_done() {
-    Command::cargo_bin("rustlings")
-        .unwrap()
+    Command::new(assert_cmd::cargo::cargo_bin!("rustlings"))
         .args(["list", "--unsolved"])
         .current_dir("tests/fixture/state")
         .assert()
