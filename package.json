@@ -71,7 +71,7 @@
     "@dg-scripts/eslint-config": "^6.1.0",
     "@dg-scripts/stylelint-config": "^6.1.0",
     "@types/node": "^24.10.13",
-    "eslint": "^9.39.3",
+    "eslint": "^10.0.1",
     "lerna": "^9.0.4",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
