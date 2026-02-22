@@ -1,0 +1,4074 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Rust labs and notes.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-979b7f54.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-e1a338a0.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Rust</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/sabertazimi/lab" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="rust"><a class="header" href="#rust">Rust</a></h1>
+<dl>
+<dt id=""><a class="header" href="#"><a href="https://github.com/sabertazimi"><img src="https://img.shields.io/badge/author-sabertaz-lightgrey?style=for-the-badge" alt="Author"></a>
+<a href="https://github.com/sabertazimi/lab/blob/main/LICENSE"><img src="https://img.shields.io/github/license/sabertazimi/lab?style=for-the-badge" alt="LICENSE"></a>
+<a href="https://github.com/sabertazimi/lab/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sabertazimi/lab/ci.yml?branch=main&amp;style=for-the-badge&amp;logo=github" alt="CI"></a></a></dt>
+<dd>
+<p>wrench: Rust prototypes.</p>
+</dd>
+</dl>
+<h2 id="crates"><a class="header" href="#crates">Crates</a></h2>
+<ul>
+<li><a href="https://github.com/sabertazimi/lab/tree/main/crates/basis">Rust Snippets</a></li>
+<li><a href="https://github.com/sabertazimi/lab/tree/main/crates/rustlings/exercises">Rustlings Solutions</a></li>
+</ul>
+<h2 id="documentation"><a class="header" href="#documentation">Documentation</a></h2>
+<p>Check out <a href="https://lab.tazimi.dev/rust/doc/basis">rustdoc documentation</a> for more details.</p>
+<h2 id="contributing"><a class="header" href="#contributing">Contributing</a></h2>
+<p>Contributions are greatly appreciated.
+Please fork this repository and open a pull request.</p>
+<h2 id="credits"><a class="header" href="#credits">Credits</a></h2>
+<ul>
+<li><a href="https://github.com/rust-lang/book">Rust Book</a></li>
+<li><a href="https://github.com/rust-lang/nomicon">Rust Nomicon</a></li>
+<li><a href="https://github.com/rust-lang/async-book">Rust Asynchronism</a></li>
+<li><a href="https://github.com/rust-unofficial/too-many-lists">Rust Data Structures</a></li>
+<li><a href="https://github.com/rust-lang/rust-by-example">Rust Example</a></li>
+<li><a href="https://github.com/rust-lang/rustlings">Rust Lings</a></li>
+</ul>
+<h2 id="contact"><a class="header" href="#contact">Contact</a></h2>
+<p><a href="https://github.com/sabertazimi"><img src="https://img.shields.io/badge/-GitHub-181717?style=for-the-badge&amp;logo=github&amp;logoColor=white" alt="GitHub"></a>
+<a href="mailto:sabertazimi@gmail.com"><img src="https://img.shields.io/badge/-Gmail-ea4335?style=for-the-badge&amp;logo=gmail&amp;logoColor=white" alt="Email"></a>
+<a href="https://x.com/sabertazimi"><img src="https://img.shields.io/badge/-X.com-000000?style=for-the-badge&amp;logo=x&amp;logoColor=white" alt="X"></a></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="toolchain"><a class="header" href="#toolchain">Toolchain</a></h1>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<pre><code class="language-bash"># RustUp script.
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+# Setup environment variables.
+echo '. $HOME/.cargo/env' &gt;&gt; ~/.zshrc
+# Install GCC linker and OpenSSL.
+sudo apt install build-essential libssl-dev pkg-config
+# Done.
+cargo -V
+rustc -V
+</code></pre>
+<h2 id="cargo"><a class="header" href="#cargo">Cargo</a></h2>
+<h3 id="commands"><a class="header" href="#commands">Commands</a></h3>
+<pre><code class="language-bash">cargo new hello_world
+cargo run
+cargo build
+cargo run --release
+cargo build --release
+cargo check
+cargo generate-lockfile
+</code></pre>
+<pre><code class="language-bash">cargo fmt --check
+cargo clippy
+cargo test
+</code></pre>
+<pre><code class="language-bash">cargo install cargo-edit
+cargo install cargo-release
+cargo install cargo-tarpaulin
+cargo install cargo-watch
+cargo install cargo-workspaces
+</code></pre>
+<p>Cargo release configuration:</p>
+<pre><code class="language-toml">[workspace.metadata.release]
+# cargo install cargo-release
+# cargo release -x
+sign-commit = true
+sign-tag = true
+release = false
+push = false
+publish = false
+shared-version = true
+pre-release-commit-message = "chore(release): {{version}}"
+post-release-commit-message = "chore(release): {{version}}"
+tag-message = "{{tag_name}}"
+</code></pre>
+<h3 id="cache"><a class="header" href="#cache">Cache</a></h3>
+<p><code>~/.cargo/</code>:</p>
+<ul>
+<li><code>config.toml</code>: global configuration.</li>
+<li><code>credentials.toml</code>: <code>cargo login</code> related file.</li>
+<li><code>.crates.toml</code>/<code>.crates2.json</code>: installed package information.</li>
+<li><code>bin/</code>: installed binaries.</li>
+<li><code>git/</code>: installed rust git repositories.
+<ul>
+<li><code>git/db/</code>: installed git repositories.</li>
+<li><code>git/checkouts/</code>: branches of git repositories.</li>
+</ul>
+</li>
+<li><code>registry/</code>: <code>crates.io</code> metadata and packages.
+<ul>
+<li><code>registry/index/</code>: metadata git repository.</li>
+<li><code>registry/cache/</code>: dependencies cache (<code>.crate</code> gzip files).</li>
+<li><code>registry/src/</code>: package source files.</li>
+</ul>
+</li>
+</ul>
+<h3 id="configuration"><a class="header" href="#configuration">Configuration</a></h3>
+<p><code>Cargo.toml</code>:</p>
+<ul>
+<li><code>cargo-features</code>: 只能用于 <code>nightly</code>版本的 <code>feature</code>.</li>
+<li><code>[package]</code>: 定义项目( <code>package</code> )的元信息.
+<ul>
+<li><code>name</code>: 名称.</li>
+<li><code>version</code>: 版本.</li>
+<li><code>authors</code>: 开发作者.</li>
+<li><code>edition</code>: Rust edition.</li>
+<li><code>rust-version</code>: 支持的最小化 Rust 版本.</li>
+<li><code>description</code>: 描述.</li>
+<li><code>documentation</code>: 文档 URL.</li>
+<li><code>readme</code>: README 文件的路径.</li>
+<li><code>homepage</code>: 主页 URL.</li>
+<li><code>repository</code>: 源代码仓库的 URL.</li>
+<li><code>license</code>: 开源协议 License.</li>
+<li><code>license-file</code>: License 文件的路径.</li>
+<li><code>keywords</code>: 项目的关键词.</li>
+<li><code>categories</code>: 项目分类.</li>
+<li><code>workspace</code>: 工作空间 workspace 的路径.</li>
+<li><code>build</code>: 构建脚本的路径.</li>
+<li><code>links</code>: 本地链接库的名称.</li>
+<li><code>exclude</code>: 发布时排除的文件.</li>
+<li><code>include</code>: 发布时包含的文件.</li>
+<li><code>publish</code>: 用于阻止项目的发布.</li>
+<li><code>metadata</code>: 额外的配置信息，用于提供给外部工具.</li>
+<li><code>default-run</code>: [<code>cargo run</code>] 所使用的默认可执行文件( binary ).</li>
+<li><code>autobins</code>: 禁止可执行文件的自动发现.</li>
+<li><code>autoexamples</code>: 禁止示例文件的自动发现.</li>
+<li><code>autotests</code>: 禁止测试文件的自动发现.</li>
+<li><code>autobenches</code>: 禁止 bench 文件的自动发现.</li>
+<li><code>resolver</code>: 设置依赖解析器( dependency resolver).</li>
+</ul>
+</li>
+<li>Cargo target configuration:
+<ul>
+<li><code>[lib]</code>: Library target.</li>
+<li><code>[[bin]]</code>: Binary target.</li>
+<li><code>[[example]]</code>: Example target.</li>
+<li><code>[[test]]</code>: Test target.</li>
+<li><code>[[bench]]</code>: Benchmark target.</li>
+</ul>
+</li>
+<li>Dependency tables:
+<ul>
+<li><code>[dependencies]</code>: 项目依赖包.</li>
+<li><code>[dev-dependencies]</code>:
+用于 examples、tests 和 benchmarks 的依赖包.</li>
+<li><code>[build-dependencies]</code>: 用于构建脚本的依赖包.</li>
+<li><code>[target]</code>: 平台特定的依赖包.</li>
+</ul>
+</li>
+<li><code>[badges]</code>: 维护状态.</li>
+<li><code>[features]</code>: <code>features</code> 可以用于条件编译.</li>
+<li><code>[patch]</code>: 推荐使用的依赖覆盖方式.</li>
+<li><code>[profile]</code>: 编译器设置和优化.</li>
+<li><code>[workspace]</code>: 工作空间的定义.</li>
+</ul>
+<h2 id="github-action"><a class="header" href="#github-action">GitHub Action</a></h2>
+<ul>
+<li>Use <a href="https://github.com/mozilla/sccache">tool</a> to speed up compilation.</li>
+</ul>
+<pre><code class="language-yml">name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-features --workspace
+
+  rustfmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          components: rustfmt
+      - name: Check formatting
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          components: clippy
+      - name: Clippy check
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features --workspace -- -D warnings
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Check documentation
+        env:
+          RUSTDOCFLAGS: -D warnings
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          args: --no-deps --document-private-items --all-features --workspace
+
+  publish-dry-run:
+    name: Publish dry run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: publish
+          args: --dry-run
+
+  coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          args: --all-features --workspace --ignore-tests --out Lcov
+      - name: Upload to Coveralls
+        if: ${{ github.event_name == 'push' }}
+        uses: coverallsapp/github-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./lcov.info
+</code></pre>
+<h2 id="nodejs-bindings"><a class="header" href="#nodejs-bindings">Node.js Bindings</a></h2>
+<p>Tasks suite for native <code>Node.js</code> add-ons:</p>
+<ul>
+<li>Computing intensive tasks with simple I/O:
+e.g. <code>@node-rs/crc32</code> (CPU SIMD instruction), <code>@node-rs/bcrypt</code>, <code>@node-rs/jieba</code>.</li>
+<li>System call tasks:
+SIMD instruction, GPU instruction.</li>
+</ul>
+<p><a href="https://github.com/napi-rs/napi-rs">Napi</a>:
+Framework for building compiled <code>Node.js</code> add-ons in <code>Rust</code> via Node API.</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[macro_use]
+extern crate napi;
+
+/// import the preludes
+use napi::bindgen_prelude::*;
+
+/// module registration is done by the runtime, no need to explicitly do it now.
+#[napi]
+fn fibonacci(n: u32) -&gt; u32 {
+    match n {
+        1 | 2 =&gt; 1,
+        _ =&gt; fibonacci(n - 1) + fibonacci(n - 2),
+    }
+}
+
+/// use `Fn`, `FnMut` or `FnOnce` traits to defined JavaScript callbacks
+/// the return type of callbacks can only be `Result`.
+#[napi]
+fn get_cwd&lt;T: Fn(String) -&gt; Result&lt;()&gt;&gt;(callback: T) {
+    callback(env::current_dir().unwrap().to_string_lossy().to_string()).unwrap();
+}
+
+/// or, define the callback signature in where clause
+#[napi]
+fn test_callback&lt;T&gt;(callback: T)
+where T: Fn(String) -&gt; Result&lt;()&gt;
+{}
+
+/// async fn, require `async` feature enabled.
+/// [dependencies]
+/// napi = {version="2", features=["async"]}
+#[napi]
+async fn read_file_async(path: String) -&gt; Result&lt;Buffer&gt; {
+    tokio::fs::read(path)
+        .map(|r| match r {
+            Ok(content) =&gt; Ok(content.into()),
+            Err(e) =&gt; Err(Error::new(
+                Status::GenericFailure,
+                format!("failed to read file, {}", e),
+            )),
+        })
+        .await
+}
+<span class="boring">}</span></code></pre>
+<p><a href="https://github.com/neon-bindings/neon">Neon</a>:
+<code>Rust</code> bindings for safe and fast native <code>Node.js</code> modules.</p>
+<pre class="playground"><code class="language-rust edition2021">use neon::context::{Context, ModuleContext, FunctionContext};
+use neon::types::JsNumber;
+use neon::result::JsResult;
+use neon::result::NeonResult;
+
+fn fibonacci(n: i32) -&gt; i32 {
+    return match n {
+        n if n &lt; 1 =&gt; 0,
+        n if n &lt;= 2 =&gt; 1,
+        _ =&gt; fibonacci(n - 1) + fibonacci(n - 2)
+  }
+}
+
+fn fibonacci_api(mut cx: FunctionContext) -&gt; JsResult&lt;JsNumber&gt; {
+    let handle = cx.argument::&lt;JsNumber&gt;(0).unwrap();
+    let res = fibonacci(handle.value(&amp;mut cx) as i32);
+    Ok(cx.number(res))
+}
+
+#[neon::main]
+fn main(mut cx: ModuleContext) -&gt; NeonResult&lt;()&gt; {
+    cx.export_function("fibonacci_rs", fibonacci_api)?;
+    Ok(())
+}</code></pre>
+<pre><code class="language-ts">const { fibonacci_rs } = require('./index.node')
+
+const value = process.argv[2] || null
+const number = Number.parseInt(value)
+
+if (Number.isNaN(number)) {
+  console.log('Provided value is not a number')
+  return
+}
+
+const result = fibonacci_rs(number)
+console.log(result)
+</code></pre>
+<h2 id="standard-library"><a class="header" href="#standard-library">Standard Library</a></h2>
+<ul>
+<li><code>as_</code>: <code>borrowed</code> -&gt; <code>borrowed</code>.</li>
+<li><code>into_</code>: <code>owned</code> -&gt; <code>owned</code> (移除所有权).</li>
+<li><code>to_</code>:
+<code>borrowed</code> -&gt; <code>borrowed</code>,
+<code>borrowed</code> -&gt; <code>owned</code> on non-copy types,
+<code>owned</code> -&gt; <code>owned</code> on copy types.</li>
+<li><code>try_</code>: 尝试一次, 失败则返回或报错.</li>
+<li><code>_mut</code>: 可变借用.</li>
+</ul>
+<h2 id="library"><a class="header" href="#library">Library</a></h2>
+<ul>
+<li><a href="https://github.com/rust-num/num">Num</a>:
+Numeric Types and Traits.</li>
+<li><a href="https://github.com/rust-random/rand">Rand</a>:
+Random Number Generator.</li>
+<li><a href="https://github.com/rust-lang/regex">Regex</a>:
+Regular Expression Engine.</li>
+<li><a href="https://github.com/rulex-rs/rulex">RuleX</a>:
+A New and Portable Regular Expression Language.</li>
+<li><a href="https://github.com/chronotope/chrono">Chrono</a>:
+DateTime Library.</li>
+<li><a href="https://github.com/async-rs/async-std">AsyncStd</a>:
+Asynchronous Version Standard Library.</li>
+<li><a href="https://github.com/crossbeam-rs/crossbeam">Crossbeam</a>:
+Concurrent Programming.</li>
+<li><a href="https://github.com/tokio-rs/tokio">Tokio</a>:
+Asynchronous Runtime.</li>
+<li><a href="https://github.com/rayon-rs/rayon">Rayon</a>:
+Data Parallelism Library.</li>
+<li><a href="https://github.com/rust-lang/log">Log</a>:
+Logging Library.</li>
+<li><a href="https://github.com/tokio-rs/tracing">Tracing</a>:
+Tracing Library.</li>
+<li><a href="https://github.com/serde-rs/serde">Serde</a>:
+Serialization Framework.</li>
+<li><a href="https://github.com/tokio-rs/axum">Axum</a>:
+Tokio Web Framework.</li>
+<li><a href="https://github.com/SergioBenitez/Rocket">Rocket</a>:
+Web Framework.</li>
+<li><a href="https://github.com/actix/actix-web">Actix</a>:
+Web Framework.</li>
+<li><a href="https://github.com/seanmonstar/warp">Warp</a>:
+Web Framework.</li>
+<li><a href="https://github.com/seanmonstar/reqwest">Request</a>:
+HTTP Client.</li>
+<li><a href="https://github.com/cloudflare/quiche">Quiche</a>:
+QUIC and HTTP/3 Library.</li>
+<li><a href="https://github.com/hyperium/tonic">Tonic</a>:
+gRPC Framework.</li>
+<li><a href="https://github.com/quickwit-oss/quickwit">QuickWit</a>:
+Distributed Search Engine.</li>
+<li><a href="https://github.com/meilisearch/MeiliSearch">MeiliSearch</a>:
+Realtime Search Engine.</li>
+<li><a href="https://github.com/clap-rs/clap">Clap</a>:
+CLI Framework.</li>
+<li><a href="https://github.com/console-rs/indicatif">Console</a>:
+ProgressBar.</li>
+<li><a href="https://github.com/dtolnay/syn">Syn</a>:
+Source Code Parser.</li>
+<li><a href="https://github.com/neon-bindings/neon">Neon</a>:
+Node.js Bindings Library.</li>
+<li><a href="https://github.com/rust-lang/git2-rs">Git</a>:
+Git Bindings Library.</li>
+<li><a href="https://github.com/colin-kiegel/rust-pretty-assertions">PrettyAssertions</a>:
+Overwrite <code>assert_eq!</code> with a drop-in replacement, adding a colorful diff.</li>
+<li><a href="https://github.com/bheisler/criterion.rs">Criterion</a>:
+Benchmarking Library.</li>
+<li><a href="https://github.com/clog-tool/clog-cli">Clog</a>:
+Conventional Changelog.</li>
+</ul>
+<h2 id="references"><a class="header" href="#references">References</a></h2>
+<ul>
+<li><a href="https://github.com/rust-lang/book">Rust Book</a></li>
+<li><a href="https://github.com/rust-lang/nomicon">Rust Nomicon</a></li>
+<li><a href="https://github.com/rust-lang/async-book">Rust Asynchronism</a></li>
+<li><a href="https://github.com/rust-unofficial/too-many-lists">Rust Data Structures</a></li>
+<li><a href="https://github.com/rust-lang/rust-by-example">Rust Example</a></li>
+<li><a href="https://github.com/rust-lang/rustlings">Rust Lings</a></li>
+<li><a href="https://github.com/sunface/rust-course">Rust Course</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="types"><a class="header" href="#types">Types</a></h1>
+<h2 id="string"><a class="header" href="#string">String</a></h2>
+<p><code>&amp;str</code> string slice reference type:</p>
+<ul>
+<li>Borrowing type.</li>
+<li>UTF-8 encode (1 ~ 4 bytes).</li>
+<li>String literal is <code>&amp;str</code> type.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let s = String::from("hello world");
+let len = s.len();
+
+let hello = &amp;s[0..5];
+let world = &amp;s[6..11];
+let slice1 = &amp;s[0..2];
+let slice2 = &amp;s[..2];
+let slice3 = &amp;s[4..len];
+let slice4 = &amp;s[4..];
+let slice5 = &amp;s[0..len];
+let slice6 = &amp;s[..];
+<span class="boring">}</span></code></pre>
+<p><code>String</code> type:</p>
+<ul>
+<li>Ownership type.</li>
+<li>UTF-8 encode (1 ~ 4 bytes).</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let mut s = String::new();
+    s.push_str("hello,world");
+    s.push('!');
+    assert_eq!(s,"hello,world!");
+
+    let mut s = "hello,world".to_string();
+    s.push('!');
+    assert_eq!(s,"hello,world!");
+
+    let mut s = String::from("你好, 世界");
+    s.push('!');
+    assert_eq!(s,"你好, 世界!");
+
+    let s1 = String::from("hello,");
+    let s2 = String::from("world!");
+    let s3 = s1 + &amp;s2;
+    assert_eq!(s3,"hello,world!");
+
+    for c in "中国人".chars() {
+        println!("{}", c);
+    }
+}</code></pre>
+<h2 id="enum"><a class="header" href="#enum">Enum</a></h2>
+<pre class="playground"><code class="language-rust edition2021">enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+fn main() {
+    let m1 = Message::Quit;
+    let m2 = Message::Move{x: 1, y: 1};
+    let m3 = Message::ChangeColor(255, 255, 0);
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum Option&lt;T&gt; {
+    Some(T),
+    None,
+}
+
+fn plus_one(x: Option&lt;i32&gt;) -&gt; Option&lt;i32&gt; {
+    match x {
+        None =&gt; None,
+        Some(i) =&gt; Some(i + 1),
+    }
+}
+
+let five = Some(5);
+let six = plus_one(five);
+let none = plus_one(None);
+<span class="boring">}</span></code></pre>
+<h2 id="array"><a class="header" href="#array">Array</a></h2>
+<pre class="playground"><code class="language-rust edition2021">let a: [i32; 5] = [1, 2, 3, 4, 5];
+let b = [3; 5];
+let slice: &amp;[i32] = &amp;a[1..3];
+assert_eq!(slice, &amp;[2, 3]);
+
+fn main() {
+  let one             = [1, 2, 3];
+  let two: [u8; 3]    = [1, 2, 3];
+  let blank1          = [0; 3];
+  let blank2: [u8; 3] = [0; 3];
+
+  let arrays: [[u8; 3]; 4]  = [one, two, blank1, blank2];
+
+  for a in &amp;arrays {
+    print!("{:?}: ", a);
+
+    for n in a.iter() {
+      print!("\t{} + 10 = {}", n, n+10);
+    }
+
+    let mut sum = 0;
+
+    for i in 0..a.len() {
+      sum += a[i];
+    }
+
+    println!("\t({:?} = {})", a, sum);
+  }
+}</code></pre>
+<h2 id="alias"><a class="header" href="#alias">Alias</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>type Meters = i32;
+
+let x: u32 = 5;
+let y: Meters = 5;
+
+println!("x + y = {}", x + y);
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>type Result&lt;T&gt; = std::result::Result&lt;T, std::io::Error&gt;;
+type Thunk = Box&lt;dyn Fn() + Send + 'static&gt;;
+
+let f: Thunk = Box::new(|| println!("hi"));
+fn takes_long_type(f: Thunk) {}
+fn returns_long_type() -&gt; Thunk {}
+<span class="boring">}</span></code></pre>
+<h2 id="conversion"><a class="header" href="#conversion">Conversion</a></h2>
+<h3 id="explicit"><a class="header" href="#explicit">Explicit</a></h3>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let a = 3.1 as i8;
+    let b = 100_i8 as i32;
+    let c = 'a' as u8;
+    println!("{}, {}, {}", a, b, c);
+
+    let x: i16 = 1500;
+    let x_: u8 = match x.try_into() {
+        Ok(x1) =&gt; x1,
+        Err(e) =&gt; {
+            println!("{:?}", e.to_string());
+            0
+        }
+    };
+}</code></pre>
+<h3 id="implicit"><a class="header" href="#implicit">Implicit</a></h3>
+<p><code>target.method()</code>:</p>
+<ol>
+<li>Call by value: <code>T::method(target)</code>.</li>
+<li>Call by reference: <code>T::method(&amp;target)</code> or <code>T::method(&amp;mut target)</code>.</li>
+<li>Call by deref: when <code>T: Deref&lt;Target = U&gt;</code>, then <code>(&amp;T).method() =&gt; (&amp;U).method()</code>.</li>
+<li>Length-non-determined collection to length-determined slice.</li>
+<li>Panic.</li>
+</ol>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let array: Rc&lt;Box&lt;[T; 3]&gt;&gt; = ...;
+let first_entry = array[0];
+// 1. `Index` trait grammar sugar: array[0] =&gt; array.index(0).
+// 2. Call by: value: `Rc&lt;Box&lt;[T; 3]&gt;&gt;` not impl `Index` trait.
+// 3. Call by reference: `&amp;Rc&lt;Box&lt;[T; 3]&gt;&gt;` not impl `Index` trait.
+// 4. Call by reference: `&amp;mut Rc&lt;Box&lt;[T; 3]&gt;&gt;` not impl `Index` trait.
+// 5. Call by deref -&gt; Call by value: `Box&lt;[T; 3]&gt;` not impl `Index` trait.
+// 6. Call by deref -&gt; Call by reference: `&amp;Box&lt;[T; 3]&gt;` not impl `Index` trait.
+// 7. Call by deref -&gt; Call by reference: `&amp;mut Box&lt;[T; 3]&gt;` not impl `Index` trait.
+// 8. Call by deref -&gt; Call by deref: `[T; 3]` not impl `Index` trait.
+// 9. `[T; 3]` =&gt; `[T]` impl `Index` trait.
+<span class="boring">}</span></code></pre>
+<h3 id="from-trait"><a class="header" href="#from-trait">From Trait</a></h3>
+<pre class="playground"><code class="language-rust edition2021">use std::convert::From;
+
+#[derive(Debug)]
+struct Number {
+    value: i32,
+}
+
+impl From&lt;i32&gt; for Number {
+    fn from(item: i32) -&gt; Self {
+        Number { value: item }
+    }
+}
+
+fn main() {
+    let num = Number::from(30);
+    println!("My number is {:?}", num);
+
+    let int = 5;
+    let num: Number = int.into();
+    println!("My number is {:?}", num);
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::convert::TryFrom;
+use std::convert::TryInto;
+
+#[derive(Debug, PartialEq)]
+struct EvenNumber(i32);
+
+impl TryFrom&lt;i32&gt; for EvenNumber {
+    type Error = ();
+
+    fn try_from(value: i32) -&gt; Result&lt;Self, Self::Error&gt; {
+        if value % 2 == 0 {
+            Ok(EvenNumber(value))
+        } else {
+            Err(())
+        }
+    }
+}
+
+fn main() {
+    // TryFrom
+    assert_eq!(EvenNumber::try_from(8), Ok(EvenNumber(8)));
+    assert_eq!(EvenNumber::try_from(5), Err(()));
+
+    // TryInto
+    let result: Result&lt;EvenNumber, ()&gt; = 8i32.try_into();
+    assert_eq!(result, Ok(EvenNumber(8)));
+    let result: Result&lt;EvenNumber, ()&gt; = 5i32.try_into();
+    assert_eq!(result, Err(()));
+}</code></pre>
+<h2 id="dynamically-sized-type"><a class="header" href="#dynamically-sized-type">Dynamically Sized Type</a></h2>
+<p>DST:</p>
+<ul>
+<li>DST 无法单独被使用, 必须要通过 <code>&amp;</code>/<code>Box</code>/<code>Rc</code> 来间接使用.</li>
+<li><code>str</code>, <code>[T]</code>, <code>dyn Trait</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Error!
+let s1: str = "Hello there!";
+let s2: str = "How's it going?";
+
+// Ok.
+let s3: &amp;str = "on?";
+let s4: Box&lt;str&gt; = "Hello there!".into();
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Error!
+fn my_function(n: usize) {
+    let array = [123; n];
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn foobar_1(thing: &amp;dyn MyThing) {}     // OK.
+fn foobar_2(thing: Box&lt;dyn MyThing&gt;) {} // OK.
+fn foobar_3(thing: Rc&lt;dyn MyThing&gt;) {}  // OK.
+fn foobar_4(thing: MyThing) {}          // ERROR!
+<span class="boring">}</span></code></pre>
+<h3 id="sized-trait"><a class="header" href="#sized-trait">Sized Trait</a></h3>
+<p>Implicit sized trait:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn generic&lt;T&gt;(t: T) {}
+// Auto-transform to by Rust compiler
+fn generic&lt;T: Sized&gt;(t: T) {}
+<span class="boring">}</span></code></pre>
+<p>Dynamic sized generics:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn generic&lt;T: ?Sized&gt;(t: &amp;T) {}
+<span class="boring">}</span></code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="format"><a class="header" href="#format">Format</a></h1>
+<h2 id="format-print-macros"><a class="header" href="#format-print-macros">Format Print Macros</a></h2>
+<ul>
+<li><code>print!</code>.</li>
+<li><code>println!</code>.</li>
+<li><code>eprint!</code>.</li>
+<li><code>eprintln!</code>.</li>
+<li><code>format!</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>println!("Hello");                 // =&gt; "Hello"
+println!("Hello, {}!", "world");   // =&gt; "Hello, world!"
+println!("The number is {}", 1);   // =&gt; "The number is 1"
+println!("{:?}", (3, 4));          // =&gt; "(3, 4)"
+println!("{value}", value=4);      // =&gt; "4"
+println!("{} {}", 1, 2);           // =&gt; "1 2"
+println!("{:04}", 42);             // =&gt; "0042" with leading zeros
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let s = "hello";
+    println!("{}, world", s);
+    let s1 = format!("{}, world", s);
+    print!("{}", s1);
+    print!("{}\n", "!");
+}</code></pre>
+<h2 id="format-print-placeholder"><a class="header" href="#format-print-placeholder">Format Print Placeholder</a></h2>
+<ul>
+<li><code>{}</code>.</li>
+<li><code>{:?}</code>.</li>
+<li><code>{:#?}</code>.</li>
+<li>Index placeholder.</li>
+<li>Alias placeholder.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    println!("{1}{}{0}{}", 1, 2); // =&gt; 2112
+    println!("{name} {}", 1, name = 2); // =&gt; "2 1"
+    println!("{a} {c} {b}", a = "a", b = 'b', c = 3); // =&gt; "a 3 b"
+}</code></pre>
+<ul>
+<li>Pad placeholder.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    // 以下全部输出 "Hello x    !"
+    // 为"x"后面填充空格, 补齐宽度5
+    println!("Hello {:5}!", "x");
+    // 使用参数5来指定宽度
+    println!("Hello {:1$}!", "x", 5);
+    // 使用x作为占位符输出内容, 同时使用5作为宽度
+    println!("Hello {1:0$}!", 5, "x");
+    // 使用有名称的参数作为宽度
+    println!("Hello {:width$}!", "x", width = 5);
+
+    // 使用参数5为参数x指定宽度, 同时在结尾输出参数5 =&gt; Hello x    !5
+    println!("Hello {:1$}!{}", "x", 5);
+
+    // 宽度是5 =&gt; Hello     5!
+    println!("Hello {:5}!", 5);
+    // 显式的输出正号 =&gt; Hello +5!
+    println!("Hello {:+}!", 5);
+    // 宽度5, 使用0进行填充 =&gt; Hello 00005!
+    println!("Hello {:05}!", 5);
+    // 负号也要占用一位宽度 =&gt; Hello -0005!
+    println!("Hello {:05}!", -5);
+}</code></pre>
+<ul>
+<li>Alignment placeholder.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    // 以下全部都会补齐5个字符的长度
+    // 左对齐 =&gt; Hello x    !
+    println!("Hello {:&lt;5}!", "x");
+    // 右对齐 =&gt; Hello     x
+    println!("Hello {:&gt;5}!", "x");
+    // 居中对齐 =&gt; Hello   x  !
+    println!("Hello {:^5}!", "x");
+
+    // 对齐并使用指定符号填充 =&gt; Hello x&amp;&amp;&amp;&amp;!
+    // 指定符号填充的前提条件是必须有对齐字符
+    println!("Hello {:&amp;&lt;5}!", "x");
+}</code></pre>
+<ul>
+<li>Precision placeholder.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let v = 3.1415926;
+    // 保留小数点后两位 =&gt; 3.14
+    println!("{:.2}", v);
+    // 带符号保留小数点后两位 =&gt; +3.14
+    println!("{:+.2}", v);
+    // 不带小数 =&gt; 3
+    println!("{:.0}", v);
+    // 通过参数来设定精度 =&gt; 3.1416, 相当于{:.4}
+    println!("{:.1$}", v, 4);
+
+    let s = "hello I'm some one";
+    // 保留字符串前三个字符 =&gt; hel
+    println!("{:.3}", s);
+    // {:.*} 接收两个参数, 第一个是精度, 第二个是被格式化的值 =&gt; Hello abc!
+    println!("Hello {:.*}!", 3, "abcdefg");
+}</code></pre>
+<ul>
+<li>Radix placeholder: <code>boxXeE</code>.
+<ul>
+<li><code>fmt::Binary</code> trait.</li>
+<li><code>fmt::Octal</code> trait.</li>
+<li><code>fmt::LowerHex</code> trait.</li>
+<li><code>fmt::UpperHex</code> trait.</li>
+<li><code>fmt::LowerExp</code> trait.</li>
+<li><code>fmt::UpperExp</code> trait.</li>
+</ul>
+</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    // 二进制 =&gt; 0b11011!
+    println!("{:#b}!", 27);
+    // 八进制 =&gt; 0o33!
+    println!("{:#o}!", 27);
+    // 十进制 =&gt; 27!
+    println!("{}!", 27);
+    // 小写十六进制 =&gt; 0x1b!
+    println!("{:#x}!", 27);
+    // 大写十六进制 =&gt; 0x1B!
+    println!("{:#X}!", 27);
+
+    // 不带前缀的十六进制 =&gt; 1b!
+    println!("{:x}!", 27);
+
+    // 使用0填充二进制, 宽度为10 =&gt; 0b00011011!
+    println!("{:#010b}!", 27);
+
+    println!("{:2e}", 1000000000); // =&gt; 1e9
+    println!("{:2E}", 1000000000); // =&gt; 1E9
+}</code></pre>
+<h2 id="debug-trait"><a class="header" href="#debug-trait">Debug Trait</a></h2>
+<pre class="playground"><code class="language-rust edition2021">#[derive(Debug)]
+struct Person {
+    name: String,
+    age: u8
+}
+
+fn main() {
+    let i = 3.1415926;
+    let s = String::from("hello");
+    let v = vec![1, 2, 3];
+    let p = Person{name: "name".to_string(), age: 18};
+    println!("{:?}, {:?}, {:?}, {:?}", i, s, v, p);
+}</code></pre>
+<h2 id="display-trait"><a class="header" href="#display-trait">Display Trait</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::fmt;
+
+struct Person {
+    name: String,
+    age: u8,
+}
+
+impl fmt::Display for Person {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(
+            f,
+            "My name is {}, {} year old.",
+            self.name, self.age
+        )
+    }
+}
+
+fn main() {
+    let p = Person {
+        name: "name".to_string(),
+        age: 18,
+    };
+
+    println!("{}", p);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ownership"><a class="header" href="#ownership">Ownership</a></h1>
+<h2 id="memory-model"><a class="header" href="#memory-model">Memory Model</a></h2>
+<h3 id="stack"><a class="header" href="#stack">Stack</a></h3>
+<ul>
+<li>Primitives</li>
+<li>Fixed size structs.</li>
+<li>Fixed size arrays.</li>
+<li>Pointers and references.</li>
+</ul>
+<h3 id="heap"><a class="header" href="#heap">Heap</a></h3>
+<ul>
+<li>Collections:
+<ul>
+<li>Arrays.</li>
+<li>Lists.</li>
+<li>Strings.</li>
+</ul>
+</li>
+<li>Dynamic sized objects:
+<ul>
+<li>Box.</li>
+<li>Trait objects.</li>
+</ul>
+</li>
+</ul>
+<h2 id="copy-trait"><a class="header" href="#copy-trait">Copy Trait</a></h2>
+<p>Copyable type (implement <code>Copy</code> trait):</p>
+<ul>
+<li>Integer type.</li>
+<li>Bool type.</li>
+<li>Float type.</li>
+<li>Char type.</li>
+<li>Copyable Tuple type, e.g. <code>(i32, i32)</code>.</li>
+<li>Reference type (<strong>borrowing</strong> ownership).</li>
+</ul>
+<p>Most these types store on stack
+(including reference type with vtable).</p>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    // Primitive type.
+    let a = 5;
+    let b = a;
+
+    // Reference type.
+    let x: &amp;str = "hello, world";
+    let y = x;
+
+    // Deep clone on `non-Copy` type.
+    let s1 = String::from("hello");
+    let s2 = s1.clone();
+
+    // Correct.
+    println!("a = {}, b = {}", a, b);
+    println!("x = {}, y = {}", x, y);
+    println!("s1 = {}, s2 = {}", s1, s2);
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let s1 = String::from("hello");
+    let s2 = s1;
+
+    // Error[E0382]: use of moved value: `s1`.
+    // Move occurs because `s1` has type `std::string::String`,
+    // which does not implement the `Copy` trait.
+    println!("{}, world!", s1);
+}</code></pre>
+<h2 id="reference"><a class="header" href="#reference">Reference</a></h2>
+<p>Borrowing ownership with reference type:</p>
+<ul>
+<li>At same time, only one mutable reference or multiple immutable reference.</li>
+<li>Reference should be valid (rustc will report dangling reference error).</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let s1 = String::from("hello");
+    let len = calculate_length(&amp;s1);
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn calculate_length(s: &amp;String) -&gt; usize {
+    s.len()
+    // Leave function without drop `s`,
+    // due to `s` not owner string.
+}</code></pre>
+<p>Mutable reference:</p>
+<ul>
+<li>Only one mutable reference for a value in a scope).</li>
+<li>Can’t mutable borrow an already immutable borrowed value.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let mut s = String::from("hello");
+    change(&amp;mut s);
+}
+
+fn change(some_string: &amp;mut String) {
+    some_string.push_str(", world");
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+   let mut s = String::from("hello");
+
+    let r1 = &amp;s;
+    let r2 = &amp;s;
+    let r3 = &amp;mut s;
+
+    // Error.
+    println!("{}, {} and {}", r1, r2, r3);
+    // End of r1 and r2 borrowing.
+
+    // Correct.
+    let r4 = &amp;mut s;
+    println!("{}", r4);
+}</code></pre>
+<h2 id="smart-pointer"><a class="header" href="#smart-pointer">Smart Pointer</a></h2>
+<h3 id="box"><a class="header" href="#box">Box</a></h3>
+<p><code>Box&lt;T&gt;</code> 将一个值分配到堆上, 然后在栈上保留一个智能指针指向堆上数据:</p>
+<ul>
+<li>实现转移所有权时的零拷贝.</li>
+<li>将不定长类型转换为定长类型.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    // 在栈上创建一个长度为 1000 的数组.
+    let arr = [0;1000];
+    // 将 arr 所有权转移 arr1, 由于 `arr` 分配在栈上, 因此直接重新深拷贝了一份数据.
+    let arr1 = arr;
+
+    // arr 和 arr1 都拥有各自的栈上数组, 因此不会报错.
+    println!("{:?}", arr.len());
+    println!("{:?}", arr1.len());
+
+    // 在堆上创建一个长度为 1000 的数组, 然后使用一个智能指针指向它.
+    let arr = Box::new([0;1000]);
+    // 将堆上数组的所有权转移给 arr1, 由于数据在堆上, 因此仅仅拷贝了智能指针的结构体, 底层数据并没有被拷贝.
+    // 所有权顺利转移给 arr1, arr 不再拥有所有权.
+    let arr1 = arr;
+    println!("{:?}", arr1.len());
+    // 由于 arr 不再拥有底层数组的所有权, 因此下面代码将报错.
+    // println!("{:?}", arr.len());
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum List {
+    Cons(i32, Box&lt;List&gt;),
+    Nil,
+}
+<span class="boring">}</span></code></pre>
+<h3 id="deref-trait"><a class="header" href="#deref-trait">Deref Trait</a></h3>
+<ul>
+<li><code>&amp;smart_pointer</code>
+=&gt; <code>smart_pointer.defer()</code>.</li>
+<li><code>*smart_pointer</code>
+=&gt; <code>*(smart_pointer.defer())</code>.</li>
+<li><code>smart_pointer.method()</code>
+=&gt; <code>(&amp;smart_pointer).method()</code>
+=&gt; <code>(smart_pointer.defer()).method()</code>.</li>
+<li>When <code>T: Deref&lt;Target=U&gt;</code>, then <code>&amp;T =&gt; &amp;U</code>.</li>
+<li>When <code>T: DerefMut&lt;Target=U&gt;</code>, then <code>&amp;mut T =&gt; &amp;mut U</code>.</li>
+<li>When <code>T: Deref&lt;Target=U&gt;</code>, then <code>&amp;mut T =&gt; &amp;U</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use core::ops::{self};
+use crate::str::{self, from_boxed_utf8_unchecked};
+use crate::vec::Vec;
+
+struct String {
+    vec: Vec&lt;u8&gt;,
+}
+
+impl ops::Deref for String {
+    type Target = str;
+
+    fn deref(&amp;self) -&gt; &amp;str {
+        unsafe { str::from_utf8_unchecked(&amp;self.vec) }
+    }
+}
+
+struct MyBox&lt;T&gt;(T);
+
+impl&lt;T&gt; MyBox&lt;T&gt; {
+    fn new(x: T) -&gt; MyBox&lt;T&gt; {
+        MyBox(x)
+    }
+}
+
+impl&lt;T&gt; ops::Deref for MyBox&lt;T&gt; {
+    type Target = T;
+
+    fn deref(&amp;self) -&gt; &amp;Self::Target {
+        &amp;self.0
+    }
+}
+
+fn main() {
+    let x = MyBox::new(5);
+    assert_eq!(5, *x);
+    // =&gt; *(x.deref())
+    // =&gt; *(&amp;x.0)
+    // =&gt; x.0
+
+    let s = MyBox::new(String::from("hello world"));
+    display(&amp;s);
+    // =&gt; &amp;MyBox
+    // =&gt; MyBox.deref()
+    // =&gt; &amp;String
+    // =&gt; String.deref()
+    // =&gt; &amp;str
+
+    let hello_world = MyBox::new(String::from("hello, world"));
+    let s1: &amp;str = &amp;hello_world;
+    // =&gt; &amp;MyBox&lt;String&gt;
+    // =&gt; MyBox&lt;String&gt;.deref()
+    // =&gt; &amp;String
+    // =&gt; String.deref()
+    // =&gt; &amp;str
+    let s2: String = hello_world.to_string();
+    // =&gt; MyBox&lt;String&gt;.to_string()
+    // =&gt; (&amp;MyBox&lt;String&gt;).to_string()
+    // =&gt; (MyBox&lt;String&gt;.defer()).to_string()
+    // =&gt; (&amp;String).to_string()
+    let ptr: *const u8 = hello_world.as_ptr();
+    // =&gt; MyBox&lt;String&gt;.as_ptr()
+    // =&gt; (&amp;MyBox&lt;String&gt;).as_ptr()
+    // =&gt; (MyBox&lt;String&gt;.defer()).as_ptr()
+    // =&gt; (&amp;String).as_ptr()
+    // =&gt; (String.defer()).as_ptr()
+    // =&gt; (&amp;str).as_ptr()
+}
+
+fn display(s: &amp;str) {
+    println!("{}", s);
+}</code></pre>
+<h3 id="drop-trait"><a class="header" href="#drop-trait">Drop Trait</a></h3>
+<p>Drop order:</p>
+<ul>
+<li>变量级别, 按照逆序的方式, 先创建的变量后 drop.</li>
+<li>结构体内部, 按照顺序的方式, 结构体中的字段按照定义中的顺序依次 drop.</li>
+</ul>
+<h3 id="reference-counting"><a class="header" href="#reference-counting">Reference Counting</a></h3>
+<p>通过引用计数的方式, 允许一个数据资源在同一时刻拥有多个所有者.</p>
+<pre class="playground"><code class="language-rust edition2021">use std::rc::Rc;
+
+fn main() {
+    let a = Rc::new(String::from("hello, world"));
+    let b = Rc::clone(&amp;a); // 复制了智能指针并增加了引用计数, 并没有克隆底层数据.
+    assert_eq!(2, Rc::strong_count(&amp;a));
+    assert_eq!(Rc::strong_count(&amp;a), Rc::strong_count(&amp;b))
+}</code></pre>
+<ul>
+<li><code>Rc</code>/<code>Arc</code> 是不可变引用, 无法修改它指向的值.</li>
+<li><code>Rc&lt;T&gt;</code> 是一个智能指针, 实现了 <code>Deref</code> 特征, 可以直接使用 <code>T</code>.</li>
+<li>一旦最后一个拥有者消失, 则资源会自动被回收.</li>
+<li><code>Arc</code>: Atomic reference counting.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::Arc;
+use std::thread;
+
+fn main() {
+    let s = Arc::new(String::from("Multiple threads walker"));
+
+    for _ in 0..10 {
+        let s = Arc::clone(&amp;s);
+        let handle = thread::spawn(move || {
+           println!("{}", s)
+        });
+    }
+}</code></pre>
+<h3 id="cell-and-refcell"><a class="header" href="#cell-and-refcell">Cell and RefCell</a></h3>
+<p><code>Cell</code> for copyable type.</p>
+<pre class="playground"><code class="language-rust edition2021">use std::cell::Cell;
+
+fn main() {
+    let c = Cell::new("abc");
+    let one = c.get();
+    c.set("xyz");
+    let two = c.get();
+    println!("{}, {}", one, two); // abc, xyz
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::cell::Cell;
+
+fn retain_even(nums: &amp;mut Vec&lt;i32&gt;) {
+    let slice: &amp;[Cell&lt;i32&gt;] = Cell::from_mut(&amp;mut nums[..])
+        .as_slice_of_cells();
+
+    let mut i = 0;
+
+    for num in slice.iter().filter(|num| is_even(num.get())) {
+        slice[i].set(num.get());
+        i += 1;
+    }
+
+    nums.truncate(i);
+}
+<span class="boring">}</span></code></pre>
+<p><code>RefCell</code> for borrowing reference:</p>
+<ul>
+<li>实现内部可变性: 不可变值的可变借用.
+<code>imut_self.refcell_member.borrow_mut().changeMember()</code>.</li>
+<li><code>Rc&lt;RefCell&lt;T&gt;&gt;</code>: 实现多个可变数据所有者.</li>
+<li>实现编译期<strong>可变借用</strong>与<strong>不可变借用</strong>共存,
+但会引起运行时 <code>panic</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use std::cell::RefCell;
+
+fn main() {
+    let s = RefCell::new(String::from("hello, world"));
+    let s1 = s.borrow();
+    let s2 = s.borrow_mut();
+
+    println!("{}, {}", s1, s2);
+}</code></pre>
+<p>通过包裹一层 <code>RefCell</code>,
+将不可变借用 <code>&amp;self</code> 的成员成为一个可变值,
+然后实现修改:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::cell::RefCell;
+
+pub trait Messenger {
+    fn send(&amp;self, msg: String);
+}
+
+pub struct MsgQueue {
+    msg_cache: RefCell&lt;Vec&lt;String&gt;&gt;,
+}
+
+impl Messenger for MsgQueue {
+    fn send(&amp;self, msg: String) {
+        self.msg_cache.borrow_mut().push(msg)
+    }
+}
+
+fn main() {
+    let mq = MsgQueue {
+        msg_cache: RefCell::new(Vec::new()),
+    };
+    mq.send("hello, world".to_string());
+}</code></pre>
+<h3 id="circle-reference"><a class="header" href="#circle-reference">Circle Reference</a></h3>
+<p><code>Weak</code> 通过 <code>use std::rc::Weak</code> 引入, 具有以下特点:</p>
+<ul>
+<li>可访问, 但没有所有权, 不增加引用计数, 不影响 drop.</li>
+<li>可由 <code>Rc&lt;T&gt;</code> 调用 <code>downgrade</code> 方法转换成 <code>Weak&lt;T&gt;</code>.</li>
+<li><code>Weak&lt;T&gt;</code> 可使用 <code>upgrade</code> 方法转换成 <code>Option&lt;Rc&lt;T&gt;&gt;</code>,
+如果资源已经被释放, 则 <code>Option</code> 的值是 <code>None</code>.</li>
+<li>常用于解决循环引用的问题.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    parent: RefCell&lt;Weak&lt;Node&gt;&gt;,
+    children: RefCell&lt;Vec&lt;Rc&lt;Node&gt;&gt;&gt;,
+}
+
+fn main() {
+    let leaf = Rc::new(Node {
+        value: 3,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
+    });
+
+    println!(
+        "leaf strong = {}, weak = {}",
+        Rc::strong_count(&amp;leaf),
+        Rc::weak_count(&amp;leaf),
+    );
+
+    {
+        let branch = Rc::new(Node {
+            value: 5,
+            parent: RefCell::new(Weak::new()),
+            children: RefCell::new(vec![Rc::clone(&amp;leaf)]),
+        });
+
+        *leaf.parent.borrow_mut() = Rc::downgrade(&amp;branch);
+
+        println!(
+            "branch strong = {}, weak = {}",
+            Rc::strong_count(&amp;branch),
+            Rc::weak_count(&amp;branch),
+        );
+
+        println!(
+            "leaf strong = {}, weak = {}",
+            Rc::strong_count(&amp;leaf),
+            Rc::weak_count(&amp;leaf),
+        );
+    }
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+    println!(
+        "leaf strong = {}, weak = {}",
+        Rc::strong_count(&amp;leaf),
+        Rc::weak_count(&amp;leaf),
+    );
+}</code></pre>
+<h2 id="phantom"><a class="header" href="#phantom">Phantom</a></h2>
+<p>虚类型/幽灵类型参数是一种在<strong>运行时不出现</strong>,
+仅进行<strong>静态编译检查</strong>的类型参数.</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::marker::PhantomData;
+
+struct Iter&lt;'a, T: 'a&gt; {
+    ptr: *const T,
+    end: *const T,
+    _marker: PhantomData&lt;&amp;'a T&gt;,
+}
+
+struct Vec&lt;T&gt; {
+    data: *const T,
+    len: usize,
+    cap: usize,
+    _marker: PhantomData&lt;T&gt;,
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::marker::PhantomData;
+
+#[derive(PartialEq)]
+struct PhantomTuple&lt;A, B&gt;(A, PhantomData&lt;B&gt;);
+
+#[derive(PartialEq)]
+struct PhantomStruct&lt;A, B&gt; { first: A, phantom: PhantomData&lt;B&gt; }
+
+fn main() {
+    let _tuple1: PhantomTuple&lt;char, f32&gt; = PhantomTuple('Q', PhantomData);
+    let _tuple2: PhantomTuple&lt;char, f64&gt; = PhantomTuple('Q', PhantomData);
+
+    let _struct1: PhantomStruct&lt;char, f32&gt; = PhantomStruct {
+        first: 'Q',
+        phantom: PhantomData,
+    };
+    let _struct2: PhantomStruct&lt;char, f64&gt; = PhantomStruct {
+        first: 'Q',
+        phantom: PhantomData,
+    };
+
+    // 编译期错误！类型不匹配，所以这些值不能够比较：
+    println!("_tuple1 == _tuple2 yields: {}",
+              _tuple1 == _tuple2);
+
+    // 编译期错误！类型不匹配，所以这些值不能够比较：
+    println!("_struct1 == _struct2 yields: {}",
+              _struct1 == _struct2);
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::ops::Add;
+use std::marker::PhantomData;
+
+#[derive(Debug, Clone, Copy)]
+enum Inch {}
+#[derive(Debug, Clone, Copy)]
+enum Mm {}
+
+#[derive(Debug, Clone, Copy)]
+struct Length&lt;Unit&gt;(f64, PhantomData&lt;Unit&gt;);
+
+impl&lt;Unit&gt; Add for Length&lt;Unit&gt; {
+     type Output = Length&lt;Unit&gt;;
+
+    fn add(self, rhs: Length&lt;Unit&gt;) -&gt; Length&lt;Unit&gt; {
+        Length(self.0 + rhs.0, PhantomData)
+    }
+}
+
+fn main() {
+    let one_foot:  Length&lt;Inch&gt; = Length(12.0, PhantomData);
+    let one_meter: Length&lt;Mm&gt;   = Length(1000.0, PhantomData);
+
+    let two_feet = one_foot + one_foot;
+    let two_meters = one_meter + one_meter;
+
+    println!("one foot + one_foot = {:?} in", two_feet.0);
+    println!("one meter + one_meter = {:?} mm", two_meters.0);
+
+    // 编译期错误: 类型不匹配.
+    let compile_error = one_foot + one_meter;
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="lifetime"><a class="header" href="#lifetime">Lifetime</a></h1>
+<p>显式地使用生命周期, 可以让编译器正确地认识到多个<strong>引用</strong>之间的关系.</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>&amp;i32        // 一个引用
+&amp;'a i32     // 具有显式生命周期的引用
+&amp;'a mut i32 // 具有显式生命周期的可变引用
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct ImportantExcerpt&lt;'a&gt; {
+    part: &amp;'a str,
+}
+
+fn longest&lt;'a&gt;(x: &amp;'a str, y: &amp;'a str) -&gt; &amp;'a str {
+    if x.len() &gt; y.len() {
+        x
+    } else {
+        y
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="function"><a class="header" href="#function">Function</a></h2>
+<p>函数或者方法中,
+参数的生命周期被称为<code>输入生命周期</code>,
+返回值的生命周期被称为<code>输出生命周期</code>:</p>
+<ul>
+<li>每一个引用参数都会获得独自的生命周期:
+<code>fn foo&lt;'a, 'b&gt;(x: &amp;'a i32, y: &amp;'b i32)</code>.</li>
+<li>若只有一个输入生命周期, 则该生命周期会被赋给所有输出生命周期.</li>
+<li>若存在多个输入生命周期, 且其中一个是<code>&amp;self</code>/<code>&amp;mut self</code>,
+则<code>&amp;self</code>生命周期被赋给所有输出生命周期 (除非显式地声明输出生命周期).</li>
+</ul>
+<h2 id="static"><a class="header" href="#static">Static</a></h2>
+<p>生命周期<code>'static</code>表示持续整个程序,
+例如字符串字面量和特征对象.</p>
+<h2 id="constraint"><a class="header" href="#constraint">Constraint</a></h2>
+<ul>
+<li><code>'a: 'b</code>: <code>'a</code> 生命周期更长.</li>
+<li><code>T: 'a</code>: <code>T</code> 生命周期更长.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="structs"><a class="header" href="#structs">Structs</a></h1>
+<h2 id="struct"><a class="header" href="#struct">Struct</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct User {
+    active: bool,
+    username: String,
+    email: String,
+    sign_in_count: u64,
+}
+
+fn build_user(email: String, username: String) -&gt; User {
+    User {
+        email,
+        username,
+        active: true,
+        sign_in_count: 1,
+    }
+}
+
+let user1 = User {
+    email: String::from("someone@example.com"),
+    username: String::from("username123"),
+    active: true,
+    sign_in_count: 1,
+};
+
+let user2 = User {
+    email: String::from("another@example.com"),
+    ..user1
+};
+<span class="boring">}</span></code></pre>
+<h3 id="tuple"><a class="header" href="#tuple">Tuple</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Color(i32, i32, i32);
+struct Point(i32, i32, i32);
+let black = Color(0, 0, 0);
+let origin = Point(0, 0, 0);
+<span class="boring">}</span></code></pre>
+<p><code>newtype</code>: Wrap type into tuple struct:</p>
+<ul>
+<li>Make code more readable.</li>
+<li>Implement 3rd traits for 3rd types.</li>
+<li>Hide internal details of types.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Meters(u32);
+<span class="boring">}</span></code></pre>
+<h3 id="unit"><a class="header" href="#unit">Unit</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct AlwaysEqual;
+let subject = AlwaysEqual;
+impl SomeTrait for AlwaysEqual {}
+<span class="boring">}</span></code></pre>
+<h2 id="method"><a class="header" href="#method">Method</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>struct Circle {
+    x: f64,
+    y: f64,
+    radius: f64,
+}
+
+impl Circle {
+    fn new(x: f64, y: f64, radius: f64) -&gt; Circle {
+        Circle {
+            x,
+            y,
+            radius,
+        }
+    }
+
+    fn area(&amp;self) -&gt; f64 {
+        std::f64::consts::PI * (self.radius * self.radius)
+    }
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+impl Message {
+    fn call(&amp;self) {}
+}
+
+fn main() {
+    let m = Message::Write(String::from("hello"));
+    m.call();
+}</code></pre>
+<h3 id="self"><a class="header" href="#self">Self</a></h3>
+<ul>
+<li><code>self</code>: 所有权转移.</li>
+<li><code>&amp;self</code>: 不可变借用.</li>
+<li><code>&amp;mut self</code>: 可变借用.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">pub struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    pub fn new(width: u32, height: u32) -&gt; Self {
+        Rectangle { width, height }
+    }
+    pub fn width(&amp;self) -&gt; u32 {
+        return self.width;
+    }
+    pub fn height(&amp;self) -&gt; u32 {
+        return self.height;
+    }
+}
+
+fn main() {
+    let rect = Rectangle::new(30, 50);
+    println!("{}", rect.width());
+    println!("{}", rect.height());
+}</code></pre>
+<h2 id="generics"><a class="header" href="#generics">Generics</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum Option&lt;T&gt; {
+    Some(T),
+    None,
+}
+
+enum Result&lt;T, E&gt; {
+    Ok(T),
+    Err(E),
+}
+
+struct Point&lt;T&gt; {
+    x: T,
+    y: T,
+}
+
+impl&lt;T&gt; Point&lt;T&gt; {
+    fn x(&amp;self) -&gt; &amp;T {
+        &amp;self.x
+    }
+
+    fn mixup&lt;U&gt;(self, other: Point&lt;U&gt;) {}
+}
+
+impl Point&lt;f32&gt; {
+    fn distance_from_origin(&amp;self) -&gt; f32 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+fn add&lt;T: std::ops::Add&lt;T, Output = T&gt;&gt;(a:T, b:T) -&gt; T {
+    a + b
+}
+
+fn largest&lt;T: PartialOrd&gt;(list: &amp;[T]) -&gt; T {}
+<span class="boring">}</span></code></pre>
+<ul>
+<li>TurboFish:
+<ul>
+<li><code>generics_struct::&lt;T&gt;::method()</code>.</li>
+<li><code>struct.generics_method::&lt;T&gt;()</code>.</li>
+</ul>
+</li>
+<li>Use associated types in traits.</li>
+</ul>
+<h2 id="traits"><a class="header" href="#traits">Traits</a></h2>
+<pre class="playground"><code class="language-rust edition2021">pub struct Post {
+    pub username: String,
+    pub content: String
+}
+
+pub trait Summary {
+    fn summarize_author(&amp;self) -&gt; String;
+
+    fn summarize(&amp;self) -&gt; String {
+        format!("(Read more from {}...)", self.summarize_author())
+    }
+}
+
+impl Summary for Post {
+    fn summarize_author(&amp;self) -&gt; String {
+        format!("@{}", self.username)
+    }
+}
+
+fn main() {
+    let post = Post{username: "username".to_string(),content: "content".to_string()};
+    println!("1 new post: {}", post.summarize());
+}</code></pre>
+<ul>
+<li><code>std::fmt::Display</code> (better than <code>std::string::ToString</code>).</li>
+<li><code>std::fmt::Debug</code>.</li>
+<li><code>std::ops::Add</code>/<code>Mul</code>/<code>Div</code>/<code>BitAnd</code>/<code>BitOr</code>/<code>Not</code>/<code>Neg</code>: operators overload.</li>
+<li><code>std::ops::Fn</code>/<code>FnMut</code>/<code>FnOnce</code>.</li>
+<li><code>std::ops::Deref</code>.</li>
+<li><code>std::ops::Drop</code>.</li>
+<li><code>std::clone::Clone</code>.</li>
+<li><code>std::iter::Iterator</code>.</li>
+</ul>
+<p><code>std::prelude</code>:</p>
+<ul>
+<li><code>std::marker::{Copy, Send, Sized, Sync, Unpin}</code>.</li>
+<li><code>std::ops::{Drop, Fn, FnMut, FnOnce}</code>.</li>
+<li><code>std::mem::drop</code>.</li>
+<li><code>std::boxed::Box</code>.</li>
+<li><code>std::borrow::ToOwned</code>.</li>
+<li><code>std::clone::Clone</code>.</li>
+<li><code>std::cmp::{PartialEq, PartialOrd, Eq, Ord}</code>.</li>
+<li><code>std::convert::{AsRef, AsMut, Into, From}</code>.</li>
+<li><code>std::default::Default</code>.</li>
+<li><code>std::iter::{Iterator, Extend, IntoIterator, DoubleEndedIterator, ExactSizeIterator}</code>.</li>
+<li><code>std::option::Option::{self, Some, None}</code>.</li>
+<li><code>std::result::Result::{self, Ok, Err}</code>.</li>
+<li><code>std::string::{String, ToString}</code>.</li>
+<li><code>std::vec::Vec</code>.</li>
+<li><code>std::convert::{TryFrom, TryInto}</code>.</li>
+<li><code>std::iter::FromIterator</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::io::prelude::*;
+<span class="boring">}</span></code></pre>
+<h3 id="orphan"><a class="header" href="#orphan">Orphan</a></h3>
+<p>Rust can’t implement external traits on external types:
+can’t implement the <code>Display</code> trait on <code>Vec&lt;T&gt;</code> in <code>some_package</code> crate,
+because <code>Display</code> and <code>Vec&lt;T&gt;</code> are <strong>both</strong> defined out of <code>some_package</code>.
+This restriction is part of a property of programs called coherence,
+ensures that other people’s code can’t break your code and vice versa.</p>
+<h3 id="bound"><a class="header" href="#bound">Bound</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn notify(item: &amp;impl Summary) {}
+fn notify(item: &amp;(impl Summary + Display)) {}
+fn notify&lt;T: Summary&gt;(item: &amp;T) {}
+fn notify&lt;T: Summary + Display&gt;(item: &amp;T) {}
+fn notify&lt;T, U&gt;(t: &amp;T, u: &amp;U) -&gt; i32
+    where T: Display + Clone,
+          U: Clone + Debug
+{}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait SomeTrait: BoundTrait {}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 可以对任何实现了 Display 特征的类型调用 ToString 特征中方法.
+impl&lt;T: Display&gt; ToString for T {}
+<span class="boring">}</span></code></pre>
+<h3 id="derive"><a class="header" href="#derive">Derive</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Debug)]
+#[derive(PartialEq)]
+#[derive(Eq)]
+#[derive(PartialOrd)]
+#[derive(Ord)]
+#[derive(Clone)]
+#[derive(Copy)]
+#[derive(Hash)]
+#[derive(Default)]
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Person {
+    fn name(&amp;self) -&gt; String;
+}
+
+trait Student: Person {
+    fn university(&amp;self) -&gt; String;
+}
+
+trait Programmer {
+    fn fav_language(&amp;self) -&gt; String;
+}
+
+trait CompSciStudent: Programmer + Student {
+    fn git_username(&amp;self) -&gt; String;
+}
+
+fn comp_sci_student_greeting(student: &amp;dyn CompSciStudent) -&gt; String {
+    format!(
+        "My name is {} and I attend {}. My language is {}. My Git username is {}",
+        student.name(),
+        student.university(),
+        student.fav_language(),
+        student.git_username()
+    )
+}
+<span class="boring">}</span></code></pre>
+<h3 id="object"><a class="header" href="#object">Object</a></h3>
+<ul>
+<li>Define trait object:
+<ul>
+<li><code>Box&lt;dyn some_trait&gt;</code>.</li>
+<li><code>&amp;dyn some_trait</code>.</li>
+</ul>
+</li>
+<li>A trait can have trait object only when
+it is <code>object safe</code>:
+<ul>
+<li>all methods can’t return <code>Self</code>.</li>
+<li>all methods can’t be generics.</li>
+</ul>
+</li>
+<li>Trait object has <code>'static</code> lifetime.</li>
+<li>Trait object stand for dynamic distributing (runtime),
+generics stand for static distributing (compile time).</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">trait Draw {
+    fn draw(&amp;self) -&gt; String;
+}
+
+impl Draw for u8 {
+    fn draw(&amp;self) -&gt; String {
+        format!("u8: {}", *self)
+    }
+}
+
+impl Draw for f64 {
+    fn draw(&amp;self) -&gt; String {
+        format!("f64: {}", *self)
+    }
+}
+
+fn draw1(x: Box&lt;dyn Draw&gt;) {
+    x.draw();
+}
+
+fn draw2(x: &amp;dyn Draw) {
+    x.draw();
+}
+
+fn main() {
+    let x = 1.1f64;
+    let y = 8u8;
+
+    draw1(Box::new(x));
+    draw1(Box::new(y));
+    draw2(&amp;x);
+    draw2(&amp;y);
+}</code></pre>
+<h3 id="associated-types"><a class="header" href="#associated-types">Associated Types</a></h3>
+<p>Associated types make code become readable and concise:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Container&lt;A,B&gt; {
+    fn contains(&amp;self,a: A,b: B) -&gt; bool;
+}
+
+fn difference&lt;A,B,C&gt;(container: &amp;C) -&gt; i32
+  where
+    C : Container&lt;A,B&gt; {}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Container{
+    type A;
+    type B;
+    fn contains(&amp;self, a: &amp;Self::A, b: &amp;Self::B) -&gt; bool;
+}
+
+fn difference&lt;C: Container&gt;(container: &amp;C) {}
+<span class="boring">}</span></code></pre>
+<p>For all <strong>generic trait</strong>,
+use associated types better than <code>&lt;T&gt;</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="pattern-matching"><a class="header" href="#pattern-matching">Pattern Matching</a></h1>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>match target {
+    pattern1 =&gt; expression1,
+    pattern2 =&gt; {
+        statement1;
+        statement2;
+        expression2
+    },
+    _ =&gt; expression3
+}
+
+if let pattern = target {
+    statement;
+    expression
+}
+
+while let pattern = target {
+    statement;
+}
+<span class="boring">}</span></code></pre>
+<h2 id="enum-1"><a class="header" href="#enum-1">Enum</a></h2>
+<pre class="playground"><code class="language-rust edition2021">enum Action {
+    Say(String),
+    MoveTo(i32, i32),
+    ChangeColorRGB(u16, u16, u16),
+}
+
+fn main() {
+    let actions = [
+        Action::Say("Hello Rust".to_string()),
+        Action::MoveTo(1,2),
+        Action::ChangeColorRGB(255,255,0),
+    ];
+
+    for action in actions {
+        match action {
+            Action::Say(s) =&gt; {
+                println!("{}", s);
+            },
+            Action::MoveTo(x, y) =&gt; {
+                println!("point from (0, 0) move to ({}, {})", x, y);
+            },
+            Action::ChangeColorRGB(r, g, _) =&gt; {
+                println!("change color into '(r:{}, g:{}, b:0)', 'b' has been ignored",
+                    r, g,
+                );
+            }
+        }
+    }
+}</code></pre>
+<h2 id="tuple-1"><a class="header" href="#tuple-1">Tuple</a></h2>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let numbers = (2, 4, 8, 16, 32);
+
+    match numbers {
+        (first, .., last) =&gt; {
+            println!("Some numbers: {}, {}", first, last);
+        },
+    }
+}</code></pre>
+<h2 id="struct-1"><a class="header" href="#struct-1">Struct</a></h2>
+<pre class="playground"><code class="language-rust edition2021">struct Point {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+
+fn main() {
+    let p = Point { x: 0, y: 7, z: 0 };
+    let Point { x: a, y: b, z: c } = p;
+    assert_eq!(0, a);
+    assert_eq!(7, b);
+    assert_eq!(0, c);
+
+    let origin = Point { x: 0, y: 0, z: 0 };
+    match origin {
+        Point { x, .. } =&gt; println!("x is {}", x),
+    }
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let p = Point { x: 0, y: 7 };
+
+    match p {
+        Point { x, y: 0 } =&gt; println!("On the x axis at {}", x),
+        Point { x: 0, y } =&gt; println!("On the y axis at {}", y),
+        Point { x, y } =&gt; println!("On neither axis: ({}, {})", x, y),
+    }
+}</code></pre>
+<h2 id="guard"><a class="header" href="#guard">Guard</a></h2>
+<p>Combine pattern matching and <code>if</code> expression:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let num = Some(4);
+
+match num {
+    Some(x) if x &lt; 5 =&gt; println!("less than five: {}", x),
+    Some(x) =&gt; println!("{}", x),
+    None =&gt; (),
+}
+<span class="boring">}</span></code></pre>
+<h2 id="assignment"><a class="header" href="#assignment">Assignment</a></h2>
+<p>Combine pattern matching and <code>@</code> expression:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>enum Message {
+    Hello { id: i32 },
+}
+
+let msg = Message::Hello { id: 5 };
+
+match msg {
+    Message::Hello { id: id_variable @ 3..=7 } =&gt; {
+        println!("Found an id in range: {}", id_variable)
+    },
+    Message::Hello { id: 10..=12 } =&gt; {
+        println!("Found an id in another range")
+    },
+    Message::Hello { id } =&gt; {
+        println!("Found some other id: {}", id)
+    },
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">struct Point {
+    x: i32,
+    y: i32,
+}
+
+fn main() {
+    let p @ Point {x: px, y: py } = Point {x: 10, y: 23};
+    println!("x: {}, y: {}", px, py);
+    println!("{:?}", p);
+
+    let point = Point {x: 10, y: 5};
+    if let p @ Point {x: 10, y} = point {
+        println!("x is 10 and y is {} in {:?}", y, p);
+    } else {
+        println!("x was not 10 :(");
+    }
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="flow-control"><a class="header" href="#flow-control">Flow Control</a></h1>
+<h2 id="if"><a class="header" href="#if">If</a></h2>
+<p><code>if</code> expression:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let number = if condition {
+    5
+} else {
+    6
+};
+<span class="boring">}</span></code></pre>
+<p><code>if let</code> expression:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let o = Some(3);
+let v = if let Some(x) = o {
+    x
+} else {
+    0
+};
+<span class="boring">}</span></code></pre>
+<h2 id="loop"><a class="header" href="#loop">Loop</a></h2>
+<h3 id="for"><a class="header" href="#for">For</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>for i in 1..=5 {}
+for _ in 0..10 {}
+for item in collection {}
+for item in &amp;collection {}
+for item in &amp;mut collection {}
+for (i, v) in collection.iter().enumerate() {}
+<span class="boring">}</span></code></pre>
+<h3 id="while"><a class="header" href="#while">While</a></h3>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let mut n = 0;
+
+    while n &lt;= 5  {
+        println!("{}!", n);
+        n = n + 1;
+    }
+}</code></pre>
+<h3 id="expression"><a class="header" href="#expression">Expression</a></h3>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let mut counter = 0;
+
+    let result = loop {
+        counter += 1;
+
+        if counter == 10 {
+            break counter * 2;
+        }
+    };
+
+    println!("The result is {}", result);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="error"><a class="header" href="#error">Error</a></h1>
+<h2 id="result"><a class="header" href="#result">Result</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::fs::File;
+use std::io::ErrorKind;
+
+fn main() {
+    let f = File::open("hello.txt");
+
+    let f = match f {
+        Ok(file) =&gt; file,
+        Err(error) =&gt; match error.kind() {
+            ErrorKind::NotFound =&gt; match File::create("hello.txt") {
+                Ok(fc) =&gt; fc,
+                Err(e) =&gt; panic!("Problem creating the file: {:?}", e),
+            },
+            other_error =&gt; panic!("Problem opening the file: {:?}", other_error),
+        },
+    };
+}</code></pre>
+<h2 id="compositor"><a class="header" href="#compositor">Compositor</a></h2>
+<ul>
+<li><code>or</code>: logic or.</li>
+<li><code>and</code>: logic and.</li>
+<li><code>or_else</code>: logic or function.</li>
+<li><code>and_then</code>: logic and function.</li>
+<li><code>filter</code>: <code>Option</code> filter function.</li>
+<li><code>map</code>: <code>Ok</code>/<code>Some</code> map function.</li>
+<li><code>map_or</code>: <code>Ok</code>/<code>Some</code> map function with defaults value.</li>
+<li><code>map_or_else</code>: <code>Ok</code>/<code>Some</code> map function with defaults function.</li>
+<li><code>map_err</code>: <code>Err</code> map function.</li>
+<li><code>ok_or</code>: <code>Option</code> -&gt; <code>Result</code> with error message.</li>
+<li><code>ok_or_else</code>: <code>Option</code> -&gt; <code>Result</code> with error message function.</li>
+</ul>
+<h2 id="macro"><a class="header" href="#macro">Macro</a></h2>
+<p><code>?</code> for <code>Result</code> type:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::fs::File;
+use std::io;
+use std::io::Read;
+
+fn open_file() -&gt; Result&lt;File, Box&lt;dyn std::error::Error&gt;&gt; {
+    let mut f = File::open("hello.txt")?;
+    Ok(f)
+}
+
+fn read_username_from_file() -&gt; Result&lt;String, io::Error&gt; {
+    let mut s = String::new();
+    File::open("hello.txt")?.read_to_string(&amp;mut s)?;
+    Ok(s)
+}
+<span class="boring">}</span></code></pre>
+<p><code>?</code> for <code>Option</code> type:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn last_char_of_first_line(text: &amp;str) -&gt; Option&lt;char&gt; {
+    text.lines().next()?.chars().last()
+}
+<span class="boring">}</span></code></pre>
+<h2 id="trait"><a class="header" href="#trait">Trait</a></h2>
+<p>Standard error trait:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::fmt::{Debug, Display};
+
+pub trait Error: Debug + Display {
+    fn source(&amp;self) -&gt; Option&lt;&amp;(Error + 'static)&gt; { ... }
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::fs::read_to_string;
+use std::error::Error;
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let html = render()?;
+    println!("{}", html);
+    Ok(())
+}
+
+fn render() -&gt; Result&lt;String, Box&lt;dyn Error&gt;&gt; {
+    let file = std::env::var("MARKDOWN")?;
+    let source = read_to_string(file)?;
+    Ok(source)
+}</code></pre>
+<p>Custom error type:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::error;
+use std::fmt;
+
+#[derive(Debug)]
+struct AppError;
+
+impl fmt::Display for AppError {
+    fn fmt(&amp;self, f: &amp;mut fmt::Formatter) -&gt; fmt::Result {
+        write!(f, "An Error Occurred, Please Try Again!")
+    }
+}
+
+impl error::Error for AppError {
+    fn description(&amp;self) -&gt; &amp;str {
+        "Invalid App"
+    }
+
+    fn source(&amp;self) -&gt; Option&lt;&amp;(dyn error::Error + 'static)&gt; {
+        None
+    }
+
+    fn cause(&amp;self) -&gt; Option&lt;&amp;dyn error::Error&gt; {
+        None
+    }
+}
+
+fn produce_error() -&gt; Result&lt;(), AppError&gt; {
+    Err(AppError)
+}
+
+fn main(){
+    match produce_error() {
+        Err(e) =&gt; eprintln!("{}", e),
+        _ =&gt; println!("No error"),
+    }
+
+    eprintln!("{:?}", produce_error()); // Err({ file: src/main.rs, line: 17 })
+}</code></pre>
+<h2 id="conversion-1"><a class="header" href="#conversion-1">Conversion</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::fs::File;
+use std::io::{self, Read};
+use std::num;
+
+#[derive(Debug)]
+struct AppError {
+    kind: String,
+    message: String,
+}
+
+impl From&lt;io::Error&gt; for AppError {
+    fn from(error: io::Error) -&gt; Self {
+        AppError {
+            kind: String::from("io"),
+            message: error.to_string(),
+        }
+    }
+}
+
+impl From&lt;num::ParseIntError&gt; for AppError {
+    fn from(error: num::ParseIntError) -&gt; Self {
+        AppError {
+            kind: String::from("parse"),
+            message: error.to_string(),
+        }
+    }
+}
+
+fn main() -&gt; Result&lt;(), AppError&gt; {
+    let mut file = File::open("hello_world.txt")?;
+
+    let mut content = String::new();
+    file.read_to_string(&amp;mut content)?;
+
+    let _number: usize;
+    _number = content.parse()?;
+
+    Ok(())
+}
+
+// --------------- 上述代码运行后的可能输出 ---------------
+// 01. 若 hello_world.txt 文件不存在
+// Error: AppError { kind: "io", message: "No such file or directory" }
+// 02. 若用户没有相关的权限访问 hello_world.txt
+// Error: AppError { kind: "io", message: "Permission denied" }
+// 03. 若 hello_world.txt 包含有非数字的内容，例如 Hello, world!
+// Error: AppError { kind: "parse", message: "invalid digit found in string" }</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="closure"><a class="header" href="#closure">Closure</a></h1>
+<h2 id="function-parameter-closure"><a class="header" href="#function-parameter-closure">Function Parameter Closure</a></h2>
+<p>改变捕获变量的所有权 (FnOnce):</p>
+<pre class="playground"><code class="language-rust edition2021">fn fn_once&lt;F&gt;(func: F)
+where
+    F: FnOnce(usize) -&gt; bool + Copy,
+{
+    println!("{}", func(3));
+    println!("{}", func(4));
+}
+
+fn main() {
+    let x = vec![1, 2, 3];
+    fn_once(|z|{z == x.len()})
+}</code></pre>
+<p>可变借用捕获 (FnMut):</p>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let mut s = String::new();
+
+    let update_string =  |str| s.push_str(str);
+
+    exec(update_string);
+
+    println!("{:?}",s);
+}
+
+fn exec&lt;'a, F: FnMut(&amp;'a str)&gt;(mut f: F)  {
+    f("hello")
+}</code></pre>
+<p>不可变借用捕获 (Fn):</p>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let s = "hello, ".to_string();
+
+    let update_string =  |str| println!("{},{}",s,str);
+
+    exec(update_string);
+
+    println!("{:?}",s);
+}
+
+fn exec&lt;'a, F: Fn(String) -&gt; ()&gt;(f: F)  {
+    f("world".to_string())
+}</code></pre>
+<ul>
+<li>所有闭包都自动实现了 <code>FnOnce</code> 特征, 因此任何一个闭包都至少可以被调用一次.</li>
+<li>没有移出所捕获变量的所有权的闭包自动实现了 <code>FnMut</code> 特征.</li>
+<li>不需要对捕获变量进行改变的闭包自动实现了 <code>Fn</code> 特征.</li>
+</ul>
+<h2 id="function-return-closure"><a class="header" href="#function-return-closure">Function Return Closure</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn factory() -&gt; impl Fn(i32) -&gt; i32 {
+    let num = 5;
+    |x| x + num
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn factory(x:i32) -&gt; Box&lt;dyn Fn(i32) -&gt; i32&gt; {
+    let num = 5;
+
+    if x &gt; 1{
+        Box::new(move |x| x + num)
+    } else {
+        Box::new(move |x| x - num)
+    }
+}
+<span class="boring">}</span></code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="iterator"><a class="header" href="#iterator">Iterator</a></h1>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let arr = [1, 2, 3];
+
+for v in arr.into_iter() {
+    println!("{}", v);
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let arr = [1, 2, 3];
+    let mut arr_iter = arr.into_iter();
+
+    assert_eq!(arr_iter.next(), Some(1));
+    assert_eq!(arr_iter.next(), Some(2));
+    assert_eq!(arr_iter.next(), Some(3));
+    assert_eq!(arr_iter.next(), None);
+}</code></pre>
+<h2 id="iterator-trait"><a class="header" href="#iterator-trait">Iterator Trait</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Iterator {
+    type Item;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt;;
+}
+
+impl&lt;I: Iterator&gt; IntoIterator for I {
+    type Item = I::Item;
+    type IntoIter = I;
+
+    #[inline]
+    fn into_iter(self) -&gt; I {
+        self
+    }
+}
+<span class="boring">}</span></code></pre>
+<ul>
+<li><code>iter</code>: 不可变借用.</li>
+<li><code>iter_mut</code>: 可变借用.</li>
+<li><code>into_iter</code>: 改变所有权.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn iter(&amp;self) -&gt; Iter             // Iter implements Iterator&lt;Item = &amp;U&gt;
+fn iter_mut(&amp;mut self) -&gt; IterMut  // IterMut implements Iterator&lt;Item = &amp;mut U&gt;
+fn into_iter(self) -&gt; IntoIter     // IntoIter implements Iterator&lt;Item = U&gt;
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let values = vec![1, 2, 3];
+
+    for v in values.into_iter() {
+        println!("{}", v)
+    }
+
+    // 下面的代码将报错.
+    // println!("{:?}",values);
+
+    let values = vec![1, 2, 3];
+    let _values_iter = values.iter();
+
+    // 不会报错.
+    println!("{:?}", values);
+
+    let mut values = vec![1, 2, 3];
+    // 对 values 中的元素进行可变借用.
+    let mut values_iter_mut = values.iter_mut();
+
+    // 取出第一个元素, 并修改为0.
+    if let Some(v) = values_iter_mut.next() {
+        *v = 0;
+    }
+
+    // 输出 [0, 2, 3].
+    println!("{:?}", values);
+}</code></pre>
+<p>Implement iterator:</p>
+<pre class="playground"><code class="language-rust edition2021">struct Counter {
+    count: u32,
+}
+
+impl Counter {
+    fn new() -&gt; Counter {
+        Counter { count: 0 }
+    }
+}
+
+impl Iterator for Counter {
+    type Item = u32;
+
+    fn next(&amp;mut self) -&gt; Option&lt;Self::Item&gt; {
+        if self.count &lt; 5 {
+            self.count += 1;
+            Some(self.count)
+        } else {
+            None
+        }
+    }
+}
+
+fn main() {
+    let mut counter = Counter::new();
+    assert_eq!(counter.next(), Some(1));
+    assert_eq!(counter.next(), Some(2));
+    assert_eq!(counter.next(), Some(3));
+    assert_eq!(counter.next(), Some(4));
+    assert_eq!(counter.next(), Some(5));
+    assert_eq!(counter.next(), None);
+
+    let sum: u32 = Counter::new()
+        .zip(Counter::new().skip(1))
+        .map(|(a, b)| a * b)
+        .filter(|x| x % 3 == 0)
+        .sum();
+    assert_eq!(18, sum);
+}</code></pre>
+<h2 id="adapter-methods"><a class="header" href="#adapter-methods">Adapter Methods</a></h2>
+<ul>
+<li>消费性适配器: 获取迭代器的所有权, 并消耗迭代器中所有元素.
+<ul>
+<li><code>collect::&lt;T&gt;()</code>.</li>
+<li>fold.</li>
+<li>partition.</li>
+<li><code>sum::&lt;T&gt;()</code>.</li>
+</ul>
+</li>
+<li>迭代性适配器: 惰性方法 (Lazy Iterator)
+<ul>
+<li>enumerate.</li>
+<li>filter.</li>
+<li>filter_map.</li>
+<li>map.</li>
+<li>take_while.</li>
+<li>zip.</li>
+</ul>
+</li>
+<li>Ordinary iterator methods:
+<ul>
+<li>Iterator::any.</li>
+<li>Iterator::find.</li>
+</ul>
+</li>
+</ul>
+<p>More adapter methods see <code>Iterator</code> trait
+<a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html">documentation</a>.</p>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let v1 = vec![1, 2, 3];
+    let v1_iter = v1.iter();
+    let total: i32 = v1_iter.sum();
+    assert_eq!(total, 6);
+
+    // v1_iter 是借用了 v1, 因此 v1 可以照常使用.
+    println!("{:?}",v1);
+
+    // 以下代码会报错, 因为 `sum` 拿到了迭代器 `v1_iter` 的所有权.
+    // println!("{:?}",v1_iter);
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">fn main() {
+    let v1: Vec&lt;i32&gt; = vec![1, 2, 3];
+    let v2: Vec&lt;_&gt; = v1.iter().map(|x| x + 1).collect();
+    assert_eq!(v2, vec![2, 3, 4]);
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::collections::HashMap;
+
+fn main() {
+    let names = ["name1", "name2"];
+    let ages = [18, 18];
+    let folks: HashMap&lt;_, _&gt; = names.into_iter().zip(ages.into_iter()).collect();
+    println!("{:?}",folks);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="collections"><a class="header" href="#collections">Collections</a></h1>
+<h2 id="vector"><a class="header" href="#vector">Vector</a></h2>
+<p>Create and Insert:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut v = Vec::new();
+v.push(1);
+<span class="boring">}</span></code></pre>
+<p>Access and Get:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![1, 2, 3, 4, 5];
+
+let third: &amp;i32 = &amp;v[2];
+println!("3rd: {}", third);
+
+match v.get(2) {
+    Some(third) =&gt; println!("3rd: {}", third),
+    None =&gt; println!("None."),
+}
+<span class="boring">}</span></code></pre>
+<p>Visit:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let v = vec![1, 2, 3];
+
+for i in &amp;v {
+    println!("{}", i);
+}
+<span class="boring">}</span></code></pre>
+<p>Visit and Mutate:</p>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut v = vec![1, 2, 3];
+
+for i in &amp;mut v {
+    *i += 10
+}
+<span class="boring">}</span></code></pre>
+<p>Store different types:</p>
+<pre class="playground"><code class="language-rust edition2021">enum IpAddr {
+    V4(String),
+    V6(String)
+}
+
+fn main() {
+    let v = vec![
+        IpAddr::V4("127.0.0.1".to_string()),
+        IpAddr::V6("::1".to_string())
+    ];
+
+    for ip in v {
+        show_addr(ip)
+    }
+}
+
+fn show_addr(ip: IpAddr) {
+    println!("{:?}",ip);
+}</code></pre>
+<h2 id="hashmap"><a class="header" href="#hashmap">HashMap</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::collections::HashMap;
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Create.
+let mut scores = HashMap::new();
+
+// Insert.
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Yellow"), 50);
+scores.entry("Red").or_insert(5);
+
+// Get.
+let team_name = String::from("Blue");
+let score: Option&lt;&amp;i32&gt; = scores.get(&amp;team_name);
+
+// Visit
+for (key, value) in &amp;scores {
+    println!("{}: {}", key, value);
+}
+
+// Transform.
+let from_list: HashMap&lt;_,_&gt; = some_list.into_iter().collect();
+<span class="boring">}</span></code></pre>
+<h2 id="hashset"><a class="header" href="#hashset">HashSet</a></h2>
+<ul>
+<li>insert.</li>
+<li>contains.</li>
+<li>union.</li>
+<li>difference.</li>
+<li>intersection.</li>
+<li>symmetric_difference.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="concurrency"><a class="header" href="#concurrency">Concurrency</a></h1>
+<h2 id="model"><a class="header" href="#model">Model</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Pros</th><th>Cons</th></tr>
+</thead>
+<tbody>
+<tr><td>OS Thread</td><td>simple, native model</td><td>consistent and context switch overhead</td></tr>
+<tr><td>Event Driven</td><td>perf model</td><td>non-liner logic, callback hell</td></tr>
+<tr><td>Coroutines</td><td>perf model</td><td>non-system abstraction</td></tr>
+<tr><td>Actor</td><td>distributed model</td><td>complex flow control and retry logic</td></tr>
+<tr><td>Async/Await</td><td>perf, native model</td><td>complex internal logic</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>OS Threads</code> for CPU intensive task (parallel computing),
+<code>Async/Await</code> for I/O intensive task (blocking I/O).</p>
+<h2 id="threads"><a class="header" href="#threads">Threads</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::thread;
+use std::time::Duration;
+
+fn main() {
+    let handle = thread::spawn(|| {
+        for i in 1..5 {
+            println!("hi number {} from the spawned thread!", i);
+            thread::sleep(Duration::from_millis(1));
+        }
+    });
+
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+
+    handle.join().unwrap();
+}</code></pre>
+<h2 id="barrier"><a class="header" href="#barrier">Barrier</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::{Arc, Barrier};
+use std::thread;
+
+fn main() {
+    let mut handles = Vec::with_capacity(6);
+    let barrier = Arc::new(Barrier::new(6));
+
+    for _ in 0..6 {
+        let b = barrier.clone();
+        handles.push(thread::spawn(move|| {
+            println!("before wait");
+            b.wait();
+            println!("after wait");
+        }));
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+}</code></pre>
+<h2 id="condition-variables-and-mutex"><a class="header" href="#condition-variables-and-mutex">Condition Variables and Mutex</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::thread;
+use std::sync::{Arc, Mutex, Condvar};
+
+fn main() {
+    let pair = Arc::new((Mutex::new(false), Condvar::new()));
+    let pair2 = pair.clone();
+
+    thread::spawn(move|| {
+        let &amp;(ref lock, ref cvar) = &amp;*pair2;
+        let mut started = lock.lock().unwrap();
+        println!("changing started");
+        *started = true;
+        cvar.notify_one();
+    });
+
+    let &amp;(ref lock, ref cvar) = &amp;*pair;
+    let mut started = lock.lock().unwrap();
+    while !*started {
+        started = cvar.wait(started).unwrap();
+    }
+
+    println!("started changed");
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::{Arc, Mutex};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0));
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let counter = Arc::clone(&amp;counter);
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+}</code></pre>
+<p>Read and write mutex:</p>
+<ul>
+<li>同时允许多个读, 但最多只能有一个写.</li>
+<li>读和写不能同时存在.</li>
+<li>可以使用 <code>read</code>/<code>try_read</code>/<code>write</code>/<code>try_write</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::RwLock;
+
+fn main() {
+    let lock = RwLock::new(5);
+
+    // 同一时间允许多个读.
+    {
+        let r1 = lock.read().unwrap();
+        let r2 = lock.read().unwrap();
+        assert_eq!(*r1, 5);
+        assert_eq!(*r2, 5);
+    } // Drop.
+
+    // 同一时间只允许一个写.
+    {
+        let mut w = lock.write().unwrap();
+        *w += 1;
+        assert_eq!(*w, 6);
+    } // Drop.
+}</code></pre>
+<h2 id="communication"><a class="header" href="#communication">Communication</a></h2>
+<p>Message channel:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::mpsc;
+use std::thread;
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        tx.send(1).unwrap();
+    });
+
+    // Block.
+    println!("receive {}", rx.recv().unwrap());
+}</code></pre>
+<p>Sync channel with message buffer:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    // Sync channel with 3 length buffer.
+    let (tx, rx)= mpsc::sync_channel(3);
+
+    let handle = thread::spawn(move || {
+        println!("发送之前");
+        tx.send(1).unwrap();
+        println!("发送之后");
+    });
+
+    println!("睡眠之前");
+    thread::sleep(Duration::from_secs(3));
+    println!("睡眠之后");
+
+    println!("receive {}", rx.recv().unwrap());
+    handle.join().unwrap();
+}</code></pre>
+<p>Send message via <code>for</code> loop:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+
+    thread::spawn(move || {
+        let values = vec![
+            String::from("hi"),
+            String::from("from"),
+            String::from("the"),
+            String::from("thread"),
+        ];
+
+        for value in values {
+            tx.send(value).unwrap();
+            thread::sleep(Duration::from_secs(1));
+        }
+    });
+
+    for received in rx {
+        println!("Got: {}", received);
+    }
+}</code></pre>
+<p>Multiple producers:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::mpsc;
+use std::thread;
+
+fn main() {
+    let (tx, rx) = mpsc::channel();
+    let tx1 = tx.clone();
+
+    thread::spawn(move || {
+        tx.send(String::from("hi from raw tx")).unwrap();
+    });
+
+    thread::spawn(move || {
+        tx1.send(String::from("hi from cloned tx")).unwrap();
+    });
+
+    for received in rx {
+        println!("Got: {}", received);
+    }
+}</code></pre>
+<p>Multiple type message:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::mpsc::{self, Receiver, Sender};
+
+enum Fruit {
+    Apple(u8),
+    Orange(String)
+}
+
+fn main() {
+    let (tx, rx): (Sender&lt;Fruit&gt;, Receiver&lt;Fruit&gt;) = mpsc::channel();
+
+    tx.send(Fruit::Orange("sweet".to_string())).unwrap();
+    tx.send(Fruit::Apple(2)).unwrap();
+
+    for _ in 0..2 {
+        match rx.recv().unwrap() {
+            Fruit::Apple(count) =&gt; println!("received {} apples", count),
+            Fruit::Orange(flavor) =&gt; println!("received {} oranges", flavor),
+        }
+    }
+}</code></pre>
+<h2 id="tokio-semaphore"><a class="header" href="#tokio-semaphore">Tokio Semaphore</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::Arc;
+use tokio::sync::Semaphore;
+
+#[tokio::main]
+async fn main() {
+    let semaphore = Arc::new(Semaphore::new(3));
+    let mut join_handles = Vec::new();
+
+    for _ in 0..5 {
+        let permit = semaphore.clone().acquire_owned().await.unwrap();
+        join_handles.push(tokio::spawn(async move {
+            /**
+             * Task here ...
+             */
+            drop(permit);
+        }));
+    }
+
+    for handle in join_handles {
+        handle.await.unwrap();
+    }
+}</code></pre>
+<h2 id="atomic-primitives"><a class="header" href="#atomic-primitives">Atomic Primitives</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::ops::Sub;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::thread::{self, JoinHandle};
+use std::time::Instant;
+
+const N_TIMES: u64 = 10000000;
+const N_THREADS: usize = 10;
+
+static R: AtomicU64 = AtomicU64::new(0);
+
+fn add_n_times(n: u64) -&gt; JoinHandle&lt;()&gt; {
+    thread::spawn(move || {
+        for _ in 0..n {
+            R.fetch_add(1, Ordering::Relaxed);
+        }
+    })
+}
+
+fn main() {
+    let s = Instant::now();
+    let mut threads = Vec::with_capacity(N_THREADS);
+
+    for _ in 0..N_THREADS {
+        threads.push(add_n_times(N_TIMES));
+    }
+
+    for thread in threads {
+        thread.join().unwrap();
+    }
+
+    assert_eq!(N_TIMES * N_THREADS as u64, R.load(Ordering::Relaxed));
+
+    println!("{:?}",Instant::now().sub(s));
+}</code></pre>
+<p><code>Ordering</code> 内存顺序:</p>
+<ul>
+<li>Relaxed: 乱序.</li>
+<li>Release: 设置内存屏障, 保证它之前的操作永远在它之前.</li>
+<li>Acquire: 设置内存屏障, 保证它之后的操作永远在它之后.</li>
+<li>AcqRel: Acquire + Release.</li>
+<li>SeqCst: 顺序一致性.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use std::thread::{self, JoinHandle};
+use std::sync::atomic::{Ordering, AtomicBool};
+
+static mut DATA: u64 = 0;
+static READY: AtomicBool = AtomicBool::new(false);
+
+fn reset() {
+    unsafe {
+        DATA = 0;
+    }
+    READY.store(false, Ordering::Relaxed);
+}
+
+fn producer() -&gt; JoinHandle&lt;()&gt; {
+    thread::spawn(move || {
+        unsafe {
+            DATA = 100;                                 // A
+        }
+        READY.store(true, Ordering::Release);           // B: 内存屏障 ↑
+    })
+}
+
+fn consumer() -&gt; JoinHandle&lt;()&gt; {
+    thread::spawn(move || {
+        while !READY.load(Ordering::Acquire) {}         // C: 内存屏障 ↓
+
+        assert_eq!(100, unsafe { DATA });               // D
+    })
+}
+
+fn main() {
+    loop {
+        reset();
+
+        let t_producer = producer();
+        let t_consumer = consumer();
+
+        t_producer.join().unwrap();
+        t_consumer.join().unwrap();
+    }
+}</code></pre>
+<p>Spinlock:</p>
+<pre class="playground"><code class="language-rust edition2021">use std::sync::Arc;
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::{hint, thread};
+
+fn main() {
+    let spinlock = Arc::new(AtomicUsize::new(1));
+    let spinlock_clone = Arc::clone(&amp;spinlock);
+    let thread = thread::spawn(move|| {
+        spinlock_clone.store(0, Ordering::SeqCst);
+    });
+
+    // 等待其它线程释放锁.
+    while spinlock.load(Ordering::SeqCst) != 0 {
+        hint::spin_loop();
+    }
+
+    if let Err(panic) = thread.join() {
+        println!("Thread had an error: {:?}", panic);
+    }
+}</code></pre>
+<h2 id="send-and-sync"><a class="header" href="#send-and-sync">Send and Sync</a></h2>
+<p>Send and Sync:</p>
+<ul>
+<li>Marker trait.</li>
+<li>实现 <code>Send</code> 的类型可以在线程间安全的传递其所有权,
+实现 <code>Sync</code> 的类型可以在线程间安全的共享 (通过引用).
+若 <code>&amp;T: Send</code>, 则 <code>T: Sync</code>.</li>
+<li>绝大部分类型都实现了 <code>Send</code>/<code>Sync</code>,
+例外: 原生指针, <code>Cell</code>/<code>RefCell</code>, <code>Rc</code>.</li>
+</ul>
+<h2 id="thread-pool"><a class="header" href="#thread-pool">Thread Pool</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::mpsc;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::thread;
+
+type Job = Box&lt;dyn FnOnce() + Send + 'static&gt;;
+
+enum Message {
+    NewJob(Job),
+    Terminate,
+}
+
+pub struct ThreadPool {
+    workers: Vec&lt;Worker&gt;,
+    sender: mpsc::Sender&lt;Message&gt;,
+}
+
+impl ThreadPool {
+    /// Create a new ThreadPool.
+    ///
+    /// The size is the number of threads in the pool.
+    ///
+    /// # Panics
+    ///
+    /// The `new` function will panic if the size is zero.
+    pub fn new(size: usize) -&gt; ThreadPool {
+        assert!(size &gt; 0);
+
+        let (sender, receiver) = mpsc::channel();
+        let receiver = Arc::new(Mutex::new(receiver));
+        let mut workers = Vec::with_capacity(size);
+
+        for id in 0..size {
+            workers.push(Worker::new(id, Arc::clone(&amp;receiver)));
+        }
+
+        ThreadPool { workers, sender }
+    }
+
+    pub fn execute&lt;F&gt;(&amp;self, f: F)
+    where
+        F: FnOnce() + Send + 'static,
+    {
+        let job = Box::new(f);
+        self.sender.send(Message::NewJob(job)).unwrap();
+    }
+}
+
+impl Drop for ThreadPool {
+    fn drop(&amp;mut self) {
+        println!("Sending terminate message to all workers.");
+
+        for _ in &amp;self.workers {
+            self.sender.send(Message::Terminate).unwrap();
+        }
+
+        println!("Shutting down all workers.");
+
+        for worker in &amp;mut self.workers {
+            println!("Shutting down worker {}", worker.id);
+
+            if let Some(thread) = worker.thread.take() {
+                thread.join().unwrap();
+            }
+        }
+    }
+}
+
+struct Worker {
+    id: usize,
+    thread: Option&lt;thread::JoinHandle&lt;()&gt;&gt;,
+}
+
+impl Worker {
+    fn new(id: usize, receiver: Arc&lt;Mutex&lt;mpsc::Receiver&lt;Message&gt;&gt;&gt;) -&gt; Worker {
+        let thread = thread::spawn(move || loop {
+            let message = receiver.lock().unwrap().recv().unwrap();
+
+            match message {
+                Message::NewJob(job) =&gt; {
+                    println!("Worker {} got a job; executing.", id);
+                    job();
+                }
+                Message::Terminate =&gt; {
+                    println!("Worker {} was told to terminate.", id);
+                    break;
+                }
+            }
+        });
+
+        Worker {
+            id,
+            thread: Some(thread),
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="async-and-await"><a class="header" href="#async-and-await">Async and Await</a></h2>
+<ul>
+<li>在 <code>.await</code> 执行期间, 任务可能会在线程间转移.</li>
+<li><code>.await</code> 只能用于 async fn 函数中.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use futures::executor::block_on;
+use futures::join;
+
+async fn learn_song() -&gt; Song { /* ... */ }
+async fn sing_song(song: Song) { /* ... */ }
+async fn dance() { /* ... */ }
+
+async fn learn_and_sing() {
+    let song = learn_song().await;
+    sing_song(song).await;
+}
+
+async fn async_main() {
+    let f1 = learn_and_sing();
+    let f2 = dance();
+    join!(f1, f2);
+}
+
+fn main() {
+    block_on(async_main());
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use futures::future;
+use futures::select;
+
+pub fn main() {
+    let mut a_fut = future::ready(4);
+    let mut b_fut = future::ready(6);
+    let mut total = 0;
+
+    loop {
+        select! {
+            a = a_fut =&gt; total += a,
+            b = b_fut =&gt; total += b,
+            complete =&gt; break,
+            default =&gt; panic!(), // 该分支永远不会运行.
+        };
+    }
+
+    assert_eq!(total, 10);
+}</code></pre>
+<h2 id="future"><a class="header" href="#future">Future</a></h2>
+<ul>
+<li><code>Future</code> 代表一组计算, 惰性求值. 当 <code>.await</code> 调用时才真正开始执行.</li>
+<li><code>Future</code> 启动后会因资源等原因阻塞, 转入 <code>pending</code> 状态.</li>
+<li><code>Future</code> 阻塞后, 当资源准备好可以重新启动时, 会通过 <code>Waker.wake</code> 通知执行器, 等待被下一次 <code>poll</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Future {
+    type Output;
+    fn poll(
+        self: Pin&lt;&amp;mut Self&gt;,
+        cx: &amp;mut Context&lt;'_&gt;,
+    ) -&gt; Poll&lt;Self::Output&gt;;
+}
+<span class="boring">}</span></code></pre>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>
+use std::{
+    future::Future,
+    pin::Pin,
+    sync::{Arc, Mutex},
+    task::{Context, Poll, Waker},
+    thread,
+    time::Duration,
+};
+
+pub struct TimerFuture {
+    shared_state: Arc&lt;Mutex&lt;SharedState&gt;&gt;,
+}
+
+struct SharedState {
+    completed: bool,
+    waker: Option&lt;Waker&gt;,
+}
+
+impl Future for TimerFuture {
+    type Output = ();
+    fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;Self::Output&gt; {
+        let mut shared_state = self.shared_state.lock().unwrap();
+
+        if shared_state.completed {
+            Poll::Ready(())
+        } else {
+            shared_state.waker = Some(cx.waker().clone());
+            Poll::Pending
+        }
+    }
+}
+
+impl TimerFuture {
+    pub fn new(duration: Duration) -&gt; Self {
+        let shared_state = Arc::new(Mutex::new(SharedState {
+            completed: false,
+            waker: None,
+        }));
+
+        let thread_shared_state = shared_state.clone();
+
+        thread::spawn(move || {
+            thread::sleep(duration);
+            let mut shared_state = thread_shared_state.lock().unwrap();
+            shared_state.completed = true;
+            if let Some(waker) = shared_state.waker.take() {
+                waker.wake()
+            }
+        });
+
+        TimerFuture { shared_state }
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>当 <code>Future</code> 会返回 <code>Poll::Pending</code> 时,
+一定要确保 <code>wake</code> 能被正常调用,
+否则会导致任务永远被挂起,
+再也不会被执行器 <code>poll</code>.</p>
+<pre class="playground"><code class="language-rust edition2021">use std::future::Future;
+use std::pin::Pin;
+use std::task::{Context, Poll};
+use std::time::{Duration, Instant};
+
+struct Delay {
+    when: Instant,
+}
+
+impl Future for Delay {
+    type Output = &amp;'static str;
+
+    fn poll(self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;)
+        -&gt; Poll&lt;&amp;'static str&gt;
+    {
+        if Instant::now() &gt;= self.when {
+            println!("Hello world");
+            Poll::Ready("done")
+        } else {
+            let waker = cx.waker().clone();
+            let when = self.when;
+
+            thread::spawn(move || {
+                let now = Instant::now();
+
+                if now &lt; when {
+                    thread::sleep(when - now);
+                }
+
+                waker.wake();
+            });
+
+            Poll::Pending
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() {
+    let when = Instant::now() + Duration::from_millis(10);
+    let future = Delay { when };
+
+    let out = future.await;
+    assert_eq!(out, "done");
+}</code></pre>
+<h2 id="asynchronous-runtime"><a class="header" href="#asynchronous-runtime">Asynchronous Runtime</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use {
+    futures::{
+        future::{BoxFuture, FutureExt},
+        task::{waker_ref, ArcWake},
+    },
+    std::{
+        future::Future,
+        sync::mpsc::{sync_channel, Receiver, SyncSender},
+        sync::{Arc, Mutex},
+        task::{Context, Poll},
+        time::Duration,
+    },
+    // 引入之前实现的定时器模块
+    timer_future::TimerFuture,
+};
+
+struct Task {
+    future: Mutex&lt;Option&lt;BoxFuture&lt;'static, ()&gt;&gt;&gt;,
+    task_sender: SyncSender&lt;Arc&lt;Task&gt;&gt;,
+}
+
+impl ArcWake for Task {
+    fn wake_by_ref(arc_self: &amp;Arc&lt;Self&gt;) {
+        let cloned = arc_self.clone();
+        arc_self
+            .task_sender
+            .send(cloned)
+            .expect("任务队列已满");
+    }
+}
+
+#[derive(Clone)]
+struct Spawner {
+    task_sender: SyncSender&lt;Arc&lt;Task&gt;&gt;,
+}
+
+impl Spawner {
+    fn spawn(&amp;self, future: impl Future&lt;Output = ()&gt; + 'static + Send) {
+        let future = future.boxed();
+        let task = Arc::new(Task {
+            future: Mutex::new(Some(future)),
+            task_sender: self.task_sender.clone(),
+        });
+        self.task_sender.send(task).expect("任务队列已满");
+    }
+}
+
+struct Executor {
+    ready_queue: Receiver&lt;Arc&lt;Task&gt;&gt;,
+}
+
+impl Executor {
+    fn run(&amp;self) {
+        while let Ok(task) = self.ready_queue.recv() {
+            let mut future_slot = task.future.lock().unwrap();
+
+            if let Some(mut future) = future_slot.take() {
+                let waker = waker_ref(&amp;task);
+                let context = &amp;mut Context::from_waker(&amp;*waker);
+
+                if future.as_mut().poll(context).is_pending() {
+                    // Future 未执行完，, 将它放回任务中, 等待下次被 poll.
+                    *future_slot = Some(future);
+                }
+            }
+        }
+    }
+}
+
+fn new_executor_and_spawner() -&gt; (Executor, Spawner) {
+    const MAX_QUEUED_TASKS: usize = 10_000;
+    let (task_sender, ready_queue) = sync_channel(MAX_QUEUED_TASKS);
+    (Executor { ready_queue }, Spawner { task_sender })
+}
+
+fn main() {
+    let (executor, spawner) = new_executor_and_spawner();
+
+    spawner.spawn(async {
+        println!("howdy!");
+        TimerFuture::new(Duration::new(2, 0)).await;
+        println!("done!");
+    });
+
+    drop(spawner);
+
+    // 运行执行器直到任务队列为空.
+    // 任务运行后, 会先打印 `howdy!`, 暂停 2 秒, 接着打印 `done!`.
+    executor.run();
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::cell::RefCell;
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::{Arc, Mutex};
+use std::task::{Context, Poll, Waker};
+use std::thread;
+use std::time::{Duration, Instant};
+use futures::task::{self, ArcWake};
+use crossbeam::channel;
+
+fn main() {
+    let mini_tokio = MiniTokio::new();
+
+    mini_tokio.spawn(async {
+        spawn(async {
+            delay(Duration::from_millis(100)).await;
+            println!("world");
+        });
+
+        spawn(async {
+            println!("hello");
+        });
+
+        delay(Duration::from_millis(200)).await;
+        std::process::exit(0);
+    });
+
+    mini_tokio.run();
+}
+
+struct MiniTokio {
+    scheduled: channel::Receiver&lt;Arc&lt;Task&gt;&gt;,
+    sender: channel::Sender&lt;Arc&lt;Task&gt;&gt;,
+}
+
+impl MiniTokio {
+    fn new() -&gt; MiniTokio {
+        let (sender, scheduled) = channel::unbounded();
+
+        MiniTokio { scheduled, sender }
+    }
+
+    fn spawn&lt;F&gt;(&amp;self, future: F)
+    where
+        F: Future&lt;Output = ()&gt; + Send + 'static,
+    {
+        Task::spawn(future, &amp;self.sender);
+    }
+
+    fn run(&amp;self) {
+        CURRENT.with(|cell| {
+            *cell.borrow_mut() = Some(self.sender.clone());
+        });
+
+        while let Ok(task) = self.scheduled.recv() {
+            task.poll();
+        }
+    }
+}
+
+pub fn spawn&lt;F&gt;(future: F)
+where
+    F: Future&lt;Output = ()&gt; + Send + 'static,
+{
+    CURRENT.with(|cell| {
+        let borrow = cell.borrow();
+        let sender = borrow.as_ref().unwrap();
+        Task::spawn(future, sender);
+    });
+}
+
+async fn delay(dur: Duration) {
+    struct Delay {
+        when: Instant,
+        waker: Option&lt;Arc&lt;Mutex&lt;Waker&gt;&gt;&gt;,
+    }
+
+    impl Future for Delay {
+        type Output = ();
+
+        fn poll(mut self: Pin&lt;&amp;mut Self&gt;, cx: &amp;mut Context&lt;'_&gt;) -&gt; Poll&lt;()&gt; {
+            if let Some(waker) = &amp;self.waker {
+                let mut waker = waker.lock().unwrap();
+
+                if !waker.will_wake(cx.waker()) {
+                    *waker = cx.waker().clone();
+                }
+            } else {
+                let when = self.when;
+                let waker = Arc::new(Mutex::new(cx.waker().clone()));
+                self.waker = Some(waker.clone());
+
+                thread::spawn(move || {
+                    let now = Instant::now();
+
+                    if now &lt; when {
+                        thread::sleep(when - now);
+                    }
+
+                    let waker = waker.lock().unwrap();
+                    waker.wake_by_ref();
+                });
+            }
+
+            if Instant::now() &gt;= self.when {
+                Poll::Ready(())
+            } else {
+                Poll::Pending
+            }
+        }
+    }
+
+    let future = Delay {
+        when: Instant::now() + dur,
+        waker: None,
+    };
+
+    future.await;
+}
+
+thread_local! {
+    static CURRENT: RefCell&lt;Option&lt;channel::Sender&lt;Arc&lt;Task&gt;&gt;&gt;&gt; =
+        RefCell::new(None);
+}
+
+struct Task {
+    future: Mutex&lt;Pin&lt;Box&lt;dyn Future&lt;Output = ()&gt; + Send&gt;&gt;&gt;,
+    executor: channel::Sender&lt;Arc&lt;Task&gt;&gt;,
+}
+
+impl Task {
+    fn spawn&lt;F&gt;(future: F, sender: &amp;channel::Sender&lt;Arc&lt;Task&gt;&gt;)
+    where
+        F: Future&lt;Output = ()&gt; + Send + 'static,
+    {
+        let task = Arc::new(Task {
+            future: Mutex::new(Box::pin(future)),
+            executor: sender.clone(),
+        });
+
+        let _ = sender.send(task);
+    }
+
+    fn poll(self: Arc&lt;Self&gt;) {
+        let waker = task::waker(self.clone());
+        let mut cx = Context::from_waker(&amp;waker);
+        let mut future = self.future.try_lock().unwrap();
+        let _ = future.as_mut().poll(&amp;mut cx);
+    }
+}
+
+impl ArcWake for Task {
+    fn wake_by_ref(arc_self: &amp;Arc&lt;Self&gt;) {
+        let _ = arc_self.executor.send(arc_self.clone());
+    }
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">#[tokio::main]
+async fn main() {
+    println!("Hello world");
+}
+
+fn main() {
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(async {
+            println!("Hello world");
+        })
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="macros"><a class="header" href="#macros">Macros</a></h1>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[macro_export]
+macro_rules! vec {
+    ( $( $x:expr ),* ) =&gt; {
+        {
+            let mut temp_vec = Vec::new();
+            $(
+                temp_vec.push($x);
+            )*
+            temp_vec
+        }
+    };
+}
+<span class="boring">}</span></code></pre>
+<h2 id="unsafe-code"><a class="header" href="#unsafe-code">Unsafe Code</a></h2>
+<p><code>unsafe {}</code>:</p>
+<ul>
+<li>对原始指针进行解引用.</li>
+<li>调用<code>不安全</code>的函数 (包括 C 函数, 编译器内建指令, 原始分配器).</li>
+<li>实现<code>不安全</code>的特性.</li>
+<li>访问<code>union</code>字段.</li>
+<li>改变静态数据.</li>
+</ul>
+<h2 id="attributes"><a class="header" href="#attributes">Attributes</a></h2>
+<ul>
+<li>Crate scope:<code>#![crate_attribute]</code>.</li>
+<li>Module/Function scope: <code>#[item_attribute]</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[attribute = "value"]
+#[attribute(key = "value")]
+#[attribute(value)]
+<span class="boring">}</span></code></pre>
+<h3 id="crate-attributes"><a class="header" href="#crate-attributes">Crate Attributes</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span>#![crate_type = "lib"]
+#![crate_name = "rand"]
+<span class="boring">fn main() {
+</span><span class="boring">}</span></code></pre>
+<h3 id="linter-attributes"><a class="header" href="#linter-attributes">Linter Attributes</a></h3>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[allow(dead_code)]
+#[allow(unused)]
+<span class="boring">}</span></code></pre>
+<h3 id="compile-attributes"><a class="header" href="#compile-attributes">Compile Attributes</a></h3>
+<pre class="playground"><code class="language-rust edition2021">#[cfg(target_os = "linux")]
+fn are_you_on_linux() {
+    println!("You are running linux!")
+}
+
+#[cfg(not(target_os = "linux"))]
+fn are_you_on_linux() {
+    println!("You are *not* running linux!")
+}
+
+fn main() {
+    are_you_on_linux();
+
+    if cfg!(target_os = "linux") {
+        println!("Yes. It's definitely linux!");
+    } else {
+        println!("Yes. It's definitely *not* linux!");
+    }
+}</code></pre>
+<h2 id="comments"><a class="header" href="#comments">Comments</a></h2>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Line Comments
+/* Block Comments */
+/// Document Line Comments
+/** Document Block Comments */
+//! Crate Line Comments
+/*! Crate Block Comments */
+
+/// [`Option`]
+/// [`Type`](struct@Type)
+/// [`Type`](fn@Type)
+
+#[doc(alias = "alias" )]
+<span class="boring">}</span></code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="io"><a class="header" href="#io">I/O</a></h1>
+<h2 id="path"><a class="header" href="#path">Path</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::path::Path;
+
+fn main() {
+    let path = Path::new(".");
+    let new_path = path.join("a").join("b");
+
+    // 将路径转换成一个字符串切片
+    match new_path.to_str() {
+        None =&gt; panic!("new path is not a valid UTF-8 sequence"),
+        Some(s) =&gt; println!("new path is {}", s),
+    }
+
+    // `display` 方法返回一个可显示的结构体
+    let display = path.display();
+}</code></pre>
+<h2 id="files"><a class="header" href="#files">Files</a></h2>
+<ul>
+<li><code>File::open</code>.</li>
+<li><code>File::create</code>.</li>
+<li><code>file.read_to_string</code>.</li>
+<li><code>file.write_all</code>.</li>
+<li><code>bufReader.lines</code>.</li>
+<li><code>OpenOptions</code>.</li>
+<li><code>fs::read_dir</code>.</li>
+<li><code>fs::create_dir</code>.</li>
+<li><code>fs::create_dir_all</code>.</li>
+<li><code>fs::remove_file</code>.</li>
+<li><code>fs::remove_dir</code>.</li>
+<li><code>fs::symlink</code>.</li>
+</ul>
+<pre class="playground"><code class="language-rust edition2021">use std::error::Error;
+use std::fs::File;
+use std::io::prelude::*;
+use std::path::Path;
+
+fn main() {
+    let path = Path::new("hello.txt");
+    let display = path.display();
+
+    let mut file = match File::open(&amp;path) {
+        Err(why) =&gt; panic!("couldn't open {}: {}", display,
+                                                   why.description()),
+        Ok(file) =&gt; file,
+    };
+
+    let mut s = String::new();
+    match file.read_to_string(&amp;mut s) {
+        Err(why) =&gt; panic!("couldn't read {}: {}", display,
+                                                   why.description()),
+        Ok(_) =&gt; print!("{} contains:\n{}", display, s),
+    }
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::fs::File;
+use std::io::{self, BufRead};
+use std::path::Path;
+
+fn main() {
+    if let Ok(lines) = read_lines("./hosts") {
+        for line in lines {
+            if let Ok(ip) = line {
+                println!("{}", ip);
+            }
+        }
+    }
+}
+
+fn read_lines&lt;P&gt;(filename: P) -&gt; io::Result&lt;io::Lines&lt;io::BufReader&lt;File&gt;&gt;&gt;
+where P: AsRef&lt;Path&gt;, {
+    let file = File::open(filename)?;
+    Ok(io::BufReader::new(file).lines())
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">static LOREM_IPSUM: &amp;'static str = "Words";
+
+use std::error::Error;
+use std::fs::File;
+use std::io::prelude::*;
+use std::path::Path;
+
+fn main() {
+    let path = Path::new("out/lorem_ipsum.txt");
+    let display = path.display();
+
+    let mut file = match File::create(&amp;path) {
+        Err(why) =&gt; panic!("couldn't create {}: {}",
+                           display,
+                           why.description()),
+        Ok(file) =&gt; file,
+    };
+
+    match file.write_all(LOREM_IPSUM.as_bytes()) {
+        Err(why) =&gt; {
+            panic!("couldn't write to {}: {}", display,
+                                               why.description())
+        },
+        Ok(_) =&gt; println!("successfully wrote to {}", display),
+    }
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::fs;
+use std::fs::{File, OpenOptions};
+use std::io;
+use std::io::prelude::*;
+use std::os::unix;
+use std::path::Path;
+
+fn cat(path: &amp;Path) -&gt; io::Result&lt;String&gt; {
+    let mut f = File::open(path)?;
+    let mut s = String::new();
+    match f.read_to_string(&amp;mut s) {
+        Ok(_) =&gt; Ok(s),
+        Err(e) =&gt; Err(e),
+    }
+}
+
+fn echo(s: &amp;str, path: &amp;Path) -&gt; io::Result&lt;()&gt; {
+    let mut f = File::create(path)?;
+    f.write_all(s.as_bytes())
+}
+
+fn touch(path: &amp;Path) -&gt; io::Result&lt;()&gt; {
+    match OpenOptions::new().create(true).write(true).open(path) {
+        Ok(_) =&gt; Ok(()),
+        Err(e) =&gt; Err(e),
+    }
+}
+
+fn main() {
+    println!("`mkdir a`");
+    match fs::create_dir("a") {
+        Err(why) =&gt; println!("! {:?}", why.kind()),
+        Ok(_) =&gt; {},
+    }
+
+    println!("`echo hello &gt; a/b.txt`");
+    echo("hello", &amp;Path::new("a/b.txt")).unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`mkdir -p a/c/d`");
+    fs::create_dir_all("a/c/d").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`touch a/c/e.txt`");
+    touch(&amp;Path::new("a/c/e.txt")).unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`ln -s ../b.txt a/c/b.txt`");
+    if cfg!(target_family = "unix") {
+        unix::fs::symlink("../b.txt", "a/c/b.txt").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+        });
+    }
+
+    println!("`cat a/c/b.txt`");
+    match cat(&amp;Path::new("a/c/b.txt")) {
+        Err(why) =&gt; println!("! {:?}", why.kind()),
+        Ok(s) =&gt; println!("&gt; {}", s),
+    }
+
+    println!("`ls a`");
+    match fs::read_dir("a") {
+        Err(why) =&gt; println!("! {:?}", why.kind()),
+        Ok(paths) =&gt; for path in paths {
+            println!("&gt; {:?}", path.unwrap().path());
+        },
+    }
+
+    println!("`rm a/c/e.txt`");
+    fs::remove_file("a/c/e.txt").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+
+    println!("`rmdir a/c/d`");
+    fs::remove_dir("a/c/d").unwrap_or_else(|why| {
+        println!("! {:?}", why.kind());
+    });
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="system"><a class="header" href="#system">System</a></h1>
+<h2 id="process"><a class="header" href="#process">Process</a></h2>
+<pre class="playground"><code class="language-rust edition2021">use std::process::Command;
+
+fn main() {
+    let output = Command::new("rustc")
+        .arg("--version")
+        .output().unwrap_or_else(|e| {
+            panic!("failed to execute process: {}", e)
+    });
+
+    if output.status.success() {
+        let s = String::from_utf8_lossy(&amp;output.stdout);
+        print!("rustc succeeded and stdout was:\n{}", s);
+    } else {
+        let s = String::from_utf8_lossy(&amp;output.stderr);
+        print!("rustc failed and stderr was:\n{}", s);
+    }
+}</code></pre>
+<pre class="playground"><code class="language-rust edition2021">use std::error::Error;
+use std::io::prelude::*;
+use std::process::{Command, Stdio};
+
+static PROGRAM: &amp;'static str =
+"the quick brown fox jumped over the lazy dog\n";
+
+fn main() {
+    let process = match Command::new("wc")
+                                .stdin(Stdio::piped())
+                                .stdout(Stdio::piped())
+                                .spawn() {
+        Err(why) =&gt; panic!("couldn't spawn wc: {}", why.description()),
+        Ok(process) =&gt; process,
+    };
+
+    match process.stdin.unwrap().write_all(PROGRAM.as_bytes()) {
+        Err(why) =&gt; panic!("couldn't write to wc stdin: {}",
+                           why.description()),
+        Ok(_) =&gt; println!("sent program to wc"),
+    }
+
+    let mut s = String::new();
+    match process.stdout.unwrap().read_to_string(&amp;mut s) {
+        Err(why) =&gt; panic!("couldn't read wc stdout: {}",
+                           why.description()),
+        Ok(_) =&gt; print!("wc responded with:\n{}", s),
+    }
+}</code></pre>
+<h2 id="command-line"><a class="header" href="#command-line">Command Line</a></h2>
+<pre class="playground"><code class="language-rust edition2021">
+use std::env;
+use std::error::Error;
+use std::fs;
+use std::process;
+
+pub struct Config {
+    pub query: String,
+    pub filename: String,
+    pub case_sensitive: bool,
+}
+
+impl Config {
+    pub fn new(args: &amp;[String]) -&gt; Result&lt;Config, &amp;'static str&gt; {
+        if args.len() &lt; 3 {
+            return Err("not enough arguments");
+        }
+
+        let query = args[1].clone();
+        let filename = args[2].clone();
+
+        let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
+
+        Ok(Config {
+            query,
+            filename,
+            case_sensitive,
+        })
+    }
+}
+
+pub fn run(config: Config) -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+    let contents = fs::read_to_string(config.filename)?;
+
+    let results = if config.case_sensitive {
+        search(&amp;config.query, &amp;contents)
+    } else {
+        search_case_insensitive(&amp;config.query, &amp;contents)
+    };
+
+    for line in results {
+        println!("{}", line);
+    }
+
+    Ok(())
+}
+
+pub fn search&lt;'a&gt;(query: &amp;str, contents: &amp;'a str) -&gt; Vec&lt;&amp;'a str&gt; {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line);
+        }
+    }
+
+    results
+}
+
+pub fn search_case_insensitive&lt;'a&gt;(
+    query: &amp;str,
+    contents: &amp;'a str,
+) -&gt; Vec&lt;&amp;'a str&gt; {
+    let query = query.to_lowercase();
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.to_lowercase().contains(&amp;query) {
+            results.push(line);
+        }
+    }
+
+    results
+}
+
+fn main() {
+    let args: Vec&lt;String&gt; = env::args().collect();
+
+    let config = Config::new(&amp;args).unwrap_or_else(|err| {
+        eprintln!("Problem parsing arguments: {}", err);
+        process::exit(1);
+    });
+
+    if let Err(e) = run(config) {
+        eprintln!("Application error: {}", e);
+
+        process::exit(1);
+    }
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="testing"><a class="header" href="#testing">Testing</a></h1>
+<pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn greeting(name: &amp;str) -&gt; String {
+    format!("Hello {}!", name)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[ignore]
+    #[should_panic]
+    #[should_panic(expected = "Panic message.")]
+    fn greeting_contains_name() {
+        let target = "name";
+        let result = greeting("Name");
+        assert!(
+            result.contains(target),
+            "Expect: `{}`, Result: `{}`",
+            target,
+            result
+        );
+    }
+}
+<span class="boring">}</span></code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="ace-2a3cd908.js"></script>
+        <script src="mode-rust-2c9d5c9a.js"></script>
+        <script src="editor-16ca416c.js"></script>
+        <script src="theme-dawn-4493f9c8.js"></script>
+        <script src="theme-tomorrow_night-9dbe62a9.js"></script>
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,2 @@
+createSrcSidebar('[["basis",["",[["list",[],["mod.rs","stack.rs"]]],["lib.rs"]]],["hello_world",["",[],["lib.rs"]]],["rustlings",["",[],["exercise.rs","main.rs","run.rs","ui.rs","verify.rs"]]]]');
+//{"start":19,"fragment_lengths":[61,35,77]}
