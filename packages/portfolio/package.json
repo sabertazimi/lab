@@ -10,7 +10,8 @@
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "lint": "eslint . && pnpm lint:typecheck",
-    "lint:typecheck": "react-router typegen && tsc"
+    "lint:typecheck": "react-router typegen && tsc",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@icons-pack/react-simple-icons": "^13.11.2",
@@ -28,13 +29,13 @@
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
-    "@dg-scripts/eslint-config": "^6.1.0",
+    "@dg-scripts/eslint-config": "^6.1.1",
     "@react-router/dev": "^7.13.0",
     "@tailwindcss/vite": "^4.2.0",
     "@types/node": "^24.10.13",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.3",
+    "eslint": "^10.0.2",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "shadcn": "^3.8.5",

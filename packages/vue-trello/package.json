@@ -19,12 +19,12 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@dg-scripts/eslint-config": "^6.1.0",
-    "@dg-scripts/stylelint-config": "^6.1.0",
+    "@dg-scripts/eslint-config": "^6.1.1",
+    "@dg-scripts/stylelint-config": "^6.1.1",
     "@types/node": "^24.10.13",
     "@vitejs/plugin-vue": "^6.0.4",
     "autoprefixer": "^10.4.24",
-    "eslint": "^9.39.3",
+    "eslint": "^10.0.2",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
     "stylelint": "^17.3.0",

@@ -203,7 +203,7 @@ interface MultiSelectProps
   responsive?:
     | boolean
     | {
-      /** Configuration for mobile devices (< 640px) */
+    /** Configuration for mobile devices (< 640px) */
       mobile?: {
         maxCount?: number
         hideIcons?: boolean
@@ -303,7 +303,7 @@ export function MultiSelect({
   options,
   onValueChange,
   variant,
-  // eslint-disable-next-line react/no-unstable-default-props -- Default value is not unstable
+
   defaultValue = [],
   placeholder = 'Select options',
   animation = 0,
@@ -335,9 +335,9 @@ export function MultiSelect({
 
   const [politeMessage, setPoliteMessage] = React.useState('')
   const [assertiveMessage, setAssertiveMessage] = React.useState('')
-  const prevSelectedCount = React.useRef(selectedValues.length)
-  const prevIsOpen = React.useRef(isPopoverOpen)
-  const prevSearchValue = React.useRef(searchValue)
+  const prevSelectedCountRef = React.useRef(selectedValues.length)
+  const prevIsOpenRef = React.useRef(isPopoverOpen)
+  const prevSearchValueRef = React.useRef(searchValue)
 
   const announce = React.useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
     if (priority === 'assertive') {
@@ -536,8 +536,7 @@ export function MultiSelect({
       const action = deduplicateOptions ? '已自动移除' : '检测到'
       toast.warning(
         `MultiSelect: ${action}重复的选项值: ${duplicates.join(', ')}. `
-        + `${
-          deduplicateOptions ? '重复项已自动移除。' : `这可能导致意外行为。建议设置 'deduplicateOptions={true}' 或确保所有选项值唯一。`
+        + `${deduplicateOptions ? '重复项已自动移除。' : `这可能导致意外行为。建议设置 'deduplicateOptions={true}' 或确保所有选项值唯一。`
         }`,
       )
     }
@@ -676,16 +675,16 @@ export function MultiSelect({
   })
 
   // 追踪上一次的 Popover 打开状态
-  const prevIsPopoverOpen = React.useRef(isPopoverOpen)
+  const prevIsPopoverOpenRef = React.useRef(isPopoverOpen)
 
   React.useEffect(() => {
     // 只在从打开变为关闭时触发 onClose
-    if (prevIsPopoverOpen.current && !isPopoverOpen) {
+    if (prevIsPopoverOpenRef.current && !isPopoverOpen) {
       setSearchValue('')
       // 触发 onClose 回调
       onCloseRef.current?.()
     }
-    prevIsPopoverOpen.current = isPopoverOpen
+    prevIsPopoverOpenRef.current = isPopoverOpen
   }, [isPopoverOpen])
 
   // 处理点击外部区域时触发 onBlur
@@ -727,8 +726,8 @@ export function MultiSelect({
     const selectedCount = selectedValues.length
     const allOptions = getAllOptions()
     const totalOptions = allOptions.filter(opt => !opt.disabled).length
-    if (selectedCount !== prevSelectedCount.current) {
-      const diff = selectedCount - prevSelectedCount.current
+    if (selectedCount !== prevSelectedCountRef.current) {
+      const diff = selectedCount - prevSelectedCountRef.current
       if (diff > 0) {
         const addedItems = selectedValues.slice(-diff)
         const addedLabels = addedItems.map(value => allOptions.find(opt => opt.value === value)?.label).filter(Boolean)
@@ -741,19 +740,19 @@ export function MultiSelect({
       } else if (diff < 0) {
         announce(`Option removed. ${selectedCount} of ${totalOptions} options selected.`)
       }
-      prevSelectedCount.current = selectedCount
+      prevSelectedCountRef.current = selectedCount
     }
 
-    if (isPopoverOpen !== prevIsOpen.current) {
+    if (isPopoverOpen !== prevIsOpenRef.current) {
       if (isPopoverOpen) {
         announce(`Dropdown opened. ${totalOptions} options available. Use arrow keys to navigate.`)
       } else {
         announce('Dropdown closed.')
       }
-      prevIsOpen.current = isPopoverOpen
+      prevIsOpenRef.current = isPopoverOpen
     }
 
-    if (searchValue !== prevSearchValue.current && searchValue !== undefined) {
+    if (searchValue !== prevSearchValueRef.current && searchValue !== undefined) {
       if (searchValue && isPopoverOpen) {
         const filteredCount = allOptions.filter(
           opt =>
@@ -763,7 +762,7 @@ export function MultiSelect({
 
         announce(`${filteredCount} option${filteredCount === 1 ? '' : 's'} found for "${searchValue}"`)
       }
-      prevSearchValue.current = searchValue
+      prevSearchValueRef.current = searchValue
     }
   }, [selectedValues, isPopoverOpen, searchValue, announce, getAllOptions])
 
@@ -800,8 +799,7 @@ export function MultiSelect({
             aria-haspopup="listbox"
             aria-controls={isPopoverOpen ? listboxId : undefined}
             aria-describedby={`${triggerDescriptionId} ${selectedCountId}`}
-            aria-label={`Multi-select: ${selectedValues.length} of ${
-              getAllOptions().length
+            aria-label={`Multi-select: ${selectedValues.length} of ${getAllOptions().length
             } options selected. ${placeholder}`}
             className={cn(
               'flex h-auto min-h-10 items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit [&_svg]:pointer-events-auto',
@@ -1031,8 +1029,7 @@ export function MultiSelect({
                           role="option"
                           aria-selected={isSelected}
                           aria-disabled={option.disabled}
-                          aria-label={`${option.label}${
-                            isSelected ? ', selected' : ', not selected'
+                          aria-label={`${option.label}${isSelected ? ', selected' : ', not selected'
                           }${option.disabled ? ', disabled' : ''}`}
                           className={cn(
                             'cursor-pointer rounded-xs',
@@ -1072,8 +1069,7 @@ export function MultiSelect({
                         role="option"
                         aria-selected={isSelected}
                         aria-disabled={option.disabled}
-                        aria-label={`${option.label}${
-                          isSelected ? ', selected' : ', not selected'
+                        aria-label={`${option.label}${isSelected ? ', selected' : ', not selected'
                         }${option.disabled ? ', disabled' : ''}`}
                         className={cn(
                           'cursor-pointer rounded-xs',

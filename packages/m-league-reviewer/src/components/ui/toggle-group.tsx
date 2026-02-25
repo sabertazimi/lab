@@ -38,7 +38,7 @@ function ToggleGroup({
       )}
       {...props}
     >
-      {/* eslint-disable-next-line react/no-unstable-context-value -- Context value is not unstable */}
+      { }
       <ToggleGroupContext value={{ variant, size, spacing }}>{children}</ToggleGroupContext>
     </ToggleGroupPrimitive.Root>
   )

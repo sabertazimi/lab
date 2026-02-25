@@ -9,17 +9,17 @@
     "build": "tsc && vite build",
     "dev": "vite",
     "lint": "pnpm lint:style && pnpm lint:type-check",
-    "lint:fix": "eslint ./src --fix",
     "lint:style": "eslint ./src",
     "lint:type-check": "tsc --noEmit",
+    "lint:fix": "eslint ./src --fix",
     "preview": "vite preview"
   },
   "dependencies": {
     "snabbdom": "^3.6.3"
   },
   "devDependencies": {
-    "@dg-scripts/eslint-config": "^6.1.0",
-    "eslint": "^9.39.3",
+    "@dg-scripts/eslint-config": "^6.1.1",
+    "eslint": "^10.0.2",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1"

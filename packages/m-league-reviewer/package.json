@@ -10,6 +10,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "lint": "eslint . && pnpm lint:typecheck",
     "lint:typecheck": "react-router typegen && tsc",
+    "lint:fix": "eslint . --fix",
     "format": "git diff --name-only --cached --relative | grep -E \"\\.(ts|tsx|js|jsx)$\" | xargs -r prettier --write && git diff --name-only --cached --relative | grep -E \"\\.(ts|tsx|js|jsx)$\" | xargs -r eslint --fix",
     "test": "vitest run --coverage",
     "fetch": "tsc --project tsconfig.scripts.json && node scripts/fetch.js && node scripts/fix.js",
@@ -51,7 +52,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@dg-scripts/eslint-config": "^6.1.0",
+    "@dg-scripts/eslint-config": "^6.1.1",
     "@react-router/dev": "^7.13.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.0",
@@ -60,7 +61,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitest/coverage-v8": "^4.0.18",
     "axios": "^1.13.5",
-    "eslint": "^9.39.3",
+    "eslint": "^10.0.2",
     "node-html-parser": "^7.0.2",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
