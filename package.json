@@ -68,8 +68,8 @@
     "rust:test": "cargo test"
   },
   "devDependencies": {
-    "@dg-scripts/eslint-config": "^6.1.0",
-    "@dg-scripts/stylelint-config": "^6.1.0",
+    "@dg-scripts/eslint-config": "^6.1.1",
+    "@dg-scripts/stylelint-config": "^6.1.1",
     "@types/node": "^24.10.13",
     "eslint": "^10.0.2",
     "lerna": "^9.0.4",
