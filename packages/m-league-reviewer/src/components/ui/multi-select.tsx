@@ -201,27 +201,27 @@ interface MultiSelectProps
    * Can be boolean true for default responsive behavior or an object for custom configuration.
    */
   responsive?:
-  | boolean
-  | {
+    | boolean
+    | {
     /** Configuration for mobile devices (< 640px) */
-    mobile?: {
-      maxCount?: number
-      hideIcons?: boolean
-      compactMode?: boolean
+      mobile?: {
+        maxCount?: number
+        hideIcons?: boolean
+        compactMode?: boolean
+      }
+      /** Configuration for tablet devices (640px - 1024px) */
+      tablet?: {
+        maxCount?: number
+        hideIcons?: boolean
+        compactMode?: boolean
+      }
+      /** Configuration for desktop devices (> 1024px) */
+      desktop?: {
+        maxCount?: number
+        hideIcons?: boolean
+        compactMode?: boolean
+      }
     }
-    /** Configuration for tablet devices (640px - 1024px) */
-    tablet?: {
-      maxCount?: number
-      hideIcons?: boolean
-      compactMode?: boolean
-    }
-    /** Configuration for desktop devices (> 1024px) */
-    desktop?: {
-      maxCount?: number
-      hideIcons?: boolean
-      compactMode?: boolean
-    }
-  }
 
   /**
    * Minimum width for the component.
@@ -675,16 +675,16 @@ export function MultiSelect({
   })
 
   // 追踪上一次的 Popover 打开状态
-  const prevIsPopoverOpen = React.useRef(isPopoverOpen)
+  const prevIsPopoverOpenRef = React.useRef(isPopoverOpen)
 
   React.useEffect(() => {
     // 只在从打开变为关闭时触发 onClose
-    if (prevIsPopoverOpen.current && !isPopoverOpen) {
+    if (prevIsPopoverOpenRef.current && !isPopoverOpen) {
       setSearchValue('')
       // 触发 onClose 回调
       onCloseRef.current?.()
     }
-    prevIsPopoverOpen.current = isPopoverOpen
+    prevIsPopoverOpenRef.current = isPopoverOpen
   }, [isPopoverOpen])
 
   // 处理点击外部区域时触发 onBlur
@@ -800,7 +800,7 @@ export function MultiSelect({
             aria-controls={isPopoverOpen ? listboxId : undefined}
             aria-describedby={`${triggerDescriptionId} ${selectedCountId}`}
             aria-label={`Multi-select: ${selectedValues.length} of ${getAllOptions().length
-              } options selected. ${placeholder}`}
+            } options selected. ${placeholder}`}
             className={cn(
               'flex h-auto min-h-10 items-center justify-between rounded-md border bg-inherit p-1 hover:bg-inherit [&_svg]:pointer-events-auto',
               autoSize ? 'w-auto' : 'w-full',
@@ -1030,7 +1030,7 @@ export function MultiSelect({
                           aria-selected={isSelected}
                           aria-disabled={option.disabled}
                           aria-label={`${option.label}${isSelected ? ', selected' : ', not selected'
-                            }${option.disabled ? ', disabled' : ''}`}
+                          }${option.disabled ? ', disabled' : ''}`}
                           className={cn(
                             'cursor-pointer rounded-xs',
                             option.disabled && 'cursor-not-allowed opacity-50',
@@ -1070,7 +1070,7 @@ export function MultiSelect({
                         aria-selected={isSelected}
                         aria-disabled={option.disabled}
                         aria-label={`${option.label}${isSelected ? ', selected' : ', not selected'
-                          }${option.disabled ? ', disabled' : ''}`}
+                        }${option.disabled ? ', disabled' : ''}`}
                         className={cn(
                           'cursor-pointer rounded-xs',
                           option.disabled && 'cursor-not-allowed opacity-50',
