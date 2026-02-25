@@ -10,7 +10,8 @@
     "build": "react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "lint": "eslint . && pnpm lint:typecheck",
-    "lint:typecheck": "react-router typegen && tsc"
+    "lint:typecheck": "react-router typegen && tsc",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@icons-pack/react-simple-icons": "^13.11.2",

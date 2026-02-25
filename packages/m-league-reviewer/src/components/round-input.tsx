@@ -15,7 +15,6 @@ interface RoundInputProps {
   existingRounds?: RoundInfo[]
 }
 
-// eslint-disable-next-line react/no-unstable-default-props -- Default value is not unstable
 export function RoundInput({ value, onChange, onClose, open, onOpenChange, existingRounds = [] }: RoundInputProps) {
   const [localValue, setLocalValue] = useState<RoundInfo>(value)
   const [error, setError] = useState<string>('')

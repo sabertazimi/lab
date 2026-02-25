@@ -9,9 +9,9 @@
     "build": "tsc && vite build",
     "dev": "vite",
     "lint": "pnpm lint:style && pnpm lint:type-check",
-    "lint:fix": "eslint ./src --fix",
     "lint:style": "eslint ./src",
     "lint:type-check": "tsc --noEmit",
+    "lint:fix": "eslint ./src --fix",
     "preview": "vite preview"
   },
   "dependencies": {

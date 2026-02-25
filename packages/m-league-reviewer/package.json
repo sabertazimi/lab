@@ -10,6 +10,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "lint": "eslint . && pnpm lint:typecheck",
     "lint:typecheck": "react-router typegen && tsc",
+    "lint:fix": "eslint . --fix",
     "format": "git diff --name-only --cached --relative | grep -E \"\\.(ts|tsx|js|jsx)$\" | xargs -r prettier --write && git diff --name-only --cached --relative | grep -E \"\\.(ts|tsx|js|jsx)$\" | xargs -r eslint --fix",
     "test": "vitest run --coverage",
     "fetch": "tsc --project tsconfig.scripts.json && node scripts/fetch.js && node scripts/fix.js",
