@@ -25,9 +25,9 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vue: ['vue'],
-          element: ['element-plus'],
+        manualChunks(id) {
+          if (id.includes('node_modules/vue')) return 'vue'
+          if (id.includes('node_modules/element-plus')) return 'element'
         },
       },
     },
