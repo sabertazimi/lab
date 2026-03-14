@@ -11,7 +11,7 @@
     "lint": "vue-tsc -b"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.2.0",
+    "@tailwindcss/vite": "^4.2.1",
     "@types/node": "^24.10.13",
     "@vueuse/core": "^14.2.1",
     "echarts": "^6.0.0",
@@ -21,10 +21,10 @@
     "vue-echarts": "^8.0.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.4",
+    "@vitejs/plugin-vue": "^6.0.5",
     "@vue/tsconfig": "^0.8.1",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^8.0.0",
     "vue-tsc": "^3.2.4"
   }
 }
