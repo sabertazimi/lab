@@ -42,7 +42,7 @@ class Machine {
           const { actor } = event
           const position = TileUtils.getRelativePosition(this.heroId, actor)
           const pai = TileUtils.get(event.pai)
-          const hand = this.uiState.hands[position]
+          const hand = this.uiState.hands.at(position)
 
           if (hand) {
             hand.tsumo = pai
@@ -58,8 +58,8 @@ class Machine {
           const { actor, tsumogiri } = event
           const position = TileUtils.getRelativePosition(this.heroId, actor)
           const pai = TileUtils.get(event.pai)
-          const hand = this.uiState.hands[position]
-          const discard = this.uiState.discards[position]
+          const hand = this.uiState.hands.at(position)
+          const discard = this.uiState.discards.at(position)
 
           if (hand) {
             const { tehai, tsumo } = hand
@@ -101,8 +101,8 @@ class Machine {
             this.heroId,
             target,
           )
-          const hand = this.uiState.hands[position]
-          const targetDiscard = this.uiState.discards[targetPosition]
+          const hand = this.uiState.hands.at(position)
+          const targetDiscard = this.uiState.discards.at(targetPosition)
 
           if (hand) {
             const consumedTiles = TileUtils.consume(hand.tehai, consumed)
@@ -130,7 +130,7 @@ class Machine {
         case 'kakan': {
           const { actor } = event
           const position = TileUtils.getRelativePosition(this.heroId, actor)
-          const hand = this.uiState.hands[position]
+          const hand = this.uiState.hands.at(position)
 
           if (hand) {
             const ponClaimed = hand.claimed.find(
@@ -151,7 +151,7 @@ class Machine {
         case 'ankan': {
           const { actor, consumed } = event
           const position = TileUtils.getRelativePosition(this.heroId, actor)
-          const hand = this.uiState.hands[position]
+          const hand = this.uiState.hands.at(position)
 
           if (hand) {
             if (hand.tsumo) {
@@ -246,7 +246,7 @@ class Machine {
   }
 
   advanceReview(actor: number) {
-    const kyoku = this.reviewLog.kyokus[this.round]
+    const kyoku = this.reviewLog.kyokus.at(this.round)
 
     if (!kyoku) {
       return
@@ -256,7 +256,7 @@ class Machine {
 
     // TODO: Remove reviewCounter check after all logs are fixed.
     if (this.reviewCounter < entries.length) {
-      const review = entries[this.reviewCounter]
+      const review = entries.at(this.reviewCounter)
 
       if (!review) {
         return
