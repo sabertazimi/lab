@@ -113,7 +113,7 @@ jobs:
         run: |
           pnpm web:build
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ matrix.node-version == 'lts/*' && matrix.os == 'ubuntu-latest' && matrix.architecture == 'x64' }}
         with:
           name: dist
@@ -334,7 +334,7 @@ jobs:
         run: |
           pnpm rust:docs
       - name: Archive documentation artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: book
           path: book
@@ -346,12 +346,12 @@ jobs:
     needs: [web-lint, web-test, web-build, python-lint, python-test, rust-lint, rust-unit, rust-e2e, rust-build, docs]
     steps:
       - name: Download production artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist
       - name: Download documentation artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: book
           path: rust
