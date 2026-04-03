@@ -34,7 +34,7 @@ pnpm rust:test        # cargo test
 
 **Web (packages/)**: `dblp`, `m-league-reviewer`, `react-renderer`, `mortal-ui`, `vue-design`, `vue-trello`, `echarts-dashboard`, `vue-challenges`, `portfolio`
 
-**Python (packages/)**: `agent-cli` (Claude Code minimal implementation)
+**Python (packages/)**: `agent-cli`, `nano-gpt`
 
 **Rust (crates/)**: `basis`, `rustlings`, `exercism/*`
 

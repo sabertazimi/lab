@@ -1,0 +1,21 @@
+[project]
+name = "nano-gpt"
+version = "0.1.0"
+description = "Build GPT from scratch"
+readme = "README.md"
+requires-python = ">=3.14.3"
+dependencies = [
+  "numpy>=2.4.4",
+  "torch>=2.11.0"
+]
+
+[project.scripts]
+nano-gpt = "nano_gpt:main"
+
+[[tool.uv.index]]
+url = "https://mirrors.aliyun.com/pypi/simple/"
+default = true
+
+[build-system]
+requires = [ "uv_build>=0.10.12,<0.10.14" ]
+build-backend = "uv_build"
