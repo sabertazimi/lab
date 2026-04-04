@@ -47,7 +47,7 @@
     "python:install": "uv tool install --editable packages/agent-cli",
     "python:dev": "pnpm python:dev:nano-gpt",
     "python:dev:agent-cli": "uv run agent-cli",
-    "python:dev:nano-gpt": "uv run nano-gpt",
+    "python:dev:nano-gpt": "./packages/nano-gpt/src/nano_gpt/data/input.sh && uv run nano-gpt",
     "python:lint": "uv run pyright && uv run ruff check",
     "python:lint:fix": "uv run ruff check --fix",
     "python:test": "uv run pytest",
