@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/sabertazimi/lab/compare/v3.2.0...v3.3.0) (2026-04-04)
+
+### Bug Fixes
+
+- **agent-skills:** avoid duplicate headers in skill content ([ad9ed27](https://github.com/sabertazimi/lab/commit/ad9ed27100bc7c8bbd1d635b81be593f135804a3))
+- **deps:** update dependencies (non-major) ([#968](https://github.com/sabertazimi/lab/issues/968)) ([996e387](https://github.com/sabertazimi/lab/commit/996e38713364c1f42b4db35e752d2196d77d168a))
+- **deps:** update dependencies (non-major) ([#972](https://github.com/sabertazimi/lab/issues/972)) ([08ed245](https://github.com/sabertazimi/lab/commit/08ed245faeea1435b424e76b7ceae3cd45d219f2))
+- **deps:** update dependencies (non-major) ([#980](https://github.com/sabertazimi/lab/issues/980)) ([cde33db](https://github.com/sabertazimi/lab/commit/cde33db75ad1eecd874d3684019322287d1e22b5))
+- **deps:** update dependency textual to v8 ([#971](https://github.com/sabertazimi/lab/issues/971)) ([3095cb3](https://github.com/sabertazimi/lab/commit/3095cb3976974a28b5a0ab27a2791a626f5b56ea))
+
+### Features
+
+- **agent-cli:** enhance CLI with headless mode and UI improvements ([#966](https://github.com/sabertazimi/lab/issues/966)) ([32ef88c](https://github.com/sabertazimi/lab/commit/32ef88c8589dff5ad92dc7512ff508444e3a394d))
+- **agent-thinking:** implement thinking mode ([798dcc0](https://github.com/sabertazimi/lab/commit/798dcc038de001e58635a190d61b22c49acdbad8))
+- **agent:** add command autocomplete to TUI input ([#961](https://github.com/sabertazimi/lab/issues/961)) ([dca7f08](https://github.com/sabertazimi/lab/commit/dca7f089b16497948dbec0d95ef058dd559118f0))
+- **agent:** add spinner animation to status bar ([#964](https://github.com/sabertazimi/lab/issues/964)) ([5c8ae65](https://github.com/sabertazimi/lab/commit/5c8ae65917792efbf3db6f3026cc934113314cec))
+- **ai-gpt:** add nanoGPT package for building GPT from scratch ([#988](https://github.com/sabertazimi/lab/issues/988)) ([cdd87c2](https://github.com/sabertazimi/lab/commit/cdd87c23bd244a0ee432f6710d1c7dba2003ca8d))
+
+### Performance Improvements
+
+- **agent-tools:** optimize Glob and Grep with directory exclusions ([931825c](https://github.com/sabertazimi/lab/commit/931825cf24f8e0d7e10d02fefcbdc0b3be62498f))
+
 # [3.2.0](https://github.com/sabertazimi/lab/compare/v3.1.0...v3.2.0) (2026-02-01)
 
 ### Bug Fixes
