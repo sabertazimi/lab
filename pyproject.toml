@@ -5,18 +5,24 @@ description = "Experimental prototypes written in Python."
 readme = "README.md"
 authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
 requires-python = ">=3.14.3"
-dependencies = [ "agent-cli" ]
+dependencies = [
+  "agent-cli",
+  "nano-gpt"
+]
 
 [dependency-groups]
 dev = [
   "pyright>=1.1.408",
   "pytest>=9.0.2",
   "pytest-cov>=7.0.0",
-  "ruff>=0.15.7",
+  "ruff>=0.15.7"
 ]
 
 [tool.uv.workspace]
-members = [ "packages/agent-cli" ]
+members = [
+  "packages/agent-cli",
+  "packages/nano-gpt"
+]
 
 [[tool.uv.index]]
 url = "https://mirrors.aliyun.com/pypi/simple/"
@@ -24,6 +30,7 @@ default = true
 
 [tool.uv.sources]
 agent-cli = { workspace = true }
+nano-gpt = { workspace = true }
 
 [tool.pyright]
 typeCheckingMode = "strict"

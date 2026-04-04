@@ -33,6 +33,8 @@ ac # or `agent-cli`
 
 [![Cyber Code](./.github/agent-cli.png 'Cyber Code')](https://github.com/sabertazimi/lab/tree/main/packages/agent-cli)
 
+- [nanoGPT](https://github.com/sabertazimi/lab/tree/main/packages/nano-gpt): Build GPT from scratch.
+
 ## Rust
 
 - [Rust Notes](https://lab.tazimi.dev/rust)
