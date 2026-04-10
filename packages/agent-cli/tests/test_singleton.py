@@ -1,3 +1,4 @@
+# pyright: reportPrivateUsage=none
 """Unit tests for agent-cli singleton module."""
 
 import pytest
@@ -48,7 +49,7 @@ class TestSingleton:
                 self.value = value
 
         first = MySingleton(1)
-        Singleton._instances.clear()  # pyright: ignore[reportPrivateUsage]
+        Singleton._instances.clear()
         second = MySingleton(2)
 
         assert first is not second

@@ -1,3 +1,4 @@
+# pyright: reportPrivateUsage=none
 """Unit tests for agent-cli Agent core logic."""
 
 import threading
@@ -103,7 +104,7 @@ class TestBuildMessage:
         mock_task_manager: MagicMock,
     ) -> None:
         """First turn should include INITIAL_REMINDER and user input."""
-        agent._build_message("hello")  # pyright: ignore[reportPrivateUsage]
+        agent._build_message("hello")
 
         assert len(agent.messages) == 1
         msg = agent.messages[0]
@@ -125,7 +126,7 @@ class TestBuildMessage:
         agent: Agent,
     ) -> None:
         """First turn with CLAUDE.md should include system reminder."""
-        agent._build_message("hello")  # pyright: ignore[reportPrivateUsage]
+        agent._build_message("hello")
 
         content = _get_text_blocks(agent.messages[0])
         texts = [block["text"] for block in content]
@@ -139,7 +140,7 @@ class TestBuildMessage:
     ) -> None:
         """After first _build_message, first_turn should be False."""
         assert agent.first_turn is True
-        agent._build_message("hello")  # pyright: ignore[reportPrivateUsage]
+        agent._build_message("hello")
         assert agent.first_turn is False
 
     @patch("agent_cli.context.load_system_reminder", return_value=None)
@@ -149,8 +150,8 @@ class TestBuildMessage:
         agent: Agent,
     ) -> None:
         """Second turn should only contain user input (no reminders)."""
-        agent._build_message("first")  # pyright: ignore[reportPrivateUsage]
-        agent._build_message("second")  # pyright: ignore[reportPrivateUsage]
+        agent._build_message("first")
+        agent._build_message("second")
 
         assert len(agent.messages) == 2
         content = _get_text_blocks(agent.messages[1])
@@ -165,7 +166,7 @@ class TestBuildMessage:
         subagent: Agent,
     ) -> None:
         """Subagent should skip system reminder and task reminder on first turn."""
-        subagent._build_message("do something")  # pyright: ignore[reportPrivateUsage]
+        subagent._build_message("do something")
 
         content = _get_text_blocks(subagent.messages[0])
         # Only user input, no reminders
@@ -178,18 +179,18 @@ class TestInterrupt:
 
     def test_initial_state_not_interrupted(self, agent: Agent) -> None:
         """Interrupt should not be requested initially."""
-        assert agent._is_interrupt_requested() is False  # pyright: ignore[reportPrivateUsage]
+        assert agent._is_interrupt_requested() is False
 
     def test_request_interrupt(self, agent: Agent) -> None:
         """request_interrupt should set the flag."""
         agent.request_interrupt()
-        assert agent._is_interrupt_requested() is True  # pyright: ignore[reportPrivateUsage]
+        assert agent._is_interrupt_requested() is True
 
     def test_clear_interrupt(self, agent: Agent) -> None:
         """_clear_interrupt should reset the flag."""
         agent.request_interrupt()
-        agent._clear_interrupt()  # pyright: ignore[reportPrivateUsage]
-        assert agent._is_interrupt_requested() is False  # pyright: ignore[reportPrivateUsage]
+        agent._clear_interrupt()
+        assert agent._is_interrupt_requested() is False
 
     def test_thread_safety(self, agent: Agent) -> None:
         """Interrupt mechanism should be thread-safe under concurrent access."""
@@ -197,12 +198,12 @@ class TestInterrupt:
 
         def reader() -> None:
             for _ in range(100):
-                results.append(agent._is_interrupt_requested())  # pyright: ignore[reportPrivateUsage]
+                results.append(agent._is_interrupt_requested())
 
         def writer() -> None:
             for _ in range(50):
                 agent.request_interrupt()
-                agent._clear_interrupt()  # pyright: ignore[reportPrivateUsage]
+                agent._clear_interrupt()
 
         t1 = threading.Thread(target=reader)
         t2 = threading.Thread(target=writer)
@@ -221,7 +222,7 @@ class TestAppendInterruptMessage:
 
     def test_appends_user_message(self, agent: Agent) -> None:
         """Should append a user-role message to history."""
-        agent._append_interrupt_message()  # pyright: ignore[reportPrivateUsage]
+        agent._append_interrupt_message()
 
         assert len(agent.messages) == 1
         msg = agent.messages[0]
@@ -229,7 +230,7 @@ class TestAppendInterruptMessage:
 
     def test_contains_interrupt_notification(self, agent: Agent) -> None:
         """Message should contain task_interrupted notification."""
-        agent._append_interrupt_message()  # pyright: ignore[reportPrivateUsage]
+        agent._append_interrupt_message()
 
         content = agent.messages[0]["content"]
         assert isinstance(content, str)
@@ -248,10 +249,10 @@ class TestAgentLoopInterrupt:
         mock_ui: MagicMock,
     ) -> None:
         """If interrupt is requested before API call, should return early."""
-        agent._build_message("hello")  # pyright: ignore[reportPrivateUsage]
+        agent._build_message("hello")
         agent.request_interrupt()
 
-        messages = agent._agent_loop()  # pyright: ignore[reportPrivateUsage]
+        messages = agent._agent_loop()
 
         mock_ui.interrupted.assert_called_once()
         # Should have the user message + interrupt notification

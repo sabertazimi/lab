@@ -1,3 +1,4 @@
+# pyright: reportPrivateUsage=none
 """Unit tests for agent-cli task module."""
 
 import pytest
@@ -119,8 +120,7 @@ class TestTaskManager:
     def test_dict_to_task_strips_whitespace(self) -> None:
         """_dict_to_task should strip whitespace from values."""
         manager = TaskManager()
-        # pyright: ignore[reportPrivateUsage]
-        task = manager._dict_to_task(  # pyright: ignore[reportPrivateUsage]
+        task = manager._dict_to_task(
             {"content": "  Task  ", "status": "  pending  ", "active_form": "  X  "}
         )
         assert task.content == "Task"

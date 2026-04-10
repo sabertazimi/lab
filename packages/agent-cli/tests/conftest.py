@@ -1,3 +1,4 @@
+# pyright: reportPrivateUsage=none
 """Shared fixtures for agent-cli tests."""
 
 from pathlib import Path
@@ -59,10 +60,10 @@ def clear_singleton():
     from agent_cli.singleton import Singleton
 
     # Clear before test (accessing protected member is intentional for testing)
-    Singleton._instances.clear()  # pyright: ignore[reportPrivateUsage]
+    Singleton._instances.clear()
     yield
     # Clear after test
-    Singleton._instances.clear()  # pyright: ignore[reportPrivateUsage]
+    Singleton._instances.clear()
 
 
 @pytest.fixture

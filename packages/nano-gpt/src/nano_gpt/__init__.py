@@ -1,3 +1,4 @@
+# pyright: reportIndexIssue=none, reportUnnecessaryComparison=none, reportUnknownMemberType=none, reportUnknownArgumentType=none
 from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
@@ -88,7 +89,7 @@ class Head(nn.Module):
         k = self.key(x)
         q = self.query(x)
         wei = q @ k.transpose(-2, -1) * k.shape[-1] ** -0.5
-        wei = wei.masked_fill(self.tril[:t, :t] == 0, float("-inf"))  # pyright: ignore[reportIndexIssue]
+        wei = wei.masked_fill(self.tril[:t, :t] == 0, float("-inf"))
         wei = F.softmax(wei, dim=-1)
         wei = self.dropout(wei)
         v = self.value(x)
@@ -159,7 +160,7 @@ class GPTLanguageModel(nn.Module):
     def _init_weights(self, module: nn.Module) -> None:
         if isinstance(module, nn.Linear):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
-            if module.bias is not None:  # pyright: ignore[reportUnnecessaryComparison]
+            if module.bias is not None:
                 nn.init.zeros_(module.bias)
         elif isinstance(module, nn.Embedding):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
@@ -196,7 +197,7 @@ class GPTLanguageModel(nn.Module):
 
 
 def main() -> None:
-    torch.manual_seed(1337)  # pyright: ignore[reportUnknownMemberType]
+    torch.manual_seed(1337)
 
     config = GPTConfig()
 
@@ -231,7 +232,7 @@ def main() -> None:
         _, loss = model(xb, yb)
         optimizer.zero_grad(set_to_none=True)
         loss.backward()
-        optimizer.step()  # pyright: ignore[reportUnknownMemberType]
+        optimizer.step()
 
     context = torch.zeros((1, 1), dtype=torch.long, device=config.device)
-    print(decode(itos, model.generate(context, max_new_tokens=500)[0].tolist()))  # pyright: ignore[reportUnknownMemberType, reportUnknownArgumentType]
+    print(decode(itos, model.generate(context, max_new_tokens=500)[0].tolist()))

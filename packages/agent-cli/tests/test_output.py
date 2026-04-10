@@ -1,3 +1,4 @@
+# pyright: reportPrivateUsage=none
 """Unit tests for agent-cli output module."""
 
 from pathlib import Path
@@ -163,15 +164,13 @@ class TestTextualOutputThinking:
 
     def test_format_thinking_block_empty(self) -> None:
         """Empty content should handle gracefully."""
-        # pyright: ignore[reportPrivateUsage]
-        result = self.output._format_thinking_block("")  # pyright: ignore[reportPrivateUsage]
+        result = self.output._format_thinking_block("")
         assert isinstance(result, Text)
 
     def test_format_thinking_block_single_line(self) -> None:
         """Single line should have blue bullet."""
         content = "Single line"
-        # pyright: ignore[reportPrivateUsage]
-        result = self.output._format_thinking_block(content)  # pyright: ignore[reportPrivateUsage]
+        result = self.output._format_thinking_block(content)
         assert isinstance(result, Text)
         plain = result.plain
         assert "Single line" in plain
@@ -179,8 +178,7 @@ class TestTextualOutputThinking:
     def test_format_thinking_block_multiline(self) -> None:
         """Multi-line should have proper indentation."""
         content = "Line 1\nLine 2\nLine 3"
-        # pyright: ignore[reportPrivateUsage]
-        result = self.output._format_thinking_block(content)  # pyright: ignore[reportPrivateUsage]
+        result = self.output._format_thinking_block(content)
         assert isinstance(result, Text)
         plain = result.plain
         assert "Line 1" in plain
