@@ -3,7 +3,7 @@
   "type": "module",
   "version": "3.3.0",
   "private": true,
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -17,29 +17,29 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
-    "@unhead/vue": "^2.1.12",
-    "element-plus": "^2.13.6",
+    "@unhead/vue": "^2.1.13",
+    "element-plus": "^2.13.7",
     "pinia": "^3.0.4",
-    "vue": "^3.5.30",
-    "vue-i18n": "^11.3.0"
+    "vue": "^3.5.32",
+    "vue-i18n": "^11.3.2"
   },
   "devDependencies": {
     "@dg-scripts/eslint-config": "^6.1.1",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^24.12.0",
-    "@vitejs/plugin-vue": "^6.0.5",
-    "@vitest/coverage-v8": "^4.1.0",
+    "@types/node": "^24.12.2",
+    "@vitejs/plugin-vue": "^6.0.6",
+    "@vitest/coverage-v8": "^4.1.4",
     "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.9.0",
-    "eslint": "^10.0.3",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.2.1",
     "eslint-plugin-format": "^2.0.1",
-    "jsdom": "^29.0.1",
+    "jsdom": "^29.0.2",
     "npm-run-all2": "^8.0.4",
     "typescript": "^5.9.3",
     "unplugin-auto-import": "^21.0.0",
-    "unplugin-vue-components": "^31.0.0",
-    "vite": "^8.0.1",
-    "vitest": "^4.1.0",
-    "vue-tsc": "^3.2.6"
+    "unplugin-vue-components": "^31.1.0",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4",
+    "vue-tsc": "^3.2.7"
   }
 }
