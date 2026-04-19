@@ -15,7 +15,7 @@ dependencies = [
   "markdownify>=1.2.2",
   "pydantic>=2.13.2",
   "python-dotenv>=1.2.2",
-  "rich>=14.3.4",
+  "rich>=15.0.0",
   "textual>=8.2.4",
   "textual-autocomplete>=4.0.6",
 ]
