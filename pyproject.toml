@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Experimental prototypes written in Python."
 readme = "README.md"
 authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
-requires-python = ">=3.14.3"
+requires-python = ">=3.14.4"
 dependencies = [
   "agent-cli",
   "nano-gpt"
@@ -13,9 +13,9 @@ dependencies = [
 [dependency-groups]
 dev = [
   "pyright>=1.1.408",
-  "pytest>=9.0.2",
-  "pytest-cov>=7.0.0",
-  "ruff>=0.15.7"
+  "pytest>=9.0.3",
+  "pytest-cov>=7.1.0",
+  "ruff>=0.15.11"
 ]
 
 [tool.uv.workspace]
