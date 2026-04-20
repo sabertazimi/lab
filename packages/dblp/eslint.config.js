@@ -6,8 +6,8 @@ export default defineConfig(
     name: 'react',
     files: ['**/*.js?(x)'],
     rules: {
-      'react/jsx-uses-vars': 'error',
       'react/prop-types': 'off',
+      'react/purity': 'off',
     },
   },
 )

@@ -37,7 +37,7 @@ export default function useTimeoutFn(fn: (...args: any[]) => void, ms: number = 
     set()
 
     return clear
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- We don't need to pass all dependencies to the effect
+    // eslint-disable-next-line react/exhaustive-deps -- We don't need to pass all dependencies to the effect
   }, [ms])
 
   return [isReady, clear, set]

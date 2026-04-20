@@ -106,7 +106,7 @@ export function NoteEditor({ open }: { open: boolean }) {
       setNote(currentNote)
       editor.commands.setContent(currentNote.content)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only need to run when open changes
+    // eslint-disable-next-line react/exhaustive-deps -- only need to run when open changes
   }, [open, editor])
 
   if (!editor) {

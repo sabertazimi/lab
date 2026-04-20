@@ -342,10 +342,10 @@ export function MultiSelect({
   const announce = React.useCallback((message: string, priority: 'polite' | 'assertive' = 'polite') => {
     if (priority === 'assertive') {
       setAssertiveMessage(message)
-      setTimeout(() => setAssertiveMessage(''), 100)
+      setTimeout(setAssertiveMessage, 100, '')
     } else {
       setPoliteMessage(message)
-      setTimeout(() => setPoliteMessage(''), 100)
+      setTimeout(setPoliteMessage, 100, '')
     }
   }, [])
 
