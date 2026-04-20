@@ -2,13 +2,18 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "types": ["element-plus/global", "node", "jsdom"],
+    "types": [
+      "element-plus/global",
+      "node",
+      "jsdom"
+    ],
     "exactOptionalPropertyTypes": false,
     "noEmit": true
   },
