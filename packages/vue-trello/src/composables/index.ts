@@ -1,4 +1,4 @@
-import type { AppStore } from 'src/store'
+import type { AppStore } from '../store'
 
 function moveTask(store: AppStore, event: DragEvent, toColumnIndex: number, toTaskIndex?: number) {
   const dataTransfer = event.dataTransfer
