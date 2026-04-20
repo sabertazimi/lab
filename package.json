@@ -79,6 +79,6 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "stylelint": "^17.8.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
