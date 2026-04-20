@@ -596,7 +596,7 @@ export function ReviewTable({
                         onChange={(value) => {
                           onUpdatePlayer(playerIndex, value)
                           onEditField(null)
-                          setTimeout(() => focusCell(fieldId), 0)
+                          setTimeout(focusCell, 0, fieldId)
                         }}
                         open={isEditing}
                         onOpenChange={(open) => {
@@ -685,7 +685,7 @@ export function ReviewTable({
                           onClose={() => {
                             onEditField(null)
                             onBlur()
-                            setTimeout(() => focusCell(fieldId), 0)
+                            setTimeout(focusCell, 0, fieldId)
                           }}
                           onEdgeDragStart={handleEdgeDragStart}
                           autoFocus

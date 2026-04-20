@@ -170,7 +170,7 @@ export function ReviewDialog({ open, onOpenChange, reviewId }: ReviewDialogProps
       e.preventDefault()
       setEditingField(null)
       autoSave()
-      setTimeout(() => focusField(field), 0)
+      setTimeout(focusField, 0, field)
     }
   }
 

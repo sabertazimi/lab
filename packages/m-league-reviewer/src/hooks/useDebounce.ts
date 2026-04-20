@@ -14,7 +14,7 @@ export default function useDebounce(
 ): UseDebounceReturn {
   const [isReady, cancel, reset] = useTimeoutFn(fn, ms)
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- We don't need to pass all dependencies to the effect
+  // eslint-disable-next-line react/exhaustive-deps -- We don't need to pass all dependencies to the effect
   useEffect(reset, deps)
 
   return [isReady, cancel]

@@ -39,8 +39,8 @@
     "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
-    "@dg-scripts/eslint-config": "^6.1.1",
-    "@dg-scripts/stylelint-config": "^6.1.1",
+    "@dg-scripts/eslint-config": "^6.1.2",
+    "@dg-scripts/stylelint-config": "^6.1.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",

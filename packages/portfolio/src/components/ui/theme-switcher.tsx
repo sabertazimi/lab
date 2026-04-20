@@ -23,7 +23,7 @@ export function ThemeSwitcher({
 
   useEffect(() => {
     const updateTheme = () => {
-      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect -- we need to set the state directly here
+      // eslint-disable-next-line react/set-state-in-effect -- we need to set the state directly here
       setIsDark(document.documentElement.classList.contains('dark'))
     }
 
