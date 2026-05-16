@@ -3,29 +3,23 @@ name = "lab"
 version = "0.1.0"
 description = "Experimental prototypes written in Python."
 readme = "README.md"
-authors = [ { name = "sabertazimi", email = "sabertazimi@gmail.com" } ]
+authors = [{ name = "sabertazimi", email = "sabertazimi@gmail.com" }]
 requires-python = ">=3.14.4"
-dependencies = [
-  "agent-cli",
-  "nano-gpt"
-]
+dependencies = ["agent-cli", "nano-gpt"]
 
 [dependency-groups]
 dev = [
   "pyright>=1.1.408",
   "pytest>=9.0.3",
   "pytest-cov>=7.1.0",
-  "ruff>=0.15.11"
+  "ruff>=0.15.11",
 ]
 
 [tool.uv.workspace]
-members = [
-  "packages/agent-cli",
-  "packages/nano-gpt"
-]
+members = ["packages/agent-cli", "packages/nano-gpt"]
 
 [[tool.uv.index]]
-url = "https://mirrors.aliyun.com/pypi/simple/"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
 default = true
 
 [tool.uv.sources]
@@ -34,21 +28,21 @@ nano-gpt = { workspace = true }
 
 [tool.pyright]
 typeCheckingMode = "strict"
-include = [ "packages" ]
-extraPaths = [ "packages/agent-cli/src" ]
+include = ["packages"]
+extraPaths = ["packages/agent-cli/src"]
 
 [tool.ruff.lint]
 select = [
-  "E", # pycodestyle
-  "F", # Pyflakes
-  "UP", # pyupgrade
-  "B", # flake8-bugbear
+  "E",   # pycodestyle
+  "F",   # Pyflakes
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
   "SIM", # flake8-simplify
-  "I", # isort
+  "I",   # isort
 ]
-ignore = [ "E501" ] # 忽略行长度限制
+ignore = ["E501"] # 忽略行长度限制
 
 [tool.pytest.ini_options]
 addopts = "--cov=packages --cov-report=term-missing"
-testpaths = [ "packages" ]
-pythonpath = [ "." ]
+testpaths = ["packages"]
+pythonpath = ["."]
