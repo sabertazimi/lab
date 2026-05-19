@@ -1,4 +1,14 @@
+minimumReleaseAge: 0
+
 shellEmulator: true
+
+trustPolicy: no-downgrade
+
+trustPolicyExclude:
+  - '@octokit/endpoint@9.0.6'
+  - chokidar@4.0.3
+  - prettier-plugin-tailwindcss@0.7.4
+  - semver
 
 packages:
   # Web and Python packages
@@ -7,3 +17,8 @@ packages:
   - crates/basis
   - crates/rustlings
   - crates/exercism/*
+
+allowBuilds:
+  esbuild: false
+  msw: false
+  nx: false

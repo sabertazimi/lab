@@ -130,6 +130,14 @@ jobs:
           fetch-depth: 1
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -156,6 +164,14 @@ jobs:
           fetch-depth: 1
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -182,6 +198,14 @@ jobs:
           fetch-depth: 1
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -215,6 +239,14 @@ jobs:
           fetch-depth: 1
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -249,6 +281,14 @@ jobs:
           fetch-depth: ${{ matrix.git-depth }}
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -282,6 +322,14 @@ jobs:
           fetch-depth: 1
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -311,6 +359,14 @@ jobs:
           fetch-depth: 0 # Keep `0` for last updated time
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
+      - name: Setup Node environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          architecture: x64
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
