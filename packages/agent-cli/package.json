@@ -3,7 +3,7 @@
   "type": "module",
   "version": "3.3.0",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@10.33.4",
   "description": "Minimal Claude Code with rich tools, task planning, subagent orchestration, and skill system support.",
   "license": "MIT"
 }

@@ -3,7 +3,7 @@ name = "nano-gpt"
 version = "0.1.0"
 description = "Build GPT from scratch"
 readme = "README.md"
-requires-python = ">=3.14.4"
+requires-python = ">=3.14.5"
 dependencies = ["numpy>=2.4.4", "torch>=2.11.0"]
 
 [project.scripts]

@@ -3,7 +3,7 @@
   "type": "module",
   "version": "3.3.0",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@10.33.4",
   "description": "DBLP search application",
   "author": "sabertazimi",
   "license": "MIT",
@@ -30,24 +30,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.1.1",
-    "antd": "^6.3.6",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
-    "react-redux": "^9.2.0",
+    "@ant-design/icons": "^6.2.3",
+    "antd": "^6.4.3",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-redux": "^9.3.0",
     "redux": "^5.0.1",
     "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
     "@dg-scripts/eslint-config": "^6.1.2",
     "@dg-scripts/stylelint-config": "^6.1.2",
-    "@types/react": "^19.2.14",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.1",
-    "eslint": "^10.2.1",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.0",
     "prettier": "^3.8.3",
-    "stylelint": "^17.8.0",
+    "stylelint": "^17.11.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.9"
+    "vite": "^8.0.13"
   }
 }
