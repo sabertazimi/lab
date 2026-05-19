@@ -44,7 +44,7 @@ export function ThemeSwitcher({
     }
 
     await document.startViewTransition(() => {
-      // eslint-disable-next-line react-dom/no-flush-sync -- flushSync is used to ensure the DOM is updated immediately
+      // eslint-disable-next-line react/dom-no-flush-sync -- flushSync is used to ensure the DOM is updated immediately
       flushSync(() => {
         const newTheme = !isDark
         setIsDark(newTheme)
