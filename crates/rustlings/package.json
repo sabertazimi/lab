@@ -3,7 +3,6 @@
   "type": "module",
   "version": "3.3.0",
   "private": true,
-  "packageManager": "pnpm@10.33.4",
   "description": "Small exercises to get you used to reading and writing Rust code.",
   "license": "MIT"
 }

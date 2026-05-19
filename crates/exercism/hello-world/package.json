@@ -3,7 +3,6 @@
   "type": "module",
   "version": "3.3.0",
   "private": true,
-  "packageManager": "pnpm@10.33.4",
   "description": "Exercism hello-world exercise in Rust.",
   "license": "MIT"
 }
