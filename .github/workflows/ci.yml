@@ -135,7 +135,7 @@ jobs:
         with:
           python-version-file: pyproject.toml
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
       - name: Install dependencies
@@ -161,7 +161,7 @@ jobs:
         with:
           python-version-file: pyproject.toml
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
       - name: Install dependencies
