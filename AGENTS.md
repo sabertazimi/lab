@@ -6,29 +6,29 @@ This file provides guidance to coding agents when working with code in this repo
 
 Lab is a polyglot monorepo with Web apps, Python packages, and Rust crates.
 
-**Stack**: pnpm + uv + Cargo workspaces | React + Vite + TypeScript + Tailwind | Vue 3 | Python | Rust
+**Stack**: pnpm + uv + Cargo + just workspaces | React + Vite + TypeScript + Tailwind | Vue 3 | Python | Rust
 **Packages**: 9 web packages, 1+ Python packages, 3+ Rust crates
 
 ## Common Commands
 
 ```bash
 # Web
-pnpm web:build        # Build all to dist/
-pnpm web:lint         # ESLint + Stylelint + TypeScript
-pnpm web:dev          # Start portfolio (default)
+pnpm build            # Build all to dist/
+pnpm lint             # ESLint + Stylelint + TypeScript
+pnpm dev              # Start portfolio (default)
 
-# Python
-pnpm python:dev       # Run agent-cli
-pnpm python:lint      # pyright + ruff
-pnpm python:test      # pytest
+# Python (justfile)
+just python-dev       # Run agent-cli
+just python-lint      # pyright + ruff
+just python-test      # pytest
 
-# Rust
-pnpm rust:build       # Cargo build --release
-pnpm rust:lint        # rustfmt + clippy
-pnpm rust:test        # cargo test
+# Rust (justfile)
+just rust-build       # Cargo build --release
+just rust-lint        # rustfmt + clippy
+just rust-test        # cargo test
 ```
 
-**IMPORTANT**: Always use `pnpm` over `npm`, use `uv` over `pip`.
+**IMPORTANT**: Use `pnpm` over `npm`, use `uv` over `pip`, use `just` for Python/Rust tasks.
 
 ## Architecture
 
@@ -47,7 +47,8 @@ pnpm rust:test        # cargo test
 
 ## Key Files
 
-- `pnpm-workspace.yaml` - pnpm workspace (web + rust + python)
+- `pnpm-workspace.yaml` - pnpm workspace (web)
+- `justfile` - task runner (Python + Rust)
 - `pyproject.toml` - uv workspace config
 - `Cargo.toml` - Cargo workspace config
 - `tsconfig.json` - TypeScript strict mode, `@/*` aliases
