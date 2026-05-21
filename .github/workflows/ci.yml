@@ -138,9 +138,14 @@ jobs:
           enable-cache: true
       - name: Setup just
         uses: extractions/setup-just@v4
+      - name: Cache virtual environment
+        uses: actions/cache@v5
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
       - name: Install dependencies
         run: |
-          uv sync --locked --all-extras --dev
+          uv sync --frozen --dev
       - name: Run linter tests
         run: |
           just python-lint
@@ -164,9 +169,14 @@ jobs:
           enable-cache: true
       - name: Setup just
         uses: extractions/setup-just@v4
+      - name: Cache virtual environment
+        uses: actions/cache@v5
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
       - name: Install dependencies
         run: |
-          uv sync --locked --all-extras --dev
+          uv sync --frozen --dev
       - name: Run unit tests
         run: |
           just python-test

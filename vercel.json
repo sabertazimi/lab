@@ -5,5 +5,5 @@
       "gh-pages": false
     }
   },
-  "buildCommand": "pnpm web:build"
+  "buildCommand": "pnpm build"
 }
