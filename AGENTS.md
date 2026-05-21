@@ -17,12 +17,12 @@ pnpm build            # Build all to dist/
 pnpm lint             # ESLint + Stylelint + TypeScript
 pnpm dev              # Start portfolio (default)
 
-# Python (justfile)
+# Python
 just python-dev       # Run agent-cli
 just python-lint      # pyright + ruff
 just python-test      # pytest
 
-# Rust (justfile)
+# Rust
 just rust-build       # Cargo build --release
 just rust-lint        # rustfmt + clippy
 just rust-test        # cargo test
