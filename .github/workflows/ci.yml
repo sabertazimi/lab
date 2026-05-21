@@ -38,7 +38,7 @@ jobs:
           pnpm install
       - name: Run linter tests
         run: |
-          pnpm web:lint
+          pnpm lint
 
   web-test:
     name: Web Test
@@ -69,7 +69,7 @@ jobs:
           pnpm install
       - name: Run unit tests
         run: |
-          pnpm web:test
+          pnpm test
       - name: Perform code coverage report action
         uses: codecov/codecov-action@v6
         if: ${{ matrix.node-version == 'lts/*' && matrix.os == 'ubuntu-latest' && matrix.architecture == 'x64' }}
@@ -111,7 +111,7 @@ jobs:
           pnpm install
       - name: Build applications
         run: |
-          pnpm web:build
+          pnpm build
       - name: Archive production artifacts
         uses: actions/upload-artifact@v7
         if: ${{ matrix.node-version == 'lts/*' && matrix.os == 'ubuntu-latest' && matrix.architecture == 'x64' }}
@@ -128,16 +128,6 @@ jobs:
         with:
           submodules: true
           fetch-depth: 1
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -146,12 +136,14 @@ jobs:
         uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Install dependencies
         run: |
           uv sync --locked --all-extras --dev
       - name: Run linter tests
         run: |
-          pnpm python:lint
+          just python-lint
 
   python-test:
     name: Python Test
@@ -162,16 +154,6 @@ jobs:
         with:
           submodules: true
           fetch-depth: 1
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -180,12 +162,14 @@ jobs:
         uses: astral-sh/setup-uv@v8.1.0
         with:
           enable-cache: true
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Install dependencies
         run: |
           uv sync --locked --all-extras --dev
       - name: Run unit tests
         run: |
-          pnpm python:test
+          just python-test
 
   rust-lint:
     name: Rust Lint
@@ -196,16 +180,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: 1
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -222,7 +198,7 @@ jobs:
           cargo -V
       - name: Run linter tests
         run: |
-          pnpm rust:lint
+          just rust-lint
 
   rust-unit:
     name: Rust Unit Test
@@ -237,16 +213,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: 1
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -263,7 +231,7 @@ jobs:
           cargo -V
       - name: Run unit tests
         run: |
-          pnpm rust:test
+          just rust-test
 
   rust-e2e:
     name: Rust E2E Test
@@ -279,16 +247,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: ${{ matrix.git-depth }}
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -305,7 +265,7 @@ jobs:
           cargo -V
       - name: Run e2e tests
         run: |
-          pnpm rust:e2e
+          just rust-e2e
     
   rust-build:
     name: Rust Build
@@ -320,16 +280,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: 1
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -346,7 +298,7 @@ jobs:
           cargo -V
       - name: Build binaries
         run: |
-          pnpm rust:build
+          just rust-build
 
   docs:
     name: Documentation
@@ -357,16 +309,8 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0 # Keep `0` for last updated time
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-      - name: Setup Node environment
-        uses: actions/setup-node@v6
-        with:
-          node-version: lts/*
-          check-latest: true
-          architecture: x64
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm
+      - name: Setup just
+        uses: extractions/setup-just@v4
       - name: Cache cargo binaries and registry
         uses: actions/cache@v5
         with:
@@ -388,7 +332,7 @@ jobs:
           mdbook -V
       - name: Build documentation
         run: |
-          pnpm rust:docs
+          just rust-docs
       - name: Archive documentation artifacts
         uses: actions/upload-artifact@v7
         with:
