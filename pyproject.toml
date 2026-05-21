@@ -9,10 +9,10 @@ dependencies = ["agent-cli", "nano-gpt"]
 
 [dependency-groups]
 dev = [
-  "pyright>=1.1.408",
+  "pyright>=1.1.409",
   "pytest>=9.0.3",
   "pytest-cov>=7.1.0",
-  "ruff>=0.15.11",
+  "ruff>=0.15.13",
 ]
 
 [tool.uv.workspace]

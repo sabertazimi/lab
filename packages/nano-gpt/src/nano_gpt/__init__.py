@@ -1,4 +1,4 @@
-# pyright: reportIndexIssue=none, reportUnnecessaryComparison=none, reportUnknownMemberType=none, reportUnknownArgumentType=none
+# pyright: reportIndexIssue=none, reportUnnecessaryComparison=none, reportUnknownMemberType=none, reportUnknownArgumentType=none, reportPrivateImportUsage=none
 from dataclasses import dataclass
 from importlib.resources import files
 from pathlib import Path
