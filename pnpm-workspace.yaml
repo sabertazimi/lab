@@ -8,7 +8,7 @@ trustPolicyExclude:
   - '@octokit/endpoint@9.0.6'
   - chokidar@4.0.3
   - prettier-plugin-tailwindcss@0.7.4
-  - semver
+  - semver@5.7.2 || 6.3.1
 
 packages:
   # Web and Python packages
