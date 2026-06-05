@@ -1,6 +1,12 @@
+import type { Paper } from '../api'
 import { List } from 'antd'
 
-function ListResult({ isLoading, dataSource }) {
+interface ListResultProps {
+  isLoading: boolean
+  dataSource: Paper[]
+}
+
+function ListResult({ isLoading, dataSource }: ListResultProps) {
   return (
     <List
       itemLayout="vertical"

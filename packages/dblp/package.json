@@ -19,13 +19,13 @@
     "computer science",
     "react"
   ],
-  "main": "./src/index.js",
+  "main": "./src/main.tsx",
   "scripts": {
     "build": "vite build",
     "dev": "vite",
     "lint": "stylelint ./src/**/*.css && eslint ./src",
     "lint:fix": "stylelint ./src/**/*.css --fix && eslint ./src --fix",
-    "format": "prettier --write src/**/*.{js,jsx,css}",
+    "format": "prettier --write src/**/*.{ts,tsx,css}",
     "preview": "vite preview"
   },
   "dependencies": {

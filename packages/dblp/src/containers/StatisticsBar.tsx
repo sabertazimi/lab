@@ -1,10 +1,24 @@
+import type { RootState } from '../store'
 import { Button, Modal } from 'antd'
 import { Component } from 'react'
 import { connect } from 'react-redux'
 import { StatisticsModal } from '../components'
 
-class StatisticsBarComponent extends Component {
-  constructor(props) {
+interface StatisticsBarComponentProps {
+  error: Error | null
+  isLoading: boolean
+  items: RootState['data']['items']
+  venues: string[]
+  year: number
+}
+
+interface StatisticsBarComponentState {
+  loading: boolean
+  visible: boolean
+}
+
+class StatisticsBarComponent extends Component<StatisticsBarComponentProps, StatisticsBarComponentState> {
+  constructor(props: StatisticsBarComponentProps) {
     super(props)
     this.state = {
       loading: false,
@@ -12,13 +26,13 @@ class StatisticsBarComponent extends Component {
     }
   }
 
-  showStatistics = () => {
+  showStatistics = (): void => {
     this.setState({
       visible: true,
     })
   }
 
-  handleExport = () => {
+  handleExport = (): void => {
     this.setState({ loading: true })
 
     setTimeout(() => {
@@ -26,13 +40,13 @@ class StatisticsBarComponent extends Component {
     }, 3000)
   }
 
-  handleClose = () => {
+  handleClose = (): void => {
     this.setState({
       visible: false,
     })
   }
 
-  render() {
+  render(): React.ReactNode {
     const { visible, loading } = this.state
 
     return (
@@ -66,7 +80,7 @@ class StatisticsBarComponent extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
   return {
     ...state.data,
     ...state.filter,

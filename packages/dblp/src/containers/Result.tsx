@@ -1,9 +1,19 @@
+import type { Paper } from '../api'
+import type { RootState } from '../store'
 import { Alert } from 'antd'
 import { connect } from 'react-redux'
 import { getFilteredData } from '../api'
 import { ListResult, Responsive, TableResult } from '../components'
 
-function ResultComponent({ error, isLoading, items, venues, year }) {
+interface ResultComponentProps {
+  error: Error | null
+  isLoading: boolean
+  items: Paper[]
+  venues: string[]
+  year: number
+}
+
+function ResultComponent({ error, isLoading, items, venues, year }: ResultComponentProps) {
   if (error) {
     return (
       <Alert
@@ -16,7 +26,7 @@ function ResultComponent({ error, isLoading, items, venues, year }) {
   }
 
   const dataSource = getFilteredData(items, { venues, year })
-  const sortedDataSource = dataSource.sort(
+  const sortedDataSource = [...dataSource].sort(
     (a, b) =>
       b.year.localeCompare(a.year)
       || a.venue.localeCompare(b.venue)
@@ -36,7 +46,7 @@ function ResultComponent({ error, isLoading, items, venues, year }) {
   )
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
   return {
     ...state.data,
     ...state.filter,

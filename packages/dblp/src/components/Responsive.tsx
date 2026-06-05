@@ -6,32 +6,55 @@ import { Component } from 'react'
 // const onlyLargeScreen = { minWidth: 1200, maxWidth: 1919 };
 // const onlyWidescreen = { minWidth: 1920 };
 
-const fitsMaxWidth = (width, maxWidth) => !maxWidth || width <= maxWidth
-const fitsMinWidth = (width, minWidth) => !minWidth || width >= minWidth
+interface ResponsiveProps {
+  maxWidth?: number
+  minWidth?: number
+  children: React.ReactNode
+  getWidth?: () => number
+  onUpdate?: (event?: Event, props?: ResponsiveProps & { width: number }) => void
+}
 
-function isVisible(width, { maxWidth, minWidth }) {
+interface ResponsiveState {
+  visible: boolean
+}
+
+function fitsMaxWidth(width: number, maxWidth?: number): boolean {
+  return !maxWidth || width <= maxWidth
+}
+
+function fitsMinWidth(width: number, minWidth?: number): boolean {
+  return !minWidth || width >= minWidth
+}
+
+function isVisible(
+  width: number,
+  { maxWidth, minWidth }: Pick<ResponsiveProps, 'maxWidth' | 'minWidth'>,
+): boolean {
   return fitsMinWidth(width, minWidth) && fitsMaxWidth(width, maxWidth)
 }
 
-export default class Responsive extends Component {
-  constructor(props) {
+export default class Responsive extends Component<ResponsiveProps, ResponsiveState> {
+  private ticking = false
+  private frameId = 0
+
+  constructor(props: ResponsiveProps) {
     super(props)
     this.state = {
       visible: true,
     }
   }
 
-  componentDidMount() {
+  componentDidMount(): void {
     window.addEventListener('resize', this.handleResize)
     this.handleUpdate()
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     window.removeEventListener('resize', this.handleResize)
     cancelAnimationFrame(this.frameId)
   }
 
-  getWidth = () => {
+  getWidth = (): number => {
     const { getWidth: gw } = this.props
 
     if (gw)
@@ -40,7 +63,7 @@ export default class Responsive extends Component {
     return window.innerWidth || 0
   }
 
-  handleResize = (event) => {
+  handleResize = (event: Event): void => {
     if (this.ticking)
       return
 
@@ -48,7 +71,7 @@ export default class Responsive extends Component {
     this.frameId = requestAnimationFrame(() => this.handleUpdate(event))
   }
 
-  handleUpdate = (event) => {
+  handleUpdate = (event?: Event): void => {
     this.ticking = false
 
     const { onUpdate } = this.props
@@ -63,7 +86,7 @@ export default class Responsive extends Component {
       onUpdate(event, { ...this.props, width })
   }
 
-  render() {
+  render(): React.ReactNode {
     const { children } = this.props
     const { visible } = this.state
 

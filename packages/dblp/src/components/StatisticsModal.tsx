@@ -1,7 +1,16 @@
+import type { Paper } from '../api'
 import { Alert, Empty, List } from 'antd'
 import { getStatisticsData } from '../api'
 
-function StatisticsModal({ error, isLoading, items, venues, year }) {
+interface StatisticsModalProps {
+  error: Error | null
+  isLoading: boolean
+  items: Paper[]
+  venues: string[]
+  year: number
+}
+
+function StatisticsModal({ error, isLoading, items, venues, year }: StatisticsModalProps) {
   if (error) {
     return (
       <Alert

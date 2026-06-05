@@ -7,8 +7,12 @@ import './App.css'
 
 const { Header, Content, Sider } = Layout
 
-export default class App extends Component {
-  constructor(props) {
+interface AppState {
+  collapsed: boolean
+}
+
+export default class App extends Component<object, AppState> {
+  constructor(props: object) {
     super(props)
     this.state = {
       collapsed: false,
@@ -16,11 +20,11 @@ export default class App extends Component {
     this.onCollapse = this.onCollapse.bind(this)
   }
 
-  onCollapse(collapsed) {
+  onCollapse(collapsed: boolean): void {
     this.setState({ collapsed })
   }
 
-  render() {
+  render(): React.ReactNode {
     const { collapsed } = this.state
 
     return (
@@ -45,7 +49,7 @@ export default class App extends Component {
             />
           </Responsive>
           <Responsive minWidth={1080}>
-            <Row type="flex" gutter={16} align="middle" justify="center">
+            <Row gutter={16} align="middle" justify="center">
               <Col
                 span={16}
                 style={{

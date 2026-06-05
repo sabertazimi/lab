@@ -1,11 +1,11 @@
+import type { RootState } from '../reducers'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { thunk as thunkMiddleware } from 'redux-thunk'
 import createRootReducer from '../reducers'
 
-const middleware = []
-middleware.push(thunkMiddleware)
+const middleware = [thunkMiddleware]
 
-function configureStore(preloadedState) {
+function configureStore(preloadedState?: RootState) {
   const store = createStore(
     createRootReducer(),
     preloadedState,
@@ -16,3 +16,4 @@ function configureStore(preloadedState) {
 }
 
 export default configureStore
+export type { RootState }
