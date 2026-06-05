@@ -1,3 +1,6 @@
+import type { Dispatch } from 'redux'
+import type { Action } from '../actions'
+import type { RootState } from '../store'
 import { ClockCircleOutlined, EllipsisOutlined } from '@ant-design/icons'
 import { Menu } from 'antd'
 import { Component } from 'react'
@@ -6,8 +9,21 @@ import * as Actions from '../actions'
 import { VENUES_LIST } from '../api'
 import { VenuesFilter, YearFilter } from '../components'
 
-class FilterComponent extends Component {
-  constructor(props) {
+interface FilterComponentProps {
+  year: number
+  venues: string[]
+  collapsed: boolean
+  filterVenue: (venues: string[]) => void
+  filterYear: (year: number) => void
+}
+
+interface FilterComponentState {
+  indeterminate: boolean
+  checkAll: boolean
+}
+
+class FilterComponent extends Component<FilterComponentProps, FilterComponentState> {
+  constructor(props: FilterComponentProps) {
     super(props)
     this.state = {
       indeterminate: true,
@@ -15,12 +31,13 @@ class FilterComponent extends Component {
     }
   }
 
-  onYearChange = (value) => {
+  onYearChange = (value: number | null): void => {
     const { filterYear } = this.props
-    filterYear(value)
+    if (value !== null)
+      filterYear(value)
   }
 
-  onVenuesChange = (checkedValues) => {
+  onVenuesChange = (checkedValues: string[]): void => {
     const { filterVenue } = this.props
     filterVenue(checkedValues)
 
@@ -31,7 +48,7 @@ class FilterComponent extends Component {
     })
   }
 
-  onCheckAllChange = (event) => {
+  onCheckAllChange = (event: { target: { checked: boolean } }): void => {
     const { filterVenue } = this.props
     filterVenue(event.target.checked ? VENUES_LIST : [])
 
@@ -41,7 +58,7 @@ class FilterComponent extends Component {
     })
   }
 
-  render() {
+  render(): React.ReactNode {
     const { year, venues, collapsed } = this.props
     const { indeterminate, checkAll } = this.state
 
@@ -86,16 +103,16 @@ class FilterComponent extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
   return {
     ...state.filter,
   }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
-    filterVenue: venues => dispatch(Actions.filterVenue(venues)),
-    filterYear: year => dispatch(Actions.filterYear(year)),
+    filterVenue: (venues: string[]) => dispatch(Actions.filterVenue(venues)),
+    filterYear: (year: number) => dispatch(Actions.filterYear(year)),
   }
 }
 

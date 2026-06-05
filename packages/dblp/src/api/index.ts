@@ -1,20 +1,39 @@
 import venuesData from '../venues.json'
 
-export const VenuesDB = venuesData
-export const VENUES_LIST = VenuesDB.map(({ venue }) => venue)
-export const DEFAULT_VENUES_LIST = VENUES_LIST.slice(0, 30)
+interface VenueItem {
+  venue: string
+  title?: string
+}
 
-function dblpQuery(keyword, venue) {
+interface Paper {
+  key: string
+  title: string
+  venue: string
+  year: string
+  url: string
+  citations?: number
+}
+
+export const VenuesDB: VenueItem[] = venuesData
+export const VENUES_LIST: string[] = VenuesDB.map(({ venue }) => venue)
+export const DEFAULT_VENUES_LIST: string[] = VENUES_LIST.slice(0, 30)
+
+function dblpQuery(keyword: string, venue: string): string {
   return `https://dblp.org/search/publ/api?q=${keyword} venue:${venue}:&format=json&h=999`
 }
-function scIdsQuery(title) {
+
+function scIdsQuery(title: string): string {
   return `https://api.semanticscholar.org/graph/v1/paper/search?query=${title}&limit=1`
 }
-function scCitationsQuery(paperId) {
+
+function scCitationsQuery(paperId: string): string {
   return `https://api.semanticscholar.org/graph/v1/paper/${paperId}?fields=citationCount`
 }
 
-export async function fetchDblpPapers(keyword, venues) {
+export async function fetchDblpPapers(
+  keyword: string,
+  venues: string[],
+): Promise<Paper[] | null> {
   const papersResponse = await Promise.all(
     venues.map(venue =>
       fetch(dblpQuery(keyword, venue), {
@@ -30,8 +49,8 @@ export async function fetchDblpPapers(keyword, venues) {
 
   const papers = papersJson
     ? papersJson
-        .map(({ result }) => {
-          const { hit } = result?.hits
+        .map(({ result }: { result: { hits?: { hit?: Array<{ info: Record<string, string> }> } } }) => {
+          const { hit } = result?.hits ?? {}
 
           if (!hit)
             return []
@@ -50,8 +69,8 @@ export async function fetchDblpPapers(keyword, venues) {
   return papers
 }
 
-export async function fetchPaperCitations(papers) {
-  let paperCitations = Array.from({ length: papers.length }).fill(0)
+export async function fetchPaperCitations(papers: Paper[]): Promise<number[]> {
+  let paperCitations: number[] = Array.from({ length: papers.length }).fill(0) as number[]
 
   try {
     const paperIdsResponse = await Promise.all(
@@ -74,8 +93,9 @@ export async function fetchPaperCitations(papers) {
     if (!paperIdsJson)
       return paperCitations
 
-    const paperIds = paperIdsJson.map(paper =>
-      paper && paper.data[0] ? paper.data[0].paperId : '0',
+    const paperIds = paperIdsJson.map(
+      (paper: { data?: Array<{ paperId: string }> }) =>
+        paper?.data?.[0]?.paperId ?? '0',
     )
 
     const paperCitationsResponse = await Promise.all(
@@ -100,10 +120,9 @@ export async function fetchPaperCitations(papers) {
     if (!paperCitationsJson)
       return paperCitations
 
-    paperCitations = paperCitationsJson.map(paperCitation =>
-      paperCitation && paperCitation.citationCount
-        ? paperCitation.citationCount
-        : 0,
+    paperCitations = paperCitationsJson.map(
+      (citation: { citationCount?: number }) =>
+        citation?.citationCount ?? 0,
     )
   } catch {
     console.error('Up to API limits.')
@@ -112,13 +131,18 @@ export async function fetchPaperCitations(papers) {
   return paperCitations
 }
 
-function getVenueItem(venueName) {
+function getVenueItem(venueName: string): VenueItem | undefined {
   return VenuesDB.find(({ venue }) => venue === venueName)
 }
 
-export const getVenueTitle = venue => getVenueItem(venue).title || venue
+export function getVenueTitle(venue: string): string {
+  return getVenueItem(venue)?.title ?? venue
+}
 
-export function getFilteredData(items, { venues, year }) {
+export function getFilteredData(
+  items: Paper[],
+  { venues, year }: { venues: string[], year: number },
+): Paper[] {
   return items
     .filter(
       item => venues.includes(item.venue) && Number.parseInt(item.year, 10) >= year,
@@ -129,9 +153,12 @@ export function getFilteredData(items, { venues, year }) {
     }))
 }
 
-export function getStatisticsData(items, { venues, year }) {
+export function getStatisticsData(
+  items: Paper[],
+  { venues, year }: { venues: string[], year: number },
+): Array<{ venue: string, count: number }> {
   const filteredItems = getFilteredData(items, { venues, year })
-  const statisticsData = {}
+  const statisticsData: Record<string, number> = {}
 
   filteredItems.forEach(({ venue }) => {
     if (!statisticsData[venue])
@@ -145,3 +172,5 @@ export function getStatisticsData(items, { venues, year }) {
     count: statisticsData[key],
   }))
 }
+
+export type { Paper }

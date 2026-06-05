@@ -1,14 +1,21 @@
+import type { ColumnType } from 'antd/es/table'
+import type { Paper } from '../api'
 import { Table } from 'antd'
 
-function TableResult({ isLoading, dataSource }) {
-  const columns = [
+interface TableResultProps {
+  isLoading: boolean
+  dataSource: Paper[]
+}
+
+function TableResult({ isLoading, dataSource }: TableResultProps) {
+  const columns: ColumnType<Paper>[] = [
     {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
       sorter: (a, b) =>
         a.title.localeCompare(b.title)
-        || b.citations - a.citations
+        || (b.citations ?? 0) - (a.citations ?? 0)
         || b.year.localeCompare(a.year)
         || a.venue.localeCompare(b.venue)
         || a.url.localeCompare(b.url),
@@ -19,7 +26,7 @@ function TableResult({ isLoading, dataSource }) {
       key: 'venue',
       sorter: (a, b) =>
         a.venue.localeCompare(b.venue)
-        || b.citations - a.citations
+        || (b.citations ?? 0) - (a.citations ?? 0)
         || b.year.localeCompare(a.year)
         || a.title.localeCompare(b.title)
         || a.url.localeCompare(b.url),
@@ -30,7 +37,7 @@ function TableResult({ isLoading, dataSource }) {
       key: 'year',
       sorter: (a, b) =>
         b.year.localeCompare(a.year)
-        || b.citations - a.citations
+        || (b.citations ?? 0) - (a.citations ?? 0)
         || a.venue.localeCompare(b.venue)
         || a.title.localeCompare(b.title)
         || a.url.localeCompare(b.url),
@@ -40,7 +47,7 @@ function TableResult({ isLoading, dataSource }) {
       dataIndex: 'citations',
       key: 'citations',
       sorter: (a, b) =>
-        b.citations - a.citations
+        (b.citations ?? 0) - (a.citations ?? 0)
         || b.year.localeCompare(a.year)
         || a.venue.localeCompare(b.venue)
         || a.title.localeCompare(b.title)
@@ -50,14 +57,14 @@ function TableResult({ isLoading, dataSource }) {
       title: 'Url',
       dataIndex: 'url',
       key: 'url',
-      render: url => (
+      render: (url: string) => (
         <a href={url} target="_blank" rel="noopener noreferrer nofollow">
           {url}
         </a>
       ),
       sorter: (a, b) =>
         a.url.localeCompare(b.url)
-        || b.citations - a.citations
+        || (b.citations ?? 0) - (a.citations ?? 0)
         || b.year.localeCompare(a.year)
         || a.venue.localeCompare(b.venue)
         || a.title.localeCompare(b.title),
@@ -65,7 +72,7 @@ function TableResult({ isLoading, dataSource }) {
   ]
 
   return (
-    <Table
+    <Table<Paper>
       rowKey={item => item.title}
       columns={columns}
       dataSource={dataSource}
