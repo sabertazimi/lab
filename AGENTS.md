@@ -55,6 +55,19 @@ just rust-test        # cargo test
 - `eslint.config.ts` - ESLint flat config
 - `.prettierrc.json` - Tailwind plugin, 80 cols, no semicolons
 
+## Browser Debugging
+
+Use `agent-browser` (via `npx agent-browser`) with system chromium for visual debugging:
+
+```bash
+npx agent-browser open http://localhost:5173/ --browser /usr/bin/chromium
+npx agent-browser screenshot debug.png
+npx agent-browser eval "getComputedStyle(el).display"
+npx agent-browser close
+```
+
+Do NOT install browsers: use `--browser /usr/bin/chromium`.
+
 ## Constraints
 
 **Web**: pnpm only | Don't modify `src/components/ui/` | TypeScript strict | Don't commit `dist/`, `node_modules/`
