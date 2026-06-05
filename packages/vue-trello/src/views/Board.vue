@@ -17,19 +17,19 @@ function createColumn(event: Event) {
 </script>
 
 <template>
-  <div class="board-view">
-    <div v-if="columns" class="columns">
+  <div class="flex flex-col items-center justify-start h-full overflow-auto bg-green-500 p-4">
+    <div v-if="columns" class="flex flex-row flex-wrap items-start justify-center md:justify-start">
       <BoardColumn
         v-for="(column, columnIndex) in columns"
         :key="column.id"
-        class="column"
+        class="mb-4 mr-4 bg-gray-300 p-2 text-left shadow-lg column"
         :column-index="columnIndex"
         :column="column"
       />
-      <div class="column">
+      <div class="mb-4 mr-4 bg-gray-300 p-2 text-left shadow-lg column">
         <input
           type="text"
-          class="column-input"
+          class="block w-full border border-transparent bg-white p-2 outline-none focus:border-green-500 transition duration-500"
           placeholder="+ Enter new column ..."
           @keyup.enter="createColumn($event)"
         >
@@ -42,26 +42,3 @@ function createColumn(event: Event) {
     </router-view>
   </div>
 </template>
-
-<style lang="postcss" scoped>
-.board-view {
-  @apply flex flex-col items-center justify-start;
-  @apply h-full overflow-auto bg-green-500 p-4;
-}
-
-.columns {
-  @apply flex flex-row flex-wrap items-start justify-center md:justify-start;
-}
-
-.column {
-  @apply mb-4 mr-4 bg-gray-300 p-2 text-left shadow-lg;
-
-  min-width: 350px;
-}
-
-.column-input {
-  @apply block w-full border border-transparent bg-white p-2 outline-none;
-  @apply focus:border-green-500;
-  @apply transition duration-500;
-}
-</style>

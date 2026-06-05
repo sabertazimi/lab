@@ -31,7 +31,7 @@ function pickupTask(event: DragEvent, fromColumnIndex: number, fromTaskIndex: nu
 
 <template>
   <div
-    class="task"
+    class="mb-2 flex flex-wrap items-center cursor-pointer bg-white text-gray-900 no-underline shadow"
     draggable="true"
     @dragenter.prevent
     @dragover.prevent
@@ -39,7 +39,7 @@ function pickupTask(event: DragEvent, fromColumnIndex: number, fromTaskIndex: nu
     @drop.stop="moveTask(store, $event, columnIndex, taskIndex)"
     @click.stop="goToTask(task)"
   >
-    <div class="task-name">
+    <div class="flex w-full flex-shrink-0 flex-row items-center font-bold">
       <span class="px-4 py-2">{{ task.name }}</span>
       <button
         class="btn-block ml-auto"
@@ -53,14 +53,3 @@ function pickupTask(event: DragEvent, fromColumnIndex: number, fromTaskIndex: nu
     </p>
   </div>
 </template>
-
-<style scoped>
-.task {
-  @apply mb-2 flex flex-wrap items-center;
-  @apply cursor-pointer bg-white text-gray-900 no-underline shadow;
-}
-
-.task-name {
-  @apply flex w-full flex-shrink-0 flex-row items-center font-bold;
-}
-</style>

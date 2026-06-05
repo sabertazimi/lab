@@ -21,18 +21,18 @@ function updateTask(event: Event, task: TaskType, key: string) {
 </script>
 
 <template>
-  <div class="task-modal" @click.stop.self="close">
-    <div class="task-view">
+  <div class="absolute inset-0 bg-black/50" @click.stop.self="close">
+    <div class="relative inset-0 m-32 mx-auto flex max-w-3xl flex-col bg-white p-8 text-left shadow-2xl">
       <input
         type="text"
-        class="task-input"
+        class="block w-full border border-transparent text-xl font-bold outline-none focus:border-green-500 focus:outline-none transition duration-500"
         :value="task.name"
         @change="updateTask($event, task, 'name')"
       >
       <textarea
         id="task-description"
         name="task-description"
-        class="task-description"
+        class="relative my-4 h-64 w-full border bg-transparent p-2 focus:border-green-500 focus:outline-none transition duration-500"
         placeholder="Task description here ..."
         :rows="10"
         :cols="30"
@@ -45,25 +45,3 @@ function updateTask(event: Event, task: TaskType, key: string) {
     </div>
   </div>
 </template>
-
-<style lang="postcss" scoped>
-.task-modal {
-  @apply absolute inset-0 bg-black bg-opacity-50;
-}
-
-.task-view {
-  @apply relative inset-0 m-32 mx-auto flex max-w-3xl flex-col bg-white p-8 text-left shadow-2xl;
-}
-
-.task-input {
-  @apply block w-full border border-transparent text-xl font-bold outline-none;
-  @apply focus:border-green-500 focus:outline-none;
-  @apply transition duration-500;
-}
-
-.task-description {
-  @apply relative my-4 h-64 w-full border bg-transparent p-2;
-  @apply focus:border-green-500 focus:outline-none;
-  @apply transition duration-500;
-}
-</style>

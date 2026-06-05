@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+@layer components {
+  .container {
+    margin-inline: auto;
+  }
+
+  .link {
+    color: oklch(72.3% 0.219 149.579deg);
+    text-decoration: underline;
+    transition: all 0.5s;
+
+    &:hover {
+      color: oklch(83.1% 0.169 152.681deg);
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    min-width: min-content;
+    max-width: max-content;
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    background-color: oklch(72.3% 0.219 149.579deg);
+    border-radius: 1.5rem;
+    transition: all 0.5s;
+
+    &:hover {
+      background-color: oklch(79.2% 0.209 151.712deg);
+    }
+  }
+
+  .btn-block {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    min-width: min-content;
+    max-width: max-content;
+    height: 100%;
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    background-color: oklch(72.3% 0.219 149.579deg);
+    border-radius: 0;
+    transition: all 0.5s;
+
+    &:hover {
+      background-color: oklch(79.2% 0.209 151.712deg);
+    }
+  }
+
+  .btn-round {
+    display: inline-flex;
+    align-items: center;
+    min-width: min-content;
+    max-width: max-content;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1rem;
+    color: white;
+    cursor: pointer;
+    background-color: oklch(72.3% 0.219 149.579deg);
+    border-radius: 9999px;
+    transition: all 0.5s;
+
+    &:hover {
+      background-color: oklch(79.2% 0.209 151.712deg);
+    }
+  }
+
+  .danger {
+    color: white;
+    background-color: oklch(63.7% 0.237 25.331deg);
+
+    &:hover {
+      background-color: oklch(71.4% 0.194 21.792deg);
+    }
+  }
+}
+
+.v-enter-from {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v-enter-active,
+  .v-leave-active {
+    transition: opacity 0.2s ease-out;
+  }
+}
+
+.v-leave-to {
+  opacity: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+}
+
+.column {
+  min-width: 350px;
+}

@@ -52,7 +52,7 @@ just rust-test        # cargo test
 - `pyproject.toml` - uv workspace config
 - `Cargo.toml` - Cargo workspace config
 - `tsconfig.json` - TypeScript strict mode, `@/*` aliases
-- `eslint.config.mjs` - ESLint flat config
+- `eslint.config.ts` - ESLint flat config
 - `.prettierrc.json` - Tailwind plugin, 80 cols, no semicolons
 
 ## Constraints
