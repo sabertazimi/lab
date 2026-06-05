@@ -1,6 +1,6 @@
 import { parse } from 'node-html-parser'
 import { describe, expect, it } from 'vitest'
-import getGameSchedule from './get-game-schedule.js'
+import getGameSchedule from './get-game-schedule.ts'
 
 describe('getGameSchedule', () => {
   it('should extract game schedules from HTML correctly', () => {

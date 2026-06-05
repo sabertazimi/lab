@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readdirSync, writeFile } from 'node:fs'
 import path from 'node:path'
 import { parse } from 'node-html-parser'
-import config from './config.js'
-import password from './password.js'
-import { req, sleep } from './utils.js'
+import config from './config.ts'
+import password from './password.ts'
+import { req, sleep } from './utils.ts'
 
 const GameDataRegex = /UMP_PLAYER\.init\(true, true, '(.+)', autoplay\);/
 

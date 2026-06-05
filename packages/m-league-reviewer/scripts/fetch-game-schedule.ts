@@ -1,11 +1,11 @@
-import type { GameSchedule } from './get-game-schedule.js'
+import type { GameSchedule } from './get-game-schedule.ts'
 import { writeFile } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { parse } from 'node-html-parser'
-import config from './config.js'
-import getGameSchedule from './get-game-schedule.js'
-import { req, sleep } from './utils.js'
+import config from './config.ts'
+import getGameSchedule from './get-game-schedule.ts'
+import { req, sleep } from './utils.ts'
 
 /**
  * Extract year from season string

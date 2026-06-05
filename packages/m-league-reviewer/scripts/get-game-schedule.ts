@@ -1,6 +1,6 @@
 import type { HTMLElement } from 'node-html-parser'
-import type { GameSchedule } from '../src/api/data.js'
-import { teams } from '../src/api/data.js'
+import type { GameSchedule } from '../src/api/data.ts'
+import { teams } from '../src/api/data.ts'
 
 /**
  * Extract game schedule from the season page
