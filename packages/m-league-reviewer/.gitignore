@@ -27,6 +27,4 @@ dist-ssr
 /.react-router/
 /build/
 
-src/api/data.js
-scripts/*.js
 data/*.json
