@@ -47,8 +47,10 @@ function updateTask(event: Event, task: TaskType, key: string) {
 </template>
 
 <style lang="postcss" scoped>
+@reference 'tailwindcss';
+
 .task-modal {
-  @apply absolute inset-0 bg-black bg-opacity-50;
+  @apply absolute inset-0 bg-black/50;
 }
 
 .task-view {

@@ -55,6 +55,8 @@ function pickupTask(event: DragEvent, fromColumnIndex: number, fromTaskIndex: nu
 </template>
 
 <style scoped>
+@reference 'tailwindcss';
+
 .task {
   @apply mb-2 flex flex-wrap items-center;
   @apply cursor-pointer bg-white text-gray-900 no-underline shadow;

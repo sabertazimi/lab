@@ -4,6 +4,13 @@
   --color-primary-blue: #66ffff;
   --color-secondary-cyan: #06b6d4;
   --color-accent-green: #10b981;
+  --color-dashboard-primary: #0f172a;
+  --color-dashboard-secondary: #1e293b;
+  --color-dashboard-accent: #00ffff;
+  --color-dashboard-blue: #3b82f6;
+  --shadow-glow: 0 0 20px rgba(0, 255, 255, 0.3);
+  --shadow-glow-lg: 0 0 40px rgba(0, 255, 255, 0.4);
+  --backdrop-blur-xs: 2px;
 }
 
 @layer components {

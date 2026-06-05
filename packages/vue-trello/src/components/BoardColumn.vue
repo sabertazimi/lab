@@ -69,6 +69,8 @@ function pickupColumn(event: DragEvent, fromColumnIndex: number) {
 </template>
 
 <style scoped>
+@reference 'tailwindcss';
+
 .task-input {
   @apply block w-full border border-transparent bg-transparent p-2 outline-none;
   @apply focus:border-green-500;

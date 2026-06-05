@@ -44,6 +44,8 @@ function createColumn(event: Event) {
 </template>
 
 <style lang="postcss" scoped>
+@reference 'tailwindcss';
+
 .board-view {
   @apply flex flex-col items-center justify-start;
   @apply h-full overflow-auto bg-green-500 p-4;

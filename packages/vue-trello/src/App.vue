@@ -3,9 +3,7 @@
 </template>
 
 <style lang="postcss">
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
 @layer components {
   .container {
