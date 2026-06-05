@@ -23,7 +23,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "lint": "stylelint ./src/**/*.css && eslint ./src",
+    "lint": "tsc --noEmit && stylelint ./src/**/*.css && eslint ./src",
     "lint:fix": "stylelint ./src/**/*.css --fix && eslint ./src --fix",
     "format": "prettier --write src/**/*.{ts,tsx,css}",
     "preview": "vite preview"
