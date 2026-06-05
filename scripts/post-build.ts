@@ -7,7 +7,7 @@
  * to the root dist/ directory with proper path normalization.
  *
  * Usage:
- *   node scripts/post-build.js [package-name]
+ *   node scripts/post-build.ts [package-name]
  *
  * If no package name is provided, it will process all packages.
  */
@@ -23,24 +23,26 @@ const RootDir = path.resolve(__dirname, '..')
 const PackagesDir = path.join(RootDir, 'packages')
 const DistDir = path.join(RootDir, 'dist')
 
-/**
- * Package configuration for post-build processing
- *
- * @typedef {object} PackageConfig
- * @property {string} name - Package name
- * @property {'react-router' | 'vite'} type - Build type
- * @property {string} buildDir - Build output directory relative to package
- * @property {string} [destDir] - Destination directory name (defaults to package name)
- * @property {boolean} [isRoot] - Whether this is the root index.html package
- * @property {string} [normalizeSubDir] - Subdirectory containing index.html for React Router projects
- * @property {string[]} [extraCopy] - Additional files/folders to copy
- */
+/** Package configuration for post-build processing */
+interface PackageConfig {
+  /** Package name */
+  name: string
+  /** Build type */
+  type: 'react-router' | 'vite'
+  /** Build output directory relative to package */
+  buildDir: string
+  /** Destination directory name (defaults to package name) */
+  destDir?: string
+  /** Whether this is the root index.html package */
+  isRoot?: boolean
+  /** Subdirectory containing index.html for React Router projects */
+  normalizeSubDir?: string
+  /** Additional files/folders to copy */
+  extraCopy?: string[]
+}
 
-/**
- * Get package configurations
- * @returns {PackageConfig[]} Array of package configurations
- */
-function getPackageConfigs() {
+/** Get package configurations */
+function getPackageConfigs(): PackageConfig[] {
   return [
     {
       name: 'portfolio',
@@ -90,11 +92,15 @@ function getPackageConfigs() {
 
 /**
  * Recursively copy directory with optional exclusion
- * @param {string} src - Source directory
- * @param {string} dest - Destination directory
- * @param {Set<string>} [excludePaths] - Set of absolute paths to exclude
+ * @param src - Source directory
+ * @param dest - Destination directory
+ * @param excludePaths - Set of absolute paths to exclude
  */
-function copyDirSync(src, dest, excludePaths = new Set()) {
+function copyDirSync(
+  src: string,
+  dest: string,
+  excludePaths: Set<string> = new Set(),
+): void {
   if (!fs.existsSync(src)) {
     console.warn(`  ⚠️  Source does not exist: ${src}`)
     return
@@ -123,19 +129,19 @@ function copyDirSync(src, dest, excludePaths = new Set()) {
 
 /**
  * Get the first segment of a path (top-level directory name)
- * @param {string} relativePath - Relative path like 'lab' or 'lab/m-league-reviewer'
- * @returns {string} First segment of the path
+ * @param relativePath - Relative path like 'lab' or 'lab/m-league-reviewer'
+ * @returns First segment of the path
  */
-function getFirstPathSegment(relativePath) {
+function getFirstPathSegment(relativePath: string): string {
   return relativePath.split('/')[0]
 }
 
 /**
  * Find the directory containing index.html in React Router build output
- * @param {string} clientDir - The client build directory
- * @returns {string | null} - Path to directory containing index.html
+ * @param clientDir - The client build directory
+ * @returns Path to directory containing index.html, or null if not found
  */
-function findIndexHtmlDir(clientDir) {
+function findIndexHtmlDir(clientDir: string): string | null {
   if (!fs.existsSync(clientDir)) {
     return null
   }
@@ -146,7 +152,7 @@ function findIndexHtmlDir(clientDir) {
   }
 
   // Search recursively for index.html
-  const searchDir = (dir) => {
+  const searchDir = (dir: string): string | null => {
     const entries = fs.readdirSync(dir, { withFileTypes: true })
 
     for (const entry of entries) {
@@ -168,9 +174,9 @@ function findIndexHtmlDir(clientDir) {
 
 /**
  * Process a single package
- * @param {PackageConfig} config - Package configuration
+ * @param config - Package configuration
  */
-function processPackage(config) {
+function processPackage(config: PackageConfig): void {
   const packageDir = path.join(PackagesDir, config.name)
   const buildDir = path.join(packageDir, config.buildDir)
   const destDir = config.isRoot
@@ -228,7 +234,7 @@ function processPackage(config) {
 
         // Copy remaining client files (assets, etc.), excluding the normalizeSubDir parent
         const excludePaths = new Set([
-          path.join(buildDir, getFirstPathSegment(config.normalizeSubDir)),
+          path.join(buildDir, getFirstPathSegment(config.normalizeSubDir!)),
         ])
         copyDirSync(buildDir, destDir, excludePaths)
         console.log(`  ✅ Copied remaining client files`)
@@ -266,10 +272,8 @@ function processPackage(config) {
   }
 }
 
-/**
- * Main entry point
- */
-function main() {
+/** Main entry point */
+function main(): void {
   const args = process.argv.slice(2)
   const targetPackage = args[0]
   const packageConfigs = getPackageConfigs()

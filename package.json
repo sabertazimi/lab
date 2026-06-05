@@ -32,7 +32,7 @@
     "claude"
   ],
   "scripts": {
-    "build": "pnpm -r run build && node scripts/post-build.js && cp -fr CNAME dist/ && cp -fr vercel.json dist/",
+    "build": "pnpm -r run build && node scripts/post-build.ts && cp -fr CNAME dist/ && cp -fr vercel.json dist/",
     "dev": "pnpm dev:portfolio",
     "dev:portfolio": "pnpm --filter @lab/portfolio dev",
     "dev:m-league-reviewer": "pnpm --filter @lab/m-league-reviewer dev",

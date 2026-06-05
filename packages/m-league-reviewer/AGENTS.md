@@ -62,7 +62,7 @@ pnpm run fetch:game-schedule
 
 4. **Data Flow**:
    - API layer in `src/api/` handles data fetching and transformation
-   - Data fetching scripts in `scripts/` (compiled with separate tsconfig)
+   - Data fetching scripts in `scripts/` (run directly with Node.js v24+ native TS support)
    - External data sources include M.League official site and QQQ sheets
 
 ### Project Structure

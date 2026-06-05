@@ -1,26 +1,43 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./packages/echarts-dashboard" },
-    { "path": "./packages/mortal-ui" },
-    { "path": "./packages/react-renderer" },
-    { "path": "./packages/vue-challenges" },
-    { "path": "./packages/vue-design" },
-    { "path": "./packages/vue-trello" }
-  ],
   "compilerOptions": {
     "target": "esnext",
     "jsx": "preserve",
-    "lib": ["esnext", "dom"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "useDefineForClassFields": true,
     "baseUrl": ".",
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "types": ["vite/client"],
+    "types": [
+      "vite/client"
+    ],
     "strict": true,
     "sourceMap": true,
     "esModuleInterop": true,
     "skipLibCheck": true
-  }
+  },
+  "references": [
+    {
+      "path": "./packages/echarts-dashboard"
+    },
+    {
+      "path": "./packages/mortal-ui"
+    },
+    {
+      "path": "./packages/react-renderer"
+    },
+    {
+      "path": "./packages/vue-challenges"
+    },
+    {
+      "path": "./packages/vue-design"
+    },
+    {
+      "path": "./packages/vue-trello"
+    }
+  ],
+  "files": []
 }
