@@ -1,0 +1,117 @@
+@import 'tailwindcss';
+
+@layer components {
+  .container {
+    margin-inline: auto;
+  }
+
+  .link {
+    color: oklch(0.723 0.219 149.579);
+    text-decoration: underline;
+    transition: all 0.5s;
+
+    &:hover {
+      color: oklch(0.831 0.169 152.681);
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    min-width: min-content;
+    max-width: max-content;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 1.5rem;
+    padding: 0.5rem 1rem;
+    background-color: oklch(0.723 0.219 149.579);
+    font-weight: 700;
+    color: white;
+    transition: all 0.5s;
+
+    &:hover {
+      background-color: oklch(0.792 0.209 151.712);
+    }
+  }
+
+  .btn-block {
+    display: inline-flex;
+    min-width: min-content;
+    max-width: max-content;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 0;
+    padding: 0.5rem 1rem;
+    background-color: oklch(0.723 0.219 149.579);
+    font-weight: 700;
+    color: white;
+    height: 100%;
+    width: 100%;
+    transition: all 0.5s;
+
+    &:hover {
+      background-color: oklch(0.792 0.209 151.712);
+    }
+  }
+
+  .btn-round {
+    display: inline-flex;
+    min-width: min-content;
+    max-width: max-content;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    background-color: oklch(0.723 0.219 149.579);
+    font-weight: 700;
+    color: white;
+    transition: all 0.5s;
+
+    &:hover {
+      background-color: oklch(0.792 0.209 151.712);
+    }
+  }
+
+  .danger {
+    background-color: oklch(0.637 0.237 25.331);
+    color: white;
+
+    &:hover {
+      background-color: oklch(0.714 0.194 21.792);
+    }
+  }
+}
+
+.v-enter-from {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v-enter-active,
+  .v-leave-active {
+    transition: opacity 0.2s ease-out;
+  }
+}
+
+.v-leave-to {
+  opacity: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+}
+
+.column {
+  min-width: 350px;
+}

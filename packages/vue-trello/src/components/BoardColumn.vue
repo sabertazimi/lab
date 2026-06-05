@@ -60,20 +60,10 @@ function pickupColumn(event: DragEvent, fromColumnIndex: number) {
       </transition-group>
       <input
         type="text"
-        class="task-input"
+        class="block w-full border border-transparent bg-transparent p-2 outline-none focus:border-green-500 transition duration-500"
         placeholder="+ Enter new task ..."
         @keyup.enter="createTask($event, columnIndex)"
       >
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference 'tailwindcss';
-
-.task-input {
-  @apply block w-full border border-transparent bg-transparent p-2 outline-none;
-  @apply focus:border-green-500;
-  @apply transition duration-500;
-}
-</style>
