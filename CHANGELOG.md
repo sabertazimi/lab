@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/sabertazimi/lab/compare/v3.3.0...v3.4.0) (2026-06-08)
+
+### Bug Fixes
+
+- **deps:** update dependencies (non-major) ([#1001](https://github.com/sabertazimi/lab/issues/1001)) ([6c6e250](https://github.com/sabertazimi/lab/commit/6c6e2509c9c6529d88c8a2c8e2dded6092d959bd))
+- **deps:** update dependencies (non-major) ([#1006](https://github.com/sabertazimi/lab/issues/1006)) ([9e181ab](https://github.com/sabertazimi/lab/commit/9e181ab9433b3246779710d9f19409e260aa72a0))
+- **deps:** update dependencies (non-major) ([#1011](https://github.com/sabertazimi/lab/issues/1011)) ([42d5719](https://github.com/sabertazimi/lab/commit/42d5719c9f41ad0b5263b61fda54d8166861cd55))
+- **deps:** update dependencies (non-major) ([#989](https://github.com/sabertazimi/lab/issues/989)) ([339330b](https://github.com/sabertazimi/lab/commit/339330b72dd6a34848ab0c043a385e6fd847f02b))
+- **deps:** update dependency @unhead/vue to v3 ([#994](https://github.com/sabertazimi/lab/issues/994)) ([6ba5421](https://github.com/sabertazimi/lab/commit/6ba54217339d491b7d9441b1c4fb47d06dcd3ae6))
+- **deps:** update dependency lucide-react to v1 ([#996](https://github.com/sabertazimi/lab/issues/996)) ([b71fc47](https://github.com/sabertazimi/lab/commit/b71fc475a524bfb50f778ea7562b9ce2e518a43a))
+- **deps:** update dependency pydantic to >=2.13.4 ([#1010](https://github.com/sabertazimi/lab/issues/1010)) ([ae0aa2f](https://github.com/sabertazimi/lab/commit/ae0aa2fe51c914c4490d33cbe8756c47a778634a))
+- **deps:** update dependency react-day-picker to v10 ([#1005](https://github.com/sabertazimi/lab/issues/1005)) ([4507cf1](https://github.com/sabertazimi/lab/commit/4507cf13f73b059d832ba49d0f0749d8fefb07a2))
+- **deps:** update dependency rich to >=15.0.0 ([#991](https://github.com/sabertazimi/lab/issues/991)) ([f4ac3a3](https://github.com/sabertazimi/lab/commit/f4ac3a31146e7c5662329bd573dde8f2834102b6))
+
+### Features
+
+- **agent:** add `LangGraph` `ReAct` agent demo with tool calling ([f5a9841](https://github.com/sabertazimi/lab/commit/f5a9841a53acef28f8bde7e9c1f1f1c185d63e46))
+
+### Performance Improvements
+
+- **ci:** optimize Python uv sync by caching .venv and removing redundant flags ([#1013](https://github.com/sabertazimi/lab/issues/1013)) ([7e3295b](https://github.com/sabertazimi/lab/commit/7e3295bc8b5cdd014130df2dfc584df74316539d))
+
 # [3.3.0](https://github.com/sabertazimi/lab/compare/v3.2.0...v3.3.0) (2026-04-04)
 
 ### Bug Fixes

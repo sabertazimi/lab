@@ -1,7 +1,7 @@
 {
   "name": "@lab/rustlings",
   "type": "module",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "private": true,
   "description": "Small exercises to get you used to reading and writing Rust code.",
   "license": "MIT"

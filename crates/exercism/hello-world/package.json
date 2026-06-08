@@ -1,7 +1,7 @@
 {
   "name": "@lab/exercism-hello-world",
   "type": "module",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "private": true,
   "description": "Exercism hello-world exercise in Rust.",
   "license": "MIT"
