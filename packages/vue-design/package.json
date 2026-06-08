@@ -1,5 +1,6 @@
 {
   "name": "@lab/vue-design",
+  "type": "module",
   "version": "3.3.0",
   "private": true,
   "engines": {

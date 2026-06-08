@@ -1,5 +1,6 @@
 {
   "name": "@lab/vue-challenges",
+  "type": "module",
   "version": "3.3.0",
   "private": true,
   "description": "Collection of Vue.js challenges",
