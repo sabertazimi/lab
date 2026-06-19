@@ -10,5 +10,5 @@ repository = "https://github.com/sabertazimi/lab"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = "0.4.44"
+chrono = "0.4.45"
 git2 = "0.21.0"
