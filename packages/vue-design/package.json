@@ -16,13 +16,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "snabbdom": "^3.6.3"
+    "snabbdom": "^3.6.4"
   },
   "devDependencies": {
     "@dg-scripts/eslint-config": "^6.2.0",
-    "eslint": "^10.4.0",
-    "prettier": "^3.8.3",
+    "eslint": "^10.5.0",
+    "prettier": "^3.8.4",
     "typescript": "^6.0.3",
-    "vite": "^8.0.13"
+    "vite": "^8.0.16"
   }
 }

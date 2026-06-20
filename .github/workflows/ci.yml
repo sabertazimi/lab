@@ -133,7 +133,7 @@ jobs:
         with:
           python-version-file: pyproject.toml
       - name: Setup uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
       - name: Setup just
@@ -164,7 +164,7 @@ jobs:
         with:
           python-version-file: pyproject.toml
       - name: Setup uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
       - name: Setup just
