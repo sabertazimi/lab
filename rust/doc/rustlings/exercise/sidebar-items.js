@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CLIPPY_CARGO_TOML_PATH","CONTEXT","I_AM_DONE_REGEX","RUSTC_COLOR_ARGS"],"enum":["Mode","State"],"fn":["clean","temp_file"],"struct":["CompiledExercise","ContextLine","Exercise","ExerciseList","ExerciseOutput","FileHandle"]};
