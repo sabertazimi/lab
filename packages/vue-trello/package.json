@@ -14,7 +14,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "nanoid": "^5.1.16",
+    "nanoid": "^6.0.0",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0",
     "vuex": "^4.1.0"
