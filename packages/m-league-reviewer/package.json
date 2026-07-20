@@ -61,7 +61,7 @@
     "@vitest/coverage-v8": "^4.1.9",
     "axios": "^1.18.0",
     "eslint": "^10.5.0",
-    "node-html-parser": "^7.1.0",
+    "node-html-parser": "^9.0.0",
     "prettier": "^3.8.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "shadcn": "^4.11.0",
