@@ -2,7 +2,7 @@
   "name": "lab",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@11.15.1",
   "description": "Experimental prototypes.",
   "author": "sabertazimi <sabertazimi@gmail.com>",
   "license": "MIT",
@@ -45,12 +45,12 @@
   "devDependencies": {
     "@dg-scripts/eslint-config": "^6.2.0",
     "@dg-scripts/stylelint-config": "^6.2.0",
-    "@types/node": "^24.13.2",
-    "eslint": "^10.5.0",
+    "@types/node": "^24.13.3",
+    "eslint": "^10.7.0",
     "lerna": "^9.0.7",
-    "prettier": "^3.8.4",
-    "prettier-plugin-tailwindcss": "^0.8.0",
-    "stylelint": "^17.13.0",
+    "prettier": "^3.9.5",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "stylelint": "^17.14.1",
     "typescript": "^6.0.3"
   }
 }
