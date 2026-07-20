@@ -29,8 +29,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.2.5",
-    "antd": "^6.4.4",
+    "@ant-design/icons": "^6.3.2",
+    "antd": "^6.5.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-redux": "^9.3.0",
@@ -42,11 +42,11 @@
     "@dg-scripts/stylelint-config": "^6.2.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.2",
-    "eslint": "^10.5.0",
-    "prettier": "^3.8.4",
-    "stylelint": "^17.13.0",
+    "@vitejs/plugin-react": "^6.0.3",
+    "eslint": "^10.7.0",
+    "prettier": "^3.9.5",
+    "stylelint": "^17.14.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.1.5"
   }
 }
