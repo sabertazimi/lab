@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["rustlings",[["impl SubCommand for <a class=\"struct\" href=\"rustlings/struct.HintArgs.html\" title=\"struct rustlings::HintArgs\">HintArgs</a>",0],["impl SubCommand for <a class=\"struct\" href=\"rustlings/struct.ListArgs.html\" title=\"struct rustlings::ListArgs\">ListArgs</a>",0],["impl SubCommand for <a class=\"struct\" href=\"rustlings/struct.RunArgs.html\" title=\"struct rustlings::RunArgs\">RunArgs</a>",0],["impl SubCommand for <a class=\"struct\" href=\"rustlings/struct.VerifyArgs.html\" title=\"struct rustlings::VerifyArgs\">VerifyArgs</a>",0],["impl SubCommand for <a class=\"struct\" href=\"rustlings/struct.WatchArgs.html\" title=\"struct rustlings::WatchArgs\">WatchArgs</a>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[701]}
